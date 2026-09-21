@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 22: Kết Luận — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 22</div>
+<h1>Kết Luận</h1>
+<p class="chapter-subtitle">Tổng kết toàn bộ hành trình — từ data communication structure đến event design, schematized events, data liberation, microservice implementation, testing, và deployment</p>
+
+<nav class="chapnav">
+  <a href="ch21-edm.html">← Chương 21: Triển Khai</a>
+  <span class="chapnav-placeholder">Hết sách</span>
+</nav>
+
+<p>Kiến trúc microservices hướng sự kiện cung cấp một phương pháp mạnh mẽ và linh hoạt để giải quyết các vấn đề nghiệp vụ. Event streams cung cấp dữ liệu low-latency được định nghĩa rõ ràng cho bất kỳ service nào cần, bao nhiêu lần cần. Microservices cho phép tạo ra các services purpose-built sử dụng công nghệ phù hợp nhất cho công việc, bao gồm databases, languages, và frameworks. Cùng nhau, chúng cho phép các services decoupled, resilient, giao tiếp durably và asynchronously — để ngỏ cho bạn lựa chọn phương án tốt nhất để giải quyết các business use cases của mình. Dưới đây là recap nhanh tất cả những gì được đề cập trong cuốn sách này.</p>
+
+<hr class="divider">
+
+<h2>The Data Communication Structure</h2>
+
+<p>Data communication structure là thứ cho phép bạn truy cập dữ liệu nghiệp vụ quan trọng từ khắp nơi trong công ty, mà không cần phải xây dựng hoặc dựa vào các ad-hoc solutions.</p>
+
+<p>Event brokers, như một phần của event-driven architecture, cho phép bạn và các services của bạn truy cập bất kỳ data nào chúng cần, miễn là data đó đã được ghi vào một event stream. Chúng cho phép strict organization của data, có thể propagate updates trong near-real-time, và có thể vận hành ở quy mô thực sự khổng lồ. Event broker không quan tâm đến business logic của producers và consumers. Nó chỉ tập trung vào việc lưu trữ events một cách resilient và distributing chúng cho subscribers đã đăng ký.</p>
+
+<p>Bằng cách ghi events vào một event stream, các producer services cung cấp quyền truy cập readily available, low-latency, và decoupled vào events cho tất cả interested consumers. Event streams absolve producers khỏi nhu cầu cung cấp custom query endpoints cho consumers, giúp producers tập trung trước tiên và foremost vào việc phục vụ primary business use cases của mình. Consumers có thể truy cập data họ cần từ các streams phục vụ nó, sử dụng business logic, processing power, và data storage của riêng mình để giải quyết các business use cases của mình.</p>
+
+<p>Một mature data communication structure decouples ownership và production của data khỏi việc access và consumption nó. Applications không còn cần phải "double duty" — vừa phục vụ internal business logic vừa cung cấp synchronization mechanisms và outside direct access cho các services khác. Một failed service instance không còn có nghĩa là data không thể truy cập được — chỉ đơn giản là new data sẽ bị delay cho đến khi producer trở lại online.</p>
+
+<hr class="divider">
+
+<h2>Business Domains và Bounded Contexts</h2>
+
+<p>Businesses vận hành trong một domain cụ thể, có thể được chia nhỏ thành các subdomains. Các giải pháp cho business problems được mô tả bởi bounded contexts, xác định các boundaries — bao gồm inputs, outputs, events, requirements, processes, và data models — liên quan đến subdomain.</p>
+
+<p>Microservice implementation của bạn nên align với một bounded context. Các bounded contexts nhỏ hơn có thể được fulfill bởi một microservice duy nhất, trong khi các bounded contexts lớn hơn và phức tạp hơn có thể cần vài microservices.</p>
+
+<p>Nên align microservices theo business-defined bounded contexts, để services của bạn map gọn gàng vào các business problems chúng được thiết kế để giải quyết. Kết quả là một tập hợp decoupled services bạn có thể update độc lập với nhau, đảm bảo bạn có thể đáp ứng nhu cầu của một ever-changing business landscape trong khi đồng thời preserving team autonomy.</p>
+
+<hr class="divider">
+
+<h2>Tooling, Infrastructure, và The Microservice Tax</h2>
+
+<p>Event-driven microservices yêu cầu đầu tư vào các systems và tools cho phép vận hành ở quy mô lớn — được gọi là <em>microservice tax</em>. Event broker nằm ở trung tâm của hệ thống, cung cấp fundamental communication giữa các services và absolves mỗi service khỏi việc quản lý data communication solution của chính mình.</p>
+
+<p>Microservice architectures amplify các issues xung quanh việc tạo, quản lý, và deploy applications, và benefit từ standardization và streamlining của các quy trình này. Mỗi service mới yêu cầu own repository, deployment pipeline, monitoring, và logging system, cũng như processing và storage resources. Tạo custom process cho mỗi microservice sẽ rất tốn kém, trong khi tạo means cho mỗi team để tự accomplish các bước này sẽ trả lại rất nhiều về lâu dài.</p>
+
+<p>Essential services tạo nên microservice tax bao gồm:</p>
+
+<ul>
+<li>The event broker và event streams</li>
+<li>Schema registry và metadata management</li>
+<li>Access control management</li>
+<li>Container management system, bao gồm resource management</li>
+<li>Continuous integration, delivery, và deployment service</li>
+<li>Monitoring và logging service</li>
+</ul>
+
+<p>Paying the microservice tax không phải là all-or-nothing process. Tổ chức thường bắt đầu với một event broker service hoặc một container management system, và tiến dần đến việc thêm các thành phần khác khi cần.</p>
+
+<hr class="divider">
+
+<h2>Event Design</h2>
+
+<p>Có một số loại events chính. Hiểu từng loại, primary roles, benefits, drawbacks, và khi nào nên sử dụng là điều thiết yếu để xây dựng event-driven microservices.</p>
+
+<dl>
+<dt><em>State events</em></dt>
+<dd>Mô tả state của một <em>entity</em> tại một thời điểm, và bao gồm tất cả fields liên quan đến nó. State events có thể chứa chỉ current state, hoặc cũng có thể bao gồm earlier versions của state (chẳng hạn như khi dùng before/after). State events dùng primary key đại diện cho entity, để kích hoạt event-stream copartitioning và compaction. Chúng cũng hỗ trợ event-carried state transfer, một critical mechanism cho event-driven microservices.</dd>
+
+<dt><em>Delta events</em></dt>
+<dd>Mô tả sự thay đổi từ state này sang state khác. Delta events thường chỉ bao gồm các fields đã thay đổi, để lại cho consumer việc compose state. Delta events không compactable, điều này có thể làm cho việc lưu trữ chúng theo thời gian trở nên thách thức khi số lượng tăng lên. Chúng cũng hỗ trợ event sourcing, một pattern phổ biến để communicate state changes <em>within</em> một bounded context, nhưng không phải cho communication giữa bounded contexts.</dd>
+
+<dt><em>Hybrid events</em></dt>
+<dd>Kết hợp cả state và delta, các events này chứa cả state và các deltas dẫn đến sự thay đổi trong state. Hybrid events có thể cung cấp sự cân bằng giữa state và delta events, nhưng với chi phí là added production và consumption complexity, storage usage, và network usage.</dd>
+</dl>
+
+<p>Mức độ bạn <em>normalize</em> hay <em>denormalize</em> data liên quan đến events cũng là một consideration quan trọng. Relational databases được xây dựng cho và highly efficient khi xử lý complex joins cho data at rest, benefiting từ normalized schema (ví dụ: third hoặc fourth normal form). Trong event streams, joins phức tạp và tốn kém hơn nhiều, và do đó benefit từ một more denormalized approach.</p>
+
+<p>Tuy nhiên, trade-offs tồn tại: denormalized events lớn hơn và yêu cầu nhiều data storage hơn, network usage hơn. Nó cũng phức tạp hơn cho producer để tạo ra chúng. Tuy nhiên, consumers benefit lớn vì chúng có thể avoid complex và expensive stream joins, và sử dụng wider range of frameworks.</p>
+
+<hr class="divider">
+
+<h2>Schematized Events</h2>
+
+<p>Schemas đóng vai trò critical trong việc giao tiếp ý nghĩa của events. Strongly typed events buộc cả producers và consumers phải đối mặt với thực tế của data, thay vì shrug it off và hy vọng người khác sẽ figure it out sau. Producers phải đảm bảo rằng họ produce events theo schema, trong khi consumers phải đảm bảo rằng họ code microservices của mình theo schema definition. Strongly defined schemas significantly reduce khả năng consumers misinterpreting events, prevent bad data, và provide một contract cho future changes.</p>
+
+<p>Schema evolution cung cấp cơ chế để thay đổi schemas theo các business requirements mới. Nó cho phép producer generate events với new và updated fields, trong khi cũng cho phép consumers không quan tâm đến thay đổi tiếp tục sử dụng older schemas. Điều này significantly giảm frequency và risk của nonessential changes. Trong khi đó, remaining consumers có thể independently upgrade code của mình để consume và process events sử dụng latest schema format, enabling chúng truy cập latest data fields.</p>
+
+<p>Field-level encryption (FLE) và value constraints là hai features beneficial khác. FLE cho phép encrypt specific fields (theo schema), sao cho chỉ những consumers có proper authorization mới có thể decrypt và access data. Value constraints cho phép specify valid ranges cho field, chẳng hạn như restrict age field về positive integer value, hoặc name field về chỉ alphabetical characters.</p>
+
+<p>Schemas cũng cho phép useful features như code generation và data discovery. Code generators có thể tạo classes/structures liên quan đến producing và consuming applications. Developers code services của họ theo các generated outputs, giúp expose mọi problems trong data definitions sớm trong development cycle. Chúng có thể remain focused vào việc build business logic của application, để việc mapping serialized data sang class objects cho appropriate libraries.</p>
+
+<p>Schema registry cung cấp searchable means để tìm hiểu data nào được attributed vào event stream nào. Nó có thể enable easier data discovery across nhiều different event streams, và giúp bạn determine streams nào bạn cần build business logic của mình.</p>
+
+<hr class="divider">
+
+<h2>Data Liberation và The Single Source of Truth</h2>
+
+<p>Một khi event streams đã up và running, đến lúc populate chúng với business-critical data. Liberating data từ các services và data stores trong tổ chức của bạn có thể là một lengthy process và sẽ mất thời gian để đưa tất cả vào event broker. Đây là một bước thiết yếu trong việc decouple systems khỏi nhau và để tiến tới một event-driven architecture. Data liberation decouples production và ownership của data khỏi việc access nó của downstream consumers.</p>
+
+<blockquote>
+<p>Việc có data readily available trong event streams cho phép services được xây dựng bằng <em>composition</em>. Một service mới chỉ cần subscribe vào các event streams quan tâm qua event broker, thay vì directly connecting với mỗi service mà nếu không sẽ cung cấp data đó.</p>
+</blockquote>
+
+<p>Bắt đầu bằng cách liberate data được dùng nhiều nhất và critical nhất cho mục tiêu lớn tiếp theo của tổ chức. Có nhiều cách khác nhau để extract information từ các services và data stores, và mỗi method có benefits và drawbacks. Quan trọng là cân nhắc impact lên existing service theo rủi ro của stale data, lack of schemas, và exposure của internal data models trong liberated event streams.</p>
+
+<hr class="divider">
+
+<h2>Microservices</h2>
+
+<p>Microservices là các small, purpose-built services dành riêng cho việc giải quyết specific business problems. Cách bền vững nhất để build microservices là align chúng theo business-focused bounded contexts, nơi mỗi microservice, hoặc collection of microservices, contributes vào việc fulfilling nhu cầu của context. Theo chiến lược này cho phép bạn isolate microservices khỏi các changes được thực hiện ở các business areas khác, ngoại trừ các trường hợp những business changes đó cũng yêu cầu changes trong business area của bạn.</p>
+
+<p>Mặc dù bạn có thể build microservices từ hầu hết mọi technology hoặc framework, một số hoạt động tốt hơn những cái khác. Cuốn sách này đề cập các lựa chọn phổ biến nhất, bao gồm lightweight frameworks, heavyweight frameworks, basic producer/consumer, FaaS, và streaming SQL options. Bạn cũng cần cân nhắc internal state storage versus external state storage, cũng như running services trong container (phổ biến nhất) hoặc virtual machine (ít phổ biến hơn).</p>
+
+<p>Không phải tất cả microservices đều cần <em>micro</em>. Hoàn toàn hợp lý để tổ chức thay vào đó sử dụng vài services lớn hơn, đặc biệt nếu chưa pay microservice tax, một phần hoặc toàn bộ. Không có giải thưởng nào cho việc build nhiều microservices nhất, cũng không có giải thưởng nào cho việc chỉ có một single massive service. Bạn cần tìm balance phù hợp cho tổ chức của mình.</p>
+
+<p>Tuy nhiên, sẽ dễ dàng hơn nhiều để build các new, fine-grained services decoupled khỏi existing large services nếu bạn follow một vài key principles:</p>
+
+<ul>
+<li>Publish các business entities và events được dùng nhiều và quan trọng vào event broker.</li>
+<li>Dùng event broker là single source of truth để drive microservices của mình.</li>
+<li>Make it easy để set up, use, và manage microservices của riêng bạn.</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Microservice Implementation Options</h2>
+
+<p>Hiện tại, <strong>lightweight frameworks</strong> có xu hướng có greatest out-of-the-box functionality. Streams có thể được materialized thành tables và maintained vô thời hạn. Joins, bao gồm cả trên foreign keys, có thể được thực hiện cho nhiều streams và tables. Hot replicas, durable storage, và changelogs cung cấp resiliency và scalability.</p>
+
+<p><strong>Heavyweight frameworks</strong> cung cấp functionality tương tự với lightweight frameworks, nhưng fall short về processing independence vì chúng yêu cầu một separate dedicated cluster of resources. New cluster management options đang trở nên phổ biến hơn, chẳng hạn như direct integration với Kubernetes. Heavyweight frameworks thường đã được sử dụng trong các mid-sized và larger organizations, thường bởi những individuals thực hiện big-data analysis.</p>
+
+<p><strong>Basic producer/consumer (BPC)</strong> cung cấp flexible options cho nhiều languages và runtimes, nhưng thường bị giới hạn trong chỉ basic consumption và production patterns. Đảm bảo deterministic behavior là khó, vì chúng không đi kèm với built-in event scheduling. Complex operations sẽ yêu cầu either đầu tư đáng kể vào custom libraries của mình để cung cấp functionality đó, hoặc bạn cần limit usage cho simpler use cases nơi nondeterministic processing không phải là concern.</p>
+
+<p><strong>Function-as-a-Service (FaaS)</strong> solutions tương tự như BPC, nhưng streamlined hơn về quản lý và scaling. FaaS use cases bao gồm simple stateless và stateful processing, cũng như orchestration cho các complex workflows hơn. FaaS orchestrator functions không available từ tất cả FaaS providers, vì vậy cần check documentation tương ứng.</p>
+
+<hr class="divider">
+
+<h2>Testing</h2>
+
+<p>Event-driven microservices rất phù hợp với integration và unit testing. Bạn có thể dễ dàng compose events để cover wide range of test cases, specifying order, timestamps, partitions, và contents across input event streams. Event schemas cung cấp structure cần thiết để compose test input streams, bao gồm mọi constraints hoặc special edge cases mà bạn có thể cần accommodate.</p>
+
+<p>Local testing có thể bao gồm cả unit và integration testing, với latter dựa vào dynamic creation của event broker, schema registry, và mọi dependencies khác cần thiết cho service under test. Ví dụ: bạn có thể tạo event broker trong cùng executable với test chính nó, như trường hợp với nhiều JVM-based solutions. Bạn cũng có thể run một event broker trong container riêng cùng với application under test. Với full control của event broker, bạn có thể simulate load, race conditions, outages, hoặc bất kỳ broker-application interactions nào khác.</p>
+
+<p>Bạn có thể conduct production integration testing bằng cách dynamically tạo một temporary event broker, populate nó với copies của production event streams và events (barring information-security concerns), rồi run service của bạn trên đó. Điều này cung cấp smoke test trước production deployment để đảm bảo bạn chưa bỏ lỡ bất cứ điều gì rõ ràng, và cung cấp means of verification. Bạn cũng có thể execute performance tests trong môi trường này, testing cả performance của một single instance và khả năng scale horizontally. Môi trường có thể đơn giản được discard sau khi testing hoàn tất.</p>
+
+<hr class="divider">
+
+<h2>Deploying</h2>
+
+<p>Deploying microservices ở scale yêu cầu microservice owners có thể quickly và easily deploy và roll back services của mình. Autonomy này cho phép teams move nhanh và act independently, loại bỏ bottlenecks vốn tồn tại trong một infrastructural team chịu trách nhiệm duy nhất cho deployments. Continuous integration, delivery, và deployment pipelines thiết yếu để cung cấp functionality này, vì chúng cho phép một streamlined nhưng customizable deployment process giảm manual steps và intervention, và có thể scale out cho các microservices khác. Tùy thuộc vào lựa chọn của bạn, container management system có thể cung cấp additional functionality để giúp với deployments và rollbacks, further simplifying process.</p>
+
+<p>Deployment process phải tính đến service-level agreements (SLAs), rebuilding of state, và reconsumption của input event streams. SLAs không chỉ đơn giản là matters of downtime, nhưng cũng phải tính đến impact của deployment lên tất cả downstream consumers, và health của event broker service. Một microservice phải rebuild toàn bộ state của mình và propagate new output events có thể đặt considerable load lên event broker, cũng như cause downstream consumers phải đột ngột cần scale up lên nhiều processing instances hơn. Không hiếm gặp một rebuilding service phải process hàng triệu hoặc hàng tỷ events trong thời gian ngắn. Quotas có thể mitigate impact, nhưng tùy thuộc vào downstream service requirements, một rebuilding service có thể ở trạng thái inconsistent trong một khoảng thời gian không thể chấp nhận.</p>
+
+<p>Luôn có trade-offs giữa SLAs, impact cho downstream consumers, impact cho event broker, và impact cho monitoring và alerting frameworks. Ví dụ: một blue-green deployment yêu cầu hai consumer groups, phải được xem xét cho monitoring và alerting, bao gồm lag-based autoscaling. Trong khi bạn chắc chắn có thể thực hiện công việc cần thiết để accommodate deployment pattern này, một lựa chọn khác là đơn giản thay đổi application design. Thay thế cho blue-green là dùng một thin, always-on serving layer để phục vụ synchronous requests, trong khi backend event processor có thể được swapped out và reprocess theo thời gian của nó. Service layer của bạn có thể serve stale data trong một khoảng thời gian, nhưng nó không yêu cầu bất kỳ augmentations nào cho tooling hoặc more complex swapping operations và có thể vẫn meet SLAs của dependent services.</p>
+
+<hr class="divider">
+
+<h2>Final Words</h2>
+
+<p>Event-driven microservices mạnh mẽ, linh hoạt, resilient, và scalable. Chúng cho phép bạn tạo ra các purpose-built services align với business goals của mình, sử dụng bất kỳ frameworks, languages, data stores, và tooling nào bạn chọn.</p>
+
+<p>Thành công trong event-driven microservices đòi hỏi rethink về việc data thực sự là gì và cách services access và use nó. Gone are the days khi tất cả data của tổ chức có thể được nhét vào một single database và accessed bởi một single monolithic service.</p>
+
+<p>Event streams cung cấp data communication structure mà nhiều tổ chức đang thiếu. Publishing important business data lên event streams làm cho nó widely available cho bất kỳ authorized service, system, team, hoặc người nào cần nó. Một robust và well-defined data communication structure relieves services khỏi việc phải perform double duty và cho phép chúng focus thay vào đó chỉ phục vụ own business functionality của mình, không phải data và querying needs của các bounded contexts khác.</p>
+
+<p>Event-driven microservices compose own data models của mình từ data được sourced qua event streams. Compositional nature này cung cấp unparalleled flexibility, cho phép individual business units focus vào việc sử dụng bất kỳ data nào cần thiết để accomplish business goals của mình. Ngay cả các tổ chức chỉ running một vài services cũng có thể benefit lớn từ data communications được cung cấp bởi event broker, paving the way để build new services, fully decoupled khỏi old business requirements và implementations.</p>
+
+<p>Tóm lại, event-driven microservices cung cấp cho bạn nhiều powerful options để giải quyết business problems. Bất kể bạn build các services như thế nào, điều này rõ ràng: data communication structure extends power của data của tổ chức cho bất kỳ service hay team nào yêu cầu nó, eliminates access boundaries, và reduces unnecessary complexity liên quan đến production và distribution. Nó cung cấp một solid foundation để bạn build các services mà tổ chức cần để tìm thấy ultimate business success.</p>
+
+<nav class="chapnav">
+  <a href="ch21-edm.html">← Chương 21: Triển Khai</a>
+  <span class="chapnav-placeholder">Hết sách</span>
+</nav>
+</body>
+</html>

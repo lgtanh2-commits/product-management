@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 4: Schemas và Data Contracts — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 4</div>
+<h1>Schemas và Data Contracts</h1>
+<p class="chapter-subtitle">Ngôn ngữ chung cho producer và consumer — nền tảng cho mọi event-driven architecture thực sự hoạt động</p>
+
+<h2>Tại Sao Schemas Là Thiết Yếu</h2>
+<p>Schema là khai báo tường minh về cấu trúc dữ liệu — tên field, kiểu dữ liệu, giá trị mặc định, và các ràng buộc. Chúng thiết lập một sự hiểu biết chung về dữ liệu cho cả producer lẫn consumer. Schemas loại bỏ sự mơ hồ, hỗ trợ khám phá dữ liệu theo kiểu self-service, và giảm đáng kể các lỗi phân tích cú pháp và diễn giải.</p>
+
+<blockquote>
+Sử dụng schemas! Dù về mặt kỹ thuật là tùy chọn, chúng thực chất là thiết yếu để xây dựng kiến trúc event-driven thực sự hoạt động được.
+</blockquote>
+
+<p>Thực tế phũ phàng: nếu không có schema, việc diễn giải dữ liệu sẽ bị đẩy sang phía consumer. Với một consumer duy nhất, điều này có thể hoạt động (dù không nên). Nhưng trong thực tế, dữ liệu quan trọng nhất của tổ chức sẽ có rất nhiều consumer — từ nhiều business units, mỗi bên dùng ngôn ngữ lập trình và database khác nhau. Hai event stream tiêu thụ bởi 5 service sẽ tạo ra 10 cách diễn giải dữ liệu độc lập nhau. Kết quả là dữ liệu không nhất quán, kết quả phân kỳ, và một cuộc chiến không hồi kết với các lỗi có thể phòng tránh được.</p>
+
+<hr class="divider">
+
+<h2>Giới Thiệu Về Serialization và Deserialization</h2>
+<p>Trước khi đi sâu vào schemas, cần hiểu cách dữ liệu di chuyển qua mạng. <strong>Serialization</strong> là quá trình chuyển đổi một event object trong memory của ứng dụng thành một chuỗi bytes. Chuỗi bytes này sau đó được gửi qua mạng và ghi vào event stream. Schema cung cấp đặc tả để chuyển đổi từ object trong application sang biểu diễn dạng bytes.</p>
+
+<p>Quá trình producer:</p>
+<ol>
+  <li>Business logic tạo ra output object (ví dụ: đối tượng Sale-V1)</li>
+  <li>Serializer chuyển đổi object thành bytes theo schema</li>
+  <li>Schema (bytes) được đính kèm cùng binary data</li>
+  <li>Event được produce lên event stream</li>
+</ol>
+
+<p>Quá trình consumer ngược lại:</p>
+<ol>
+  <li>Consumer đọc event từ stream (bytes)</li>
+  <li>Schema được dùng để tạo object từ bytes</li>
+  <li>Object Sale-V1 đã được reconstruct</li>
+  <li>Business logic của consumer xử lý object</li>
+</ol>
+
+<p>Ví dụ điển hình về tầm quan trọng của schema: một schema quy định field <code>length</code> phải là Integer. Nếu producer cố serialize với <code>length = "six feet"</code> (String), serializer sẽ ném exception ngay tại thời điểm produce — lỗi được phát hiện ở nguồn, không phải ở consumer sau khi dữ liệu xấu đã lan ra toàn hệ thống.</p>
+
+<hr class="divider">
+
+<h2>Schema Là Gì?</h2>
+<p>Schema cung cấp cấu trúc và định nghĩa. Chúng tương đồng với định nghĩa của một database table: ở mức tối thiểu, chúng chỉ định tên, kiểu, ràng buộc, và giá trị mặc định của mỗi field. Điều quan trọng cần nhấn mạnh: <em>schema đảm bảo rằng cả producer lẫn tất cả consumer đều có một sự hiểu biết chung và nhất quán về dữ liệu.</em></p>
+
+<h3>Sáu Lợi Ích Cốt Lõi Của Schema</h3>
+
+<p><strong>Schemas như code</strong>: Schema có thể hoạt động như code thông thường trong ứng dụng. Code reviews và commit histories cho phép bạn thấy ai đã thay đổi gì, khi nào, và tại sao.</p>
+
+<p><strong>Bảo vệ dữ liệu (Data protection)</strong>: Producer service sẽ thất bại khi serialize nếu dữ liệu không tuân thủ schema. Thay vì publish dữ liệu xấu, producer sẽ ném exception. Dù bạn vẫn có thể chọn publish dữ liệu lỗi, điều đó đòi hỏi quyết định chủ động để bypass các biện pháp bảo vệ.</p>
+
+<p><strong>Tài liệu nhúng (Embedded documentation)</strong>: Schema cung cấp khả năng comment inline để nhúng documentation. Rất dễ để giữ documentation up-to-date khi nó nằm ngay trong schema.</p>
+
+<p><strong>Nền tảng cho thảo luận</strong>: Schema cung cấp cơ sở để thảo luận và tranh luận về nội dung và hình thức dữ liệu. Schema tường minh, kết hợp với pull request reviews, cho phép các cuộc thảo luận hiệu quả về những gì nên và không nên có trong một event.</p>
+
+<p><strong>Code generation</strong>: Code generation cho phép ứng dụng thao tác với events như các object trong ngôn ngữ native, tự động xử lý parsing, conversion, và object creation. Điều này đơn giản hóa business logic đáng kể bằng cách cho phép viết code với các class được định nghĩa rõ ràng thay vì với map của generic object types.</p>
+
+<p><strong>Schema evolution</strong>: Dữ liệu thay đổi theo thời gian. Các schema option tốt nhất cung cấp con đường an toàn cho schema evolution, bao gồm các quy tắc, ràng buộc, và biện pháp bảo vệ ngăn bạn vô ý vi phạm data contract với consumers.</p>
+
+<p><strong>Test data event generators</strong>: Event generators cho phép tạo dữ liệu matching schemas, bao gồm các ràng buộc tham số cụ thể như foreign-key và primary-key relationships. Tool như Kafka Connect Datagen có thể generate data phù hợp với constraints của schema:</p>
+
+<pre><code>{
+  "name": "userid",
+  "type": {
+    "type": "string",
+    "arg.properties": {
+      "regex": "User_[1-9]"
+    }
+  }
+}
+</code></pre>
+
+<hr class="divider">
+
+<h2>Các Lựa Chọn Công Nghệ Schema</h2>
+<p>Có nhiều công nghệ schema khác nhau, nhưng chỉ một số ít nổi bật về tính năng, tính phổ biến, và hỗ trợ tooling. <strong>Google's Protobuf</strong> và <strong>Apache Avro</strong> là hai lựa chọn tốt nhất. <strong>JSON Schema</strong> là lựa chọn thứ ba hợp lý cho những ai ưa chuộng JSON — nhưng chú ý: đừng nhầm lẫn nó với JSON không có schema (schemaless JSON), một antipattern nguy hiểm.</p>
+
+<h3>Google's Protocol Buffers (Protobuf)</h3>
+<p>Protobuf được open source vào năm 2008 và từ lâu đã phổ biến với gRPC format. Đây là một số điểm nổi bật:</p>
+
+<ul>
+  <li>Hỗ trợ <strong>scalar types</strong> (double, float, bool, string...) và <strong>complex data types</strong></li>
+  <li>Schema <strong>không được lưu trữ</strong> cùng với event mà được duy trì trong file riêng biệt. Protobuf files thường được chia sẻ qua schema registry</li>
+  <li>Có thể compose schema phức tạp bằng cách tham chiếu đến các schema declarations trong file khác</li>
+  <li>Không có dynamic types — đây không phải là hạn chế đáng kể vì strongly-typed schemas là lựa chọn tốt nhất cho events</li>
+</ul>
+
+<p>Protobuf có nhiều phiên bản. Proto2 cho phép đánh dấu fields là <code>required</code> hoặc <code>optional</code> và đặt custom default values. Proto3 loại bỏ một số chức năng này — tất cả fields đều technically optional, và implicit default values chỉ có thể là empty string, empty bytes, false, hoặc 0. Điều này làm cho Proto3 khó dùng hơn cho mục đích evolution so với Proto2.</p>
+
+<p><strong>Protobuf Editions</strong> (2024) là một cách tiếp cận mới, thay vì chỉ định <code>syntax="proto2"</code> hay <code>syntax="proto3"</code>, bạn dùng <code>edition="2023"</code> và chọn linh hoạt cách defaults, optionals hoạt động. Đây là cách tiếp cận được khuyến nghị cho schema mới.</p>
+
+<p>Ví dụ Protobuf schema cho entity <code>Person</code>:</p>
+
+<pre><code>message Person {
+  // The person's unique ID.
+  // Field number = 1, indicating position in wire format.
+  // Cannot change field number once established.
+  int32 id = 1;
+  // The person's full legal name
+  string name = 2;
+  // Measured in centimeters, rounded to nearest centimeter
+  int32 height = 3;
+
+  enum CountryCode {
+    ABW = 0;
+    AFG = 1;
+    ...
+    ZWE = 248;
+  }
+  // ISO3166-1-alpha-3 standard. AAA=OTHER
+  CountryCode country = 4;
+}
+</code></pre>
+
+<p>Tạo object Person bằng Java từ Protobuf schema:</p>
+
+<pre><code>Person jeremiah = Person.newBuilder()
+    .setId(8675309)
+    .setName("Jeremiah Wasabullfrog")
+    .setHeight(167)
+    .setCountryCode("CAD")
+    .build();
+output = new FileOutputStream("ProtoPerson.data");
+jeremiah.writeTo(output);
+</code></pre>
+
+<p>Đọc và deserialize bằng C++:</p>
+
+<pre><code>Person jeremiah;
+fstream input(argv[1],
+    ios::in | ios::binary);
+jeremiah.ParseFromIstream(&amp;input);
+
+// jeremiah is now populated with id, name, height received
+id = jeremiah.id();
+name = jeremiah.name();
+height = jeremiah.height();
+cc = jeremiah.countryCode();
+</code></pre>
+
+<p>Điểm quan trọng: producer là Java, consumer là C++. Cả hai đều tự động generate class từ cùng một Protobuf schema. Avro và Protobuf đều có code generators cho Rust, Go, Java, Kotlin, Python, C++, C#, Dart, JavaScript và nhiều ngôn ngữ khác.</p>
+
+<h3>Apache Avro</h3>
+<p>Apache Avro là một format schema và serialization cực kỳ phổ biến khác, được tạo ra bởi Apache Software Foundation. Ra mắt năm 2009, Avro thường được dùng cùng với Apache Kafka và là định dạng row-based storage phổ biến cho big data. Những điểm nổi bật:</p>
+
+<ul>
+  <li>Hỗ trợ <strong>primitive types</strong> (string, integer, boolean...) và <strong>complex data types</strong></li>
+  <li>Theo mặc định, schema được <strong>lưu cùng với event data</strong> khi serialization. Schema cũng có thể được tách ra và lưu độc lập trong schema registry</li>
+  <li>Bằng cách bao gồm schema với event, Avro cho phép <strong>dynamic deserialization</strong>: consumer có thể deserialize thành <code>GenericRecord</code> object mà không cần code generator. Điều này hữu ích khi consumer client không có code generator</li>
+  <li>Có thể compose schema phức tạp bằng cách tham chiếu schema declarations trong file khác</li>
+  <li>Schema evolution <em>không được định nghĩa tường minh</em> trong standard, nhưng được hỗ trợ thông qua tooling</li>
+</ul>
+
+<p>Ví dụ Avro schema cho <code>Person</code>:</p>
+
+<pre><code>{
+  "type": "record",
+  "name": "Person",
+  "namespace": "com.event.driven.microservices",
+  "doc": "Example of a Person record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "integer",
+      "doc": "The person's unique ID"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "doc": "The person's full legal name"
+    },
+    {
+      "name": "height",
+      "type": "integer",
+      "doc": "Measured in centimeters, rounded to nearest centimeter"
+    },
+    {
+      "name": "countryCode",
+      "type": "enum",
+      "symbols": ["AAA", "ABW", "... ZWE"],
+      "doc": "ISO3166-1-alpha-3 standard. AAA=OTHER"
+    }
+  ]
+}
+</code></pre>
+
+<h3>JSON Schema</h3>
+<p>JSON Schema format cho phép annotate và validate JSON documents. Không giống Avro và Protobuf, bạn có thể dùng JSON <em>mà không có</em> schema — và đây là vấn đề lớn. Schemaless JSON nghĩa là không có định nghĩa nào về những gì <em>nên</em> và <em>không nên</em> có trong schema, cũng như không có typing hay defaults.</p>
+
+<blockquote>
+Đừng dùng schemaless JSON. Nó không phù hợp cho event streams vì để lại quá nhiều chỗ cho lỗi, diễn giải sai, fields bị thiếu, và dữ liệu bị mất.
+</blockquote>
+
+<p>JSON Schema với schema tường minh là hợp lý. Những điểm nổi bật:</p>
+<ul>
+  <li>Hỗ trợ 6 primitive types: null, boolean, object, array, number, string — cùng một số complex typing</li>
+  <li>Có thể compose schema phức tạp bằng references đến schemas trong file khác</li>
+  <li>Data validation tương tự Protobuf và Avro. Producers validate dữ liệu trước khi ghi</li>
+  <li>Hỗ trợ thêm <strong>validation keywords</strong> để enforce data quality — đây là điểm độc đáo của JSON Schema</li>
+</ul>
+
+<p>Ví dụ JSON Schema cho <code>Person</code> với validation constraints:</p>
+
+<pre><code>{
+  "$id": "https://example.com/person.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Person",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The person's unique ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "The person's full legal name"
+    },
+    "height": {
+      "type": "number",
+      "description": "Measured in centimeters, rounded to nearest centimeter",
+      "minimum": 1,
+      "maximum": 300
+    },
+    "countryCode": {
+      "type": "string",
+      "enum": ["AAA", "ABW", "... ZWE"],
+      "description": "ISO3166-1-alpha-3 standard. AAA=OTHER"
+    }
+  }
+}
+</code></pre>
+
+<p>JSON Schema là công nghệ duy nhất trong ba loại cung cấp cả <em>language</em> để chỉ định schemas <strong>lẫn</strong> <em>validation parameters</em> để ràng buộc phạm vi của các properties. Như trong ví dụ trên, chiều cao được ràng buộc từ 1 đến 300 centimeters. Tuy nhiên, điều này vẫn không thể ngăn ai đó nhập chiều cao bằng inches (72 inches = khoảng 183cm vẫn nằm trong phạm vi hợp lệ).</p>
+
+<hr class="divider">
+
+<h2>Schema Evolution: Thay Đổi Schema Theo Thời Gian</h2>
+<p>Dù bạn tạo ra data model hoàn hảo đến đâu, nó sẽ cần thay đổi theo thời gian. Cơ hội kinh doanh mới, mở rộng các dòng sản phẩm, và nhu cầu dữ liệu không lường trước đều là nguyên nhân tiềm năng. <strong>Schema evolution</strong> cho phép thay đổi schema sao cho các consumer mới có thể được phục vụ mà không phá vỡ khả năng tương thích với consumers hiện tại.</p>
+
+<h3>Bốn Chế Độ Compatibility</h3>
+<p>Compatibility modes là chung cho Avro, Protobuf, và JSON Schema. Chúng xác định liệu events có thể được convert forward hay backward tùy thuộc vào những thay đổi được thực hiện giữa các schema versions.</p>
+
+<p><strong>Backward compatibility (Tương thích ngược)</strong>: Consumers dùng schema mới có thể đọc dữ liệu được produce với schema cũ. Đây là chế độ quan trọng để đảm bảo consumers dùng schema mới nhất vẫn có thể xử lý dữ liệu cũ hơn. Ví dụ: xóa một field là backward compatible.</p>
+
+<pre><code>// Version 1 (Avro)
+{
+  "type": "record",
+  "name": "Example",
+  "doc": "This is Version 1",
+  "fields": [
+    { "name": "id", "type": "integer" },
+    { "name": "foobar", "type": "string" }
+  ]
+}
+
+// Version 2 - xóa field foobar, vẫn backward compatible
+{
+  "type": "record",
+  "name": "Example",
+  "doc": "This is Version 2",
+  "fields": [
+    { "name": "id", "type": "integer" }
+  ]
+}
+</code></pre>
+
+<p>Schema converter có thể lấy Version 1 data và convert thành Version 2 đơn giản bằng cách bỏ field <code>foobar</code>.</p>
+
+<p><strong>Forward compatibility (Tương thích xuôi)</strong>: Consumers dùng schema cũ (Version 1) vẫn có thể đọc events mới được ghi với schema mới hơn (Version 2). Họ chỉ có thể truy cập dữ liệu matching version của họ. Chế độ này quan trọng khi một consumer hiện tại rewind consumer offset của nó để đọc lại dữ liệu lịch sử.</p>
+
+<p>Từ ví dụ trên: bạn không thể convert Version 2 sang Version 1 vì Version 1 thiếu <strong>default value</strong> cho field <code>foobar</code>. Consumer cần giá trị đó để fill vào khi converting. Bạn cần modify Version 1 schema để thêm default value <em>trước khi</em> publish nó:</p>
+
+<pre><code>// Version 1 với default value cho foobar
+{
+  "type": "record",
+  "name": "Example",
+  "doc": "This is Version 1, but with a default value for foobar",
+  "fields": [
+    { "name": "id", "type": "integer" },
+    {
+      "name": "foobar",
+      "type": "string",
+      "default": "DEFAULT_VALUE_STRING"
+    }
+  ]
+}
+</code></pre>
+
+<p>Lưu ý quan trọng về default values trong Avro: khác với database table nơi default được populate lúc <em>write time</em>, default values trong Avro chỉ được áp dụng lúc <em>read time</em>, và chỉ khi record không chứa field đó. Nếu bạn convert record Version 2 sang Version 1, converter sẽ thấy field <code>foobar</code> không tồn tại trong event gốc, nên sẽ set <code>foobar="DEFAULT_VALUE_STRING"</code>.</p>
+
+<p><strong>Full compatibility</strong>: Event có thể được convert cả forward lẫn backward ngay lập tức.</p>
+
+<p><strong>Full-transitive compatibility</strong>: Event có thể được convert cả forward lẫn backward <em>đến bất kỳ version nào khác trong event stream</em>. Đây là đảm bảo mạnh nhất — Version 3 schema có thể được convert sang Version 2 và Version 1, và ngược lại.</p>
+
+<blockquote>
+Full-transitive compatibility là điểm khởi đầu tốt nhất. Nó cung cấp đảm bảo mạnh nhất cho consumers và đảm bảo họ chỉ cần cập nhật code khi business use cases thay đổi, không phải khi schema bị phá vỡ. Dù bạn có thể nới lỏng compatibility level sau này, việc thắt chặt lại là cực kỳ khó.
+</blockquote>
+
+<hr class="divider">
+
+<h2>Data Contract Là Gì?</h2>
+<p>Chương 3 đã đề cập ngắn gọn đến service contracts. <strong>Data contracts</strong> tương tự về nhiều mặt, nhưng có một sự khác biệt quan trọng: trong khi service contract tham chiếu đến một dịch vụ, data contract tham chiếu đến <strong>các đảm bảo dữ liệu của chính event stream</strong>.</p>
+
+<p>Data contract là giao kèo giữa một producer dữ liệu và tất cả các services trong quá khứ, hiện tại, và tương lai tiêu thụ và sử dụng dữ liệu đó. Data contracts đã xuất hiện trong nhiều kiến trúc và hệ thống tư duy, bao gồm data mesh, data lakes, và data warehouses. Về mặt khái niệm, chúng chủ yếu là giống nhau — trả lời câu hỏi cốt lõi: "đâu là các đảm bảo liên quan đến dữ liệu cụ thể này?"</p>
+
+<p>Data contracts thiết yếu cho việc thiết lập quyền truy cập đáng tin cậy vào các event streams cốt lõi của bạn. Ở mức cốt lõi, data contract là định nghĩa của các kỳ vọng về mặt xã hội, bảo mật, và quản lý đối với dữ liệu.</p>
+
+<h3>Các Thành Phần Của Một Data Contract</h3>
+
+<p><strong>Schema(s)</strong>: Một event stream có thể có một schema đơn, hoặc nhiều schemas do evolution hoặc colocating nhiều loại event trong một stream.</p>
+
+<p><strong>Service-Level Objectives (SLOs)</strong>: Dù không phải tất cả data contracts đều yêu cầu SLOs, chúng rất quan trọng cho các chức năng dịch vụ quan trọng. EDMs phụ thuộc vào các streams của business facts liên tục được cập nhật. Nếu streams đó dừng, thì business dừng. Giống như bạn cần cung cấp SLO cho request-response services, điều tương tự áp dụng cho event streams.</p>
+
+<p><strong>Ownership</strong>: Team và/hoặc người sở hữu event stream. Họ cũng chịu trách nhiệm xử lý change requests, cung cấp support, và đảm bảo SLOs được đáp ứng.</p>
+
+<p><strong>Access restrictions</strong>: Theo dõi người và services nào có quyền truy cập event stream là điều quan trọng. Bạn cần biết consumers của mình là ai để có thể alert họ về các thay đổi sắp tới. Phát hành per-service access credentials là điểm khởi đầu tốt.</p>
+
+<p><strong>Field-level encryption (FLE)</strong>: FLE cho phép encrypt chỉ các fields cụ thể trong schema. Ví dụ: bạn có thể encrypt tên và địa chỉ của một shipment, nhưng để lại danh sách item information không được encrypt. FLE được đề cập chi tiết hơn ở phần sau.</p>
+
+<p><strong>Schema evolution rules</strong>: Data contract cũng chỉ định các quy tắc để evolve schema, như đã đề cập trong phần Schema Evolution.</p>
+
+<hr class="divider">
+
+<h2>Thương Lượng Một Breaking Schema Change</h2>
+<p>Breaking changes thường xảy ra do sự dịch chuyển ranh giới của source domain model — thường do mở rộng business model. Thêm product lines mới hoặc services có thể đòi hỏi phải rethink và redefine data ownership, dẫn đến các ranh giới không còn map 1:1 với event streams hiện có.</p>
+
+<p>Ví dụ thực tế: <code>User</code> data model ban đầu mô hình hóa <code>address</code> như một <code>string</code> đơn giản. Nhưng các tính năng locality mới yêu cầu tạo đối tượng <code>Address</code> chứa <code>home_address</code>, <code>work_address</code>, và <code>phone_number</code>.</p>
+
+<pre><code>// Version 1 - address là string đơn giản
+{
+  "type": "record",
+  "name": "User",
+  "namespace": "user.namespace",
+  "fields": [
+    { "name": "first_name", "type": "string" },
+    { "name": "last_name", "type": "string" },
+    { "name": "address", "type": "string" }
+  ]
+}
+
+// Version 2 - address được chia thành home_address và work_address
+{
+  "type": "record",
+  "name": "User_v2",
+  "namespace": "user.namespace",
+  "fields": [
+    { "name": "first_name", "type": "string" },
+    { "name": "last_name", "type": "string" },
+    { "name": "home_address",
+      "type": {
+        "type": "record",
+        "name": "Address",
+        "namespace": "user.namespace.inner",
+        "fields": [
+          {"name": "phone_number", "type": ["null", "string"]},
+          {"name": "address", "type": "string"},
+          {"name": "city", "type": "string"},
+          {"name": "country", "type": "string"}
+        ]
+      }
+    },
+    { "name": "work_address", "type": "user.namespace.inner.Address" }
+  ]
+}
+</code></pre>
+
+<p>Field <code>address</code> cũ sẽ không còn available cho downstream consumers. Nhưng liệu tất cả họ có biết về thay đổi này không? Điều gì xảy ra với các hệ thống vẫn dựa vào <code>string address</code>?</p>
+
+<h3>Bốn Bước Thương Lượng Breaking Change</h3>
+
+<p><strong>Bước 1: Thiết Kế Schema Mới</strong></p>
+<p>Team sở hữu schema phải đề xuất candidate schema mới. Breaking changes đôi khi khá đơn giản (một breaking type change), đôi khi phức tạp hơn (renegotiate nhiều event schemas và thay đổi nhiều ranh giới). Trong cả hai trường hợp, existing consumers có trách nhiệm cung cấp feedback và review các thay đổi được đề xuất. Họ sẽ là người cần migrate.</p>
+
+<p><strong>Bước 2: Tham Khảo Existing Consumers và Nhận Approval</strong></p>
+<p>Consumers là nguồn feedback quý giá nhất cho schema changes của bạn. Show them proposed changes, lý tưởng nhất là qua code review, và đảm bảo họ đã xem, hiểu, và có thể accommodate các thay đổi trước khi tiến hành. Các cuộc thảo luận này thường sinh ra nhiều rounds chỉnh sửa trước khi mọi người hài lòng. Sau khi schemas mới được approve, bạn có thể chuyển sang tạo release guide và deprecation plan.</p>
+
+<p><strong>Bước 3: Lên Kế Hoạch Release, Migration, và Deprecation</strong></p>
+<p>Release schedule phải phản ánh thời gian ước tính để migrate tất cả consumers, cộng thêm một khoảng đệm để đảm bảo an toàn. Consumers có thể cần rebuild state stores của họ trong quá trình migration, hoặc có thể đơn giản là swap sang event streams mới.</p>
+
+<p>Migrating historical event stream data là một điều cần cân nhắc quan trọng. Duy trì full history trong event stream sẽ yêu cầu hoặc migrate previous event data model sang model mới, hoặc re-create events từ source data. Cái trước có thể làm được khi breaking change chỉ là remodeling các fields hiện có, nhưng thường không đủ khi tạo net-new data.</p>
+
+<p>Trong ví dụ của chúng ta, <code>address</code> được chia thành <code>work_address</code> và <code>home_address</code>. Không có đủ thông tin để biết <code>address</code> cũ là cho công việc hay nhà ở. Ngay cả khi biết, source system sẽ chưa thể populate field còn lại.</p>
+
+<p>Cuối cùng, deprecation. Bạn sẽ cần hỗ trợ cả stream <code>User</code> và <code>User_v2</code> trong một khoảng thời gian (ví dụ: 8 đến 12 tuần) để consumers có thể migrate từ cái cũ sang cái mới.</p>
+
+<p><strong>Bước 4: Thực Thi Release</strong></p>
+<p>Release event streams mới song song với event streams hiện có, để consumers có thời gian migrate. Lý tưởng nhất, bạn cũng dùng một central data portal nơi users có thể discover và register là event-stream consumers.</p>
+
+<p>Mark stream <code>User</code> gốc là <em>deprecated</em> để block việc đăng ký consumers mới, và thay vào đó redirect các consumers tương lai sang version mới nhất, <code>User_v2</code>. Cả <code>User</code> và <code>User_v2</code> sẽ cùng tồn tại trong suốt migration timeline.</p>
+
+<blockquote>
+Đảm bảo bạn có hard date cutoff cho việc migrate existing consumers sang streams mới. Gửi nhiều warning messages và emails indicating cutoff. Nếu không làm vậy, bạn sẽ không bao giờ hoàn thành migration, thường là do thiếu resources và competing priorities. Duy trì hai versions stream vô thời hạn là không hợp lý và cuối cùng sẽ dẫn đến dữ liệu không nhất quán, partial outages, và technical debt tích lũy.
+</blockquote>
+
+<hr class="divider">
+
+<h2>Vai Trò Của Schema Registry</h2>
+<p>Quản lý schemas tốt đòi hỏi theo dõi các phiên bản trước và đảm bảo compatibility rules được tuân thủ. Consumers cũng cần khả năng discover schemas nào thuộc về event streams nào như một phần của self-service tooling. <strong>Schema registry</strong> cung cấp giải pháp cho những nhu cầu này.</p>
+
+<p>Schema registry là một service cho phép register schemas gắn với event streams. Một trong những vai trò chính là <strong>giảm số bytes được gửi qua mạng</strong>. Trong serialization cơ bản, schema được appended vào mỗi event record — dẫn đến lượng dữ liệu trùng lặp đáng kể qua mạng.</p>
+
+<p>Schema registry cho phép lưu schema <em>bên ngoài</em> event và chỉ dùng unique ID trong event để track schema liên quan. Quy trình đầy đủ:</p>
+
+<ol>
+  <li>Producer request ID cho schema</li>
+  <li>Nếu chưa có trong cache, try to register schema với registry (nếu chưa register)</li>
+  <li>Registry trả về và cache ID</li>
+  <li>Producer thay thế schema bằng short unique ID</li>
+  <li>Event (binary data + ID thay vì full schema) được produce lên stream</li>
+  <li>Consumer đọc event từ stream</li>
+  <li>Consumer request schema dùng ID (từ cache nếu có)</li>
+  <li>Nếu cache miss, hỏi registry để lấy và cache schema</li>
+  <li>Schema được lấy về</li>
+  <li>ID trong event được thay thế bằng schema</li>
+  <li>Event được deserialize</li>
+</ol>
+
+<p>Confluent's Kafka Schema Registry thay thế schema bằng 5-byte prefix. Cách schema ID thay thế schema phụ thuộc vào serialization logic của producer và các giới hạn của format events trong schema registry.</p>
+
+<h3>Bốn Lợi Ích Bổ Sung Của Schema Registry</h3>
+
+<p><strong>Data discovery</strong>: Schema registry cung cấp mapping giữa event streams và registered schemas của chúng. Prospective consumers có thể xem schemas để biết stream có chứa dữ liệu họ quan tâm không. Self-service tooling có thể cung cấp search functionality trên API của schema registry để tìm kiếm fields, documentation, hoặc metadata tags cụ thể.</p>
+
+<p><strong>Schema evolution validation</strong>: Register schema với schema registry là phần bắt buộc trong write path của một event vào stream. Đây là hook để validate schema hiện tại của producer với schema được lưu trong registry. Nếu user evolve schema theo cách không được phép bởi schema registry (ví dụ: schema mới không hỗ trợ backward compatibility)? Throw an exception. Schema hoàn toàn không hợp lệ so với những gì đã registered? Throw an exception. Event bị malformed? Throw an exception. Schema registry cung cấp biện pháp bảo vệ chống lại các thay đổi không cố ý và không được phép.</p>
+
+<p><strong>Documentation tự động cập nhật</strong>: Schema registry cung cấp một dạng documentation tự động cập nhật tối giản cho mỗi event stream. Users có thể xem tất cả registered schemas, bao gồm tên, types, và doc fields. Embedded schema docs rất hữu ích cho việc làm nổi bật các idiosyncrasies hoặc corner cases trong dữ liệu. Chúng cũng có nhiều khả năng up-to-date hơn vì được nhúng, khác với documentation được maintain độc lập bởi bên ngoài.</p>
+
+<p><strong>Downloadable schemas để generate code</strong>: Consumer có thể download schemas để generate class definitions và test events cho unit tests của họ. Bạn cũng có thể viết custom registration script để evaluate schema trong quá trình registration — ví dụ: kiểm tra xem mọi value trong schema có "doc" string với độ dài nonzero không, scan PII patterns, hoặc tự động generate class definitions và chạy validation tests trước khi deploy.</p>
+
+<hr class="divider">
+
+<h2>Field-Level Encryption (FLE)</h2>
+<p>Field-level encryption (FLE) cho phép producer encrypt các fields cụ thể trong schema. Chỉ những consumers được cấp quyền truy cập field đó mới có thể decrypt dữ liệu. PII (Personally Identifiable Information), thông tin tài chính, sức khỏe, và pháp lý thường yêu cầu xử lý đặc biệt vì lý do compliance và bảo mật. FLE có thể đơn giản hóa đáng kể event-streaming topologies của bạn.</p>
+
+<p>Ví dụ bank transfer với FLE — chỉ encrypt email, user, account trong khi amount và datetime vẫn plaintext:</p>
+
+<table>
+  <thead>
+    <tr><th>Field name</th><th>Original event</th><th>Partially encrypted event</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>email</td><td>adam@bellemare.com</td><td>n2Zl@p987NhB4.L0P</td></tr>
+    <tr><td>user</td><td>abellemare</td><td>9ajkpZp2kH</td></tr>
+    <tr><td>account</td><td>VD8675309</td><td>0PlwW81Mx</td></tr>
+    <tr><td>amount</td><td>$777.77</td><td>$777.77</td></tr>
+    <tr><td>datetime</td><td>2022-02-22:22:22:22</td><td>2022-02-22:22:22:22</td></tr>
+  </tbody>
+</table>
+
+<p>Consumers có decryption permissions có thể truy cập thông tin đã decrypt để settle account balances, trong khi một analytical system không có decryption permissions vẫn có thể track lượng tiền đang di chuyển trong một khoảng thời gian. Một trong những lợi ích lớn nhất là <strong>bạn không cần tạo các event streams riêng biệt cho mỗi consumer dựa trên security needs</strong> — điều này rất phổ biến trước khi FLE trở nên phổ biến hơn.</p>
+
+<p>Bạn cũng có thể dùng <strong>format-preserving encryption</strong> để duy trì format của event data. Trong trường hợp này, email, user, và account được encrypt theo format-preserving, có cùng alphanumeric characters, spacing, và character count với fields gốc. Điều này cho phép schema accurately represent underlying data.</p>
+
+<p>Format-preserving encryption đặc biệt hữu ích khi áp dụng encryption cho data sau khi schema đã được thương lượng — ví dụ: trong legacy event streams. Bạn không cần renegotiate schemas vì encrypted types vẫn giống với unencrypted types. Ngược lại, non-format-preserving encryption thường dẫn đến malformation, ví dụ: chuyển <code>long</code> bank account ID thành 64-character string hoặc encrypt complex nested object thành một array of hashed bytes.</p>
+
+<p>FLE cho phép kiểm soát truy cập fine-grained và per-field decryption capabilities độc lập. Consumers có thể request decryption keys chỉ cho dữ liệu họ cần, giảm surface area risk cho việc rò rỉ sensitive data.</p>
+
+<p>Encryption của sensitive data, dù end-to-end hay field-level, cũng có thể giúp với các yêu cầu pháp lý như right to be forgotten hoặc right to have data deleted (covered in Chapter 18).</p>
+
+<hr class="divider">
+
+<h2>Tích Hợp Với Data Catalogs</h2>
+<p>Một <strong>data catalog</strong> là repository lưu trữ schemas, location, và các business metadata liên quan đến data source. Ngoài ra, nó có thể lưu thông tin như event-stream ownership, schema evolution restrictions, sample data, metadata tags, và control-related information như PII, financial, hoặc restricted information.</p>
+
+<p>Trong lịch sử, data catalogs chủ yếu document data at rest — trong relational database hoặc Apache Parquet files trong cloud storage. Trong khi schema registry cung cấp operational support cho schema management và evolution, data catalog đi xa hơn bằng cách cung cấp one-stop shop để browse, search, discover, và publish new data sets.</p>
+
+<p>Support cho event-stream data cataloging đã tăng đáng kể kể từ lần xuất bản đầu tiên của cuốn sách này. Modern data catalogs support data ở nhiều forms và formats, bao gồm data at rest trong cloud storage, databases, và event streams.</p>
+
+<p>Popular catalogs cho các cloud providers lớn: AWS Glue, Azure Data Catalog, và Google's Dataplex Universal Catalog. Open source offerings: Apache Atlas, OpenMetadata, và DataHub. Nhiều data catalogs cũng cung cấp functionality bổ sung về data governance, dependency modeling, và access controls — bạn cần evaluate những offerings đó riêng để quyết định liệu chúng có phù hợp với tổ chức của bạn không.</p>
+
+<p>Data catalogs không nhất thiết <em>bắt buộc</em> cho một event-driven microservice architecture thành công, nhưng utility của chúng rất có thể sẽ dẫn bạn đến việc áp dụng một cái. Bạn sẽ cần xem xét cẩn thận schema compatibility, vendor lock-in risk, và cuộc tranh luận build-versus-buy.</p>
+
+<hr class="divider">
+
+<h2>Tóm Tắt Chương 4</h2>
+<p>Schemas thiết yếu để thành công với kiến trúc event-driven. Chúng cung cấp cấu trúc và sự rõ ràng cho cả producers lẫn consumers của event stream. Chúng cũng tạo thành nền tảng của data contracts, chứa các thông tin bổ sung như ownership, SLOs, evolution rules, và documentation.</p>
+
+<p>Code generators thu hẹp khoảng cách giữa schema và business logic, mang lại lợi ích cho cả producer lẫn consumer. Producer được hưởng lợi từ strict type definitions và sự phân biệt giữa optional và mandatory fields, đảm bảo không có dữ liệu nào bị malformed hoặc excluded một cách vô tình. Consumer được hưởng lợi từ cùng well-defined type-system, không cần tự interpret và standardize dữ liệu. Schemas cung cấp phương tiện để áp đặt quality controls gần với source nhất có thể.</p>
+
+<p>Schema evolution cung cấp khả năng evolve và thay đổi schemas theo thời gian, với các quy tắc tường minh về những thay đổi nào được phép theo compatibility requirements. Dù breaking changes vẫn có thể xảy ra, schemas cung cấp framework chung để xác định những gì được và không được phép. Và vì chúng thường được tích hợp như một phần của codebase, schema changes có thể theo cùng review processes như standard business application code changes.</p>
+
+<p>Dù có nhiều lựa chọn, Apache Avro và Google's Protobuf vẫn là hai lựa chọn tốt nhất, với JSON Schema là lựa chọn thứ ba hợp lý. Đầu tư của bạn vào một trong số này sẽ thay đổi tùy theo pre-existing technology choices, nhưng tốt nhất là được thảo luận và quyết định tập trung bởi federated governance team của bạn.</p>
+
+<p>Chương tiếp theo sẽ áp dụng những gì chúng ta đã học về schemas vào bài toán thiết kế events. Có nhiều cách khác nhau để model và design events — chương này sẽ khám phá những cách tốt nhất và những pitfalls cần tránh.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch03-edm">← Chương 3: Nền Tảng Microservice Hướng Sự Kiện</a>
+  <a href="/building-event-driven-microservices/ch05-edm">Chương 5: Thiết Kế Events →</a>
+</nav>
+</body>
+</html>

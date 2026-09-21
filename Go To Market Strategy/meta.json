@@ -1,0 +1,65 @@
+{
+  "slug": "go-to-market-strategy",
+  "title": "Go To Market Strategy",
+  "author": "Lawrence Friedman",
+  "tag": "Go-To-Market · Chiến Lược Bán Hàng",
+  "category": "Product Management",
+  "chapters": [
+    {
+      "n": 1,
+      "title": "Tổng quan về các vấn đề và cơ hội",
+      "sub": "GTM là gì, tại sao nó quan trọng hơn bao giờ hết, và những cơ hội thực sự nằm ở đâu",
+      "slug": "tong-quan-van-de-va-co-hoi",
+      "file": "ch01-gtm.html"
+    },
+    {
+      "n": 2,
+      "title": "Mười nguyên tắc vàng của GTM",
+      "sub": "Mười nguyên tắc cốt lõi cần tuân thủ để xây dựng chiến lược go-to-market thực sự hiệu quả",
+      "slug": "muoi-nguyen-tac-gtm",
+      "file": "ch02-gtm.html"
+    },
+    {
+      "n": 3,
+      "title": "Nhắm đúng thị trường mục tiêu",
+      "sub": "Framework 6 bước để xác định, đánh giá, và ưu tiên thị trường một cách có hệ thống",
+      "slug": "nham-dung-thi-truong-muc-tieu",
+      "file": "ch03-gtm.html"
+    },
+    {
+      "n": 4,
+      "title": "Đồng bộ với khách hàng",
+      "sub": "Phương pháp nghiên cứu khách hàng sâu để thiết kế kênh và chiến lược bán hàng phù hợp với hành vi thực tế",
+      "slug": "dong-bo-voi-khach-hang",
+      "file": "ch04-gtm.html"
+    },
+    {
+      "n": 5,
+      "title": "Chọn kênh và đối tác phân phối",
+      "sub": "Quy trình 6 bước có hệ thống để chọn đúng kênh, thiết kế mô hình phủ thị trường, và pilot-test trước khi triển khai toàn bộ",
+      "slug": "chon-kenh-va-doi-tac-phan-phoi",
+      "file": "ch05-gtm.html"
+    },
+    {
+      "n": 6,
+      "title": "Tư duy lại về sản phẩm và giá trị",
+      "sub": "Làm thế nào để thiết kế lại sản phẩm cho phù hợp với kênh mới, và xây dựng value proposition thực sự thuyết phục",
+      "slug": "tu-duy-lai-san-pham-va-gia-tri",
+      "file": "ch06-gtm.html"
+    },
+    {
+      "n": 7,
+      "title": "Mô hình đa kênh tích hợp",
+      "sub": "\"Holy Grail\" của GTM — thiết kế hệ thống đa kênh phối hợp nhịp nhàng, tối đa hóa doanh thu và giảm thiểu xung đột",
+      "slug": "mo-hinh-da-kenh-tich-hop",
+      "file": "ch07-gtm.html"
+    },
+    {
+      "n": 8,
+      "title": "Kế hoạch hành động 90 ngày",
+      "sub": "Quy trình thực chiến để bắt đầu triển khai GTM strategy — từ phân tích nội bộ đến kế hoạch 12–15 tháng, hoàn thành trong 90 ngày",
+      "slug": "ke-hoach-hanh-dong-90-ngay",
+      "file": "ch08-gtm.html"
+    }
+  ]
+}

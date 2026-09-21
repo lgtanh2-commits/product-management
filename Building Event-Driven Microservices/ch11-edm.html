@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 11: Microservices Producer Và Consumer Cơ Bản — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 11</div>
+<h1>Microservices Producer Và Consumer Cơ Bản</h1>
+<p class="chapter-subtitle">Pattern BPC — nền tảng đơn giản nhưng mạnh mẽ cho stateless và stateful processing</p>
+
+<p>Phần III của cuốn sách chuyển từ lý thuyết sang thực hành với các <strong>Event-Driven Microservices Frameworks</strong>. Chương 11 mở đầu bằng pattern đơn giản nhất: <strong>Basic Producer and Consumer (BPC)</strong> — microservice chỉ dùng consumer và producer client thuần túy, không có framework phức tạp. Mặc dù khiêm tốn về mặt công nghệ, BPC là nền tảng cho hầu hết các pattern microservice phức tạp hơn và phù hợp hoàn hảo cho nhiều use case thực tế.</p>
+
+<hr class="divider">
+
+<h2>Basic Producer and Consumer (BPC) Là Gì?</h2>
+
+<p>BPC microservice là microservice sử dụng <strong>basic consumer và producer client</strong> — tức là thư viện tiêu chuẩn của ngôn ngữ để đọc và ghi event stream (Kafka consumer/producer, Pulsar client...). BPC <em>không</em> sử dụng:</p>
+
+<ul>
+<li>Event scheduling (không tự động sắp xếp theo timestamp từ nhiều partition)</li>
+<li>Watermarks (không có cơ chế đánh dấu thời gian nội bộ)</li>
+<li>Built-in state materialization (không tự động tạo internal state store)</li>
+<li>Horizontal scaling ngoài consumer group balancing thông thường</li>
+</ul>
+
+<p>Về mặt tích cực, BPC có lợi thế quan trọng: <strong>producer và consumer client có sẵn trong hầu hết các ngôn ngữ lập trình</strong>. Go, Python, Ruby, Rust, JavaScript, Java, C# — tất cả đều có thư viện Kafka/Pulsar client. Điều này giảm đáng kể cognitive overhead khi bắt đầu với event-driven microservices.</p>
+
+<p>Toàn bộ workflow của bounded context được chứa trong code của microservice duy nhất. Đơn vị deployment đơn giản, dễ hiểu, dễ test.</p>
+
+<hr class="divider">
+
+<h2>BPC Phù Hợp Với Use Case Nào?</h2>
+
+<p>BPC không phải giải pháp cho mọi vấn đề — nhưng hoạt động rất tốt trong một số tình huống cụ thể.</p>
+
+<h3>External State Store Phổ Biến Hơn Trong BPC</h3>
+
+<p>Do BPC không có built-in internal state store support (không có RocksDB hay changelog tự động), việc scale local state giữa nhiều instance và phục hồi sau instance failure trở nên phức tạp hơn khi tự implement. Vì vậy, BPC thường kết hợp với <strong>external state store</strong> (PostgreSQL, Redis, MongoDB...) — cho phép tất cả instance truy cập đồng nhất vào toàn bộ state, đồng thời hưởng lợi từ cơ chế backup và recovery sẵn có của external store.</p>
+
+<h3>Tích Hợp Hệ Thống Legacy: Sidecar Pattern</h3>
+
+<p>BPC là cách tối ưu để tích hợp event-driven processing vào các codebase legacy. Legacy system thường không thể chỉnh sửa để sản xuất hoặc tiêu thụ event stream trực tiếp — và đây là lúc <strong>sidecar pattern</strong> phát huy tác dụng.</p>
+
+<p>Tình huống (Hình 11-1): Frontend product monolith lấy dữ liệu từ backend product monolith qua batch update process được schedule định kỳ. Không có real-time data feed.</p>
+
+<p>Giải pháp sidecar (Hình 11-2): Trong môi trường event-driven, có hai stream: Product Info stream và Product Inventory stream. Một BPC sidecar consumer được deploy <em>trong cùng một container hoặc cùng deployable unit với frontend service</em>. Sidecar này:</p>
+
+<ol>
+<li>Consume từ cả hai stream (Product Info và Product Inventory)</li>
+<li>Upsert dữ liệu vào data store của frontend service</li>
+<li>Frontend service tiếp tục đọc từ data store của mình như cũ — không cần thay đổi code</li>
+</ol>
+
+<p>Frontend giờ có data feed near-real-time mà <strong>không cần thay đổi một dòng code nào trong legacy codebase</strong>. Sidecar có thể là Kubernetes sidecar container, hoặc process riêng trong cùng container với microservice ứng dụng.</p>
+
+<p>Nhược điểm sidecar: tăng complexity và coordination overhead. Testing phức tạp hơn vì phải include stream-processing component. Quản lý bounded context khi có cả microservice lẫn sidecar streaming component trong cùng deployable đòi hỏi cẩn thận khi deploy và rollback.</p>
+
+<h3>Business Logic Stateful Không Phụ Thuộc Vào Thứ Tự Event</h3>
+
+<p>Nhiều business process không yêu cầu xử lý event theo thứ tự nghiêm ngặt, nhưng yêu cầu <em>tất cả event cần thiết cuối cùng phải đến</em>. Đây gọi là <strong>gating pattern</strong>.</p>
+
+<p>Ví dụ thực tế (Hình 11-3): nhà xuất bản sách cần đảm bảo 3 điều kiện trước khi gửi bản thảo đến nhà in:</p>
+<ul>
+<li><em>Contents:</em> nội dung sách đã được viết xong</li>
+<li><em>Cover art:</em> bìa sách đã được thiết kế xong</li>
+<li><em>Pricing:</em> giá đã được xác định theo từng vùng và định dạng</li>
+</ul>
+
+<p>Thứ tự hoàn thành ba điều kiện này không quan trọng — có thể bìa xong trước, hoặc giá xong trước. Điều quan trọng là cả ba đều phải hoàn thành trước khi phát event cuối cùng.</p>
+
+<p>Triển khai BPC: Microservice tiêu thụ từ ba stream (Contents, Cover art, Pricing). Khi nhận event từ bất kỳ stream nào, upsert vào bảng tương ứng trong external state store (key = ISBN). Sau mỗi upsert, query xem cả ba bảng đã có record cho ISBN này chưa. Nếu đủ ba, phát Book event ra output stream.</p>
+
+<p>Sách ISBN 0010 trong ví dụ đã đủ cả ba điều kiện và được phát xuống. ISBN 0011 vẫn đang chờ cover art — chưa phát. Explicit human approval cũng có thể được thêm vào gating pattern này (ví dụ chờ phê duyệt từ editor-in-chief).</p>
+
+<h3>Khi Data Store Thực Hiện Phần Lớn Công Việc</h3>
+
+<p>BPC phù hợp khi underlying data store xử lý phần lớn business logic phức tạp. Ví dụ:</p>
+
+<p><strong>Geospatial data store:</strong> Một ecommerce company muốn hiển thị quảng cáo cho retailer gần nhất. User behavior events được correlate với geospatial data store — BPC chỉ cần consume event, query geospatial store, và emit kết quả. Toàn bộ spatial logic do data store xử lý.</p>
+
+<p><strong>Machine learning / AI classifier:</strong> Công ty ingest sản phẩm mới từ các website và cần classify chúng. ML model được train offline theo batch. BPC consume event, gọi ML inference service, và phát kết quả classification. Logic phức tạp nằm trong ML model, không trong BPC.</p>
+
+<p>Trong cả hai trường hợp, BPC đóng vai trò <em>connector layer</em> — kết nối event stream với data store/service thực hiện xử lý nặng. Đơn giản, hiệu quả, dễ maintain.</p>
+
+<h3>Scale Xử Lý Và Data Store Độc Lập Nhau</h3>
+
+<p>BPC cho phép scale processing instances và data store <em>một cách độc lập</em> — không nhất thiết phải tăng cùng nhau. Ví dụ thực tế:</p>
+
+<p>Một service aggregates user behavior events theo 24-giờ session, xác định sản phẩm phổ biến nhất với từng user, để phục vụ quảng cáo. External key-value data store (Table 11-1) có key là (userId, timestamp), value là List(productId).</p>
+
+<p>Pattern này có load theo chu kỳ ngủ/thức (sleep/wake cycle) của người dùng: ban đêm rất ít activity, ban ngày nhiều. BPC có thể scale down processing instances vào ban đêm (tiết kiệm tài nguyên) — nhưng data store <strong>không thể</strong> scale down theo, vì domain của potential users vẫn không đổi: bất kỳ ai cũng có thể login bất cứ lúc nào, và cần full access đến tất cả user aggregation. Scaling down storage không có ý nghĩa dù traffic thấp.</p>
+
+<p>Trong ngày, thêm processing instances được kéo lên để xử lý event load tăng. Query rate của data store cũng tăng, nhưng caching, partitioning, và batching giúp giữ load nhẹ hơn mức tăng tuyến tính. Cloud provider thường cung cấp high-performance key-value store với independent read/write scaling, cost proportional to access patterns — phù hợp hoàn hảo với use case này.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>BPC pattern đơn giản nhưng mạnh mẽ. Nó tạo nền tảng cho nhiều pattern microservice stateless và stateful. Stateless streaming và stateful application đơn giản đều có thể implement dễ dàng với BPC.</p>
+
+<p>BPC linh hoạt: kết hợp tốt với data storage layer thực hiện phần lớn business work, dùng như interfacing layer giữa event stream và legacy system, và leverage external stream-processing systems để bổ sung khả năng.</p>
+
+<p>Điểm hạn chế chính của BPC là thiếu các khả năng nâng cao cần thiết khi làm việc với <em>nhiều stream cùng lúc</em>: nếu cần join data từ nhiều stream, phải load tất cả vào database và join ở đó — không có built-in join. BPC cũng thiếu state materialization tự động, event scheduling, và timestamp-based decision making. Hai chương tiếp theo sẽ bàn về cách heavyweight và lightweight framework cung cấp tất cả những tính năng này.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch10-edm">← Chương 10</a>
+  <a href="/building-event-driven-microservices/ch12-edm">Chương 12 →</a>
+</nav>
+</body>
+</html>

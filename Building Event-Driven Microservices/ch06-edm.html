@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 6: Tích Hợp Kiến Trúc Hướng Sự Kiện Với Hệ Thống Hiện Có — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 6</div>
+<h1>Tích Hợp Kiến Trúc Hướng Sự Kiện Với Hệ Thống Hiện Có</h1>
+<p class="chapter-subtitle">Data liberation, CDC, outbox tables và chiến lược chuyển đổi sang event-driven</p>
+
+<p>Chuyển đổi một tổ chức sang kiến trúc hướng sự kiện đòi hỏi phải tích hợp các hệ thống hiện có. Tổ chức của bạn có thể có một hoặc nhiều ứng dụng monolithic, các kết nối point-to-point giữa nhiều implementation, hay các cơ chế truyền dữ liệu bulk thông qua file sync định kỳ. Chương này hướng dẫn cách bắt đầu đưa dữ liệu nghiệp vụ quan trọng vào event streams — và quan trọng hơn, cách tránh những cạm bẫy phổ biến trong quá trình đó.</p>
+
+<hr class="divider">
+
+<h2>Data Liberation Là Gì?</h2>
+
+<p><strong>Data liberation</strong> (giải phóng dữ liệu) là việc xác định và publish các cross-domain data sets lên các event streams tương ứng. Đây là một phần quan trọng của migration strategy sang kiến trúc hướng sự kiện. Cross-domain data sets là bất kỳ dữ liệu nào được lưu trong một data store mà hệ thống khác cần đến.</p>
+
+<p>Trong kiến trúc point-to-point truyền thống, System A, B, C đều gửi query trực tiếp đến Legacy System để lấy dữ liệu. Điều này tạo ra phụ thuộc chặt chẽ và khó mở rộng. Sau khi data liberation, Legacy System có một data-sourcing relay publish dữ liệu lên Event Stream, và System A, B, C chỉ cần consume từ stream đó — không còn phụ thuộc trực tiếp vào legacy system.</p>
+
+<p>Data liberation thực thi hai tính năng cơ bản của kiến trúc hướng sự kiện: single source of truth và loại bỏ direct coupling giữa các hệ thống.</p>
+
+<hr class="divider">
+
+<h2>Antipattern: Dual Write</h2>
+
+<p>Dual write antipattern xảy ra khi một service ghi dữ liệu vào hai data store độc lập cùng lúc — ví dụ, vừa ghi vào state store vừa ghi vào event stream trong event broker. Service không thể dùng một transaction đơn để commit cả hai vì chúng là hai hệ thống hoàn toàn độc lập.</p>
+
+<p>Vấn đề: commit thành công vào một service có thể bị thất bại ở service kia — do schema không hợp lệ, service bị di chuyển vĩnh viễn, hoặc sự cố phần cứng/cấu hình kéo dài. Dù service retry, cuối cùng dữ liệu trong hai hệ thống sẽ <em>phân kỳ vĩnh viễn</em>.</p>
+
+<p>Two-phase commit (2PC) có thể giải quyết vấn đề này về mặt lý thuyết, nhưng nhiều data store và hầu hết event broker không hỗ trợ 2PC. Kafka đang có project cho 2PC nhưng vẫn còn đang tiến triển. May mắn thay, có nhiều chiến lược data liberation không cần 2PC.</p>
+
+<hr class="divider">
+
+<h2>Ba Pattern Data Liberation</h2>
+
+<p>Có ba pattern chính để extract dữ liệu từ data store. Vì dữ liệu được giải phóng phải trở thành single source of truth mới, nó phải chứa <em>toàn bộ</em> tập dữ liệu từ data store và được cập nhật liên tục với insertions, updates, và deletes. Cả ba pattern đều nên produce events theo thứ tự <em>sorted by timestamp</em>, dùng timestamp <code>updated_at</code> gần nhất của record làm timestamp của output event — điều này đảm bảo event stream phản ánh thời điểm sự kiện thực sự xảy ra, không phải thời điểm producer publish.</p>
+
+<p><strong>Query-based:</strong> Extract dữ liệu bằng cách query data store. Có thể thực hiện trên bất kỳ data store nào.</p>
+
+<p><strong>Log-based:</strong> Extract dữ liệu bằng cách theo dõi append-only log của các thay đổi trong data store. Chỉ áp dụng cho các data store duy trì log các modification (ví dụ: binary log của MySQL, write-ahead log của PostgreSQL).</p>
+
+<p><strong>Outbox table-based:</strong> Push dữ liệu vào một table được dùng như output queue. Một thread hoặc process riêng biệt query table đó, emit dữ liệu lên event stream tương ứng, rồi xóa các entry đã xử lý. Yêu cầu data store hỗ trợ transaction và có output queue mechanism.</p>
+
+<hr class="divider">
+
+<h2>Data Liberation Frameworks</h2>
+
+<p>Các framework tập trung như <strong>Kafka Connect</strong> (dành riêng cho Kafka platform), <strong>Debezium</strong>, và <strong>Apache NiFi</strong> cung cấp các connector sẵn có cho rất nhiều data store, application, và SaaS endpoints. Mỗi framework cho phép execute query đối với data set và pipe kết quả qua output event streams. Chúng cũng scalable — có thể add thêm instance để tăng capacity cho change-data capture (CDC) jobs. Nhiều framework hỗ trợ tích hợp với schema registry (đặc biệt là Confluent cho Apache Kafka).</p>
+
+<hr class="divider">
+
+<h2>Giải Phóng Dữ Liệu Bằng Change-Data Capture</h2>
+
+<p>CDC là một trong những phương pháp chính để giải phóng dữ liệu. Nó dựa vào immutable log của chính data store — binary log cho MySQL, write-ahead log cho PostgreSQL. Log này là cấu trúc dữ liệu bất biến dạng append-only, đảm bảo tính toàn vẹn: một record được ghi vào log durable trước khi được apply vào data model. Nếu database fail giữa chừng, log được replay để đảm bảo không mất dữ liệu.</p>
+
+<p>CDC là process đọc (hay <em>tailing</em>) các log này, convert từng thay đổi thành event, và ghi vào event stream. Các thay đổi bao gồm creation, deletion, updating của individual records và schemas của chúng. MongoDB cung cấp CDC events trực tiếp thay vì phải tail log.</p>
+
+<h3>Snapshotting Trạng Thái Ban Đầu</h3>
+
+<p>Data store log thường không chứa toàn bộ lịch sử từ đầu — nó chủ yếu là cơ chế đảm bảo tính nhất quán của data store, chỉ giữ một cửa sổ dữ liệu ngắn (thường vài GB). Để đưa <em>toàn bộ</em> dataset hiện tại vào event stream, bạn cần tạo snapshot.</p>
+
+<p><strong>Snapshotting</strong> (hay <em>bootstrapping</em>) là quá trình load toàn bộ dữ liệu <em>hiện tại</em> trực tiếp từ data store (không phải từ log) vào event stream. Phải đảm bảo có overlap giữa snapshot query results và các records trong log để không bỏ sót bất kỳ record nào khi chuyển sang live CDC.</p>
+
+<p>Vấn đề phức tạp: snapshot thường yêu cầu dữ liệu không thay đổi trong quá trình query để đảm bảo consistency, và để làm vậy thường phải lock table — có thể mất vài giờ cho production table. DBA của bạn sẽ không vui. Giải pháp: snapshot từ read-only replica, không ảnh hưởng production.</p>
+
+<p>Debezium cung cấp cơ chế snapshot không lock table dựa trên <strong>DBLog</strong> — một paper từ Netflix:</p>
+
+<blockquote>
+DBLog dùng watermark-based approach cho phép xen kẽ transaction log events với các rows được select trực tiếp từ tables để capture full state. Solution cho phép log events tiếp tục trong khi snapshot selects tiến hành mà không bị stall. Selects có thể được kích hoạt bất kỳ lúc nào trên tất cả tables, một table cụ thể, hoặc các primary keys cụ thể. DBLog execute selects theo chunks và track tiến độ, cho phép pause và resume. Watermark approach không dùng lock và có tác động tối thiểu đến source. — Andreas Andreakis và Ioannis Papapanagiotou, Netflix
+</blockquote>
+
+<h3>Lợi Ích Của CDC Qua Data Store Logs</h3>
+
+<p><strong>Delete tracking:</strong> Data store logs chứa deletions, giúp bạn thấy khi nào một record bị xóa. Có thể convert thành tombstone events để enable downstream deletions và stream compaction.</p>
+
+<p><strong>Tác động tối thiểu đến performance:</strong> Với các data store dùng logs, CDC có thể thực hiện mà không ảnh hưởng performance của data store. Với các data store dùng change tables (như SQL Server), tác động tỷ lệ với volume dữ liệu.</p>
+
+<p><strong>Low-latency updates:</strong> Updates propagate ngay khi event được ghi vào log — event streams có độ trễ thấp.</p>
+
+<p><strong>Nonblocking snapshots:</strong> CDC có thể tạo snapshot mà không cản trở normal operations của source data store.</p>
+
+<h3>Nhược Điểm Của CDC Qua Data Store Logs</h3>
+
+<p><strong>Phơi lộ internal data models:</strong> Internal data model được expose hoàn toàn trong changelogs. Cần quản lý cẩn thận việc cô lập underlying data model.</p>
+
+<p><strong>Denormalization ngoài data store:</strong> Changelogs chỉ chứa event data. Với nhiều trường hợp, denormalization phải xảy ra downstream, thường tạo ra các stream rất normalized đòi hỏi consumer xử lý foreign-key joins. Chapter 7 đề cập chi tiết hơn.</p>
+
+<p><strong>Phụ thuộc brittle giữa data set schema và output event schema:</strong> Thay đổi data model trong source data store (alter column, redefine field type) có thể gây breaking changes cho downstream consumers.</p>
+
+<hr class="divider">
+
+<h2>Giải Phóng Dữ Liệu Bằng Polling Query</h2>
+
+<p>Với query-based data liberation, bạn query data store, lấy kết quả, convert thành events, và ghi vào event stream. Có thể dùng code tự viết hay framework như Kafka Connect hoặc Debezium. Tuy nhiên, tác giả khuyên dùng purpose-built framework thay vì tự xây.</p>
+
+<p>Có hai giai đoạn chính: initial snapshot và incremental phase. Snapshot giống như đã mô tả ở phần CDC. Phase incremental bắt đầu từ đó — cần identify records nào đã thay đổi kể từ lần polling cuối.</p>
+
+<p>Query-based polling yêu cầu một <strong>high-water mark</strong>: thường là column <code>updated_at</code> hay <code>modified_at</code>. Iteration (n+1) dùng high-water mark từ iteration (n) để select tất cả records từ n đến n+1.</p>
+
+<p>Kafka Connect JDBC connector cung cấp ba chế độ incremental snapshot:</p>
+
+<ul>
+  <li><strong>Incrementing:</strong> Dùng column auto-increment để detect chỉ các row mới. Không detect modifications hay deletions.</li>
+  <li><strong>Timestamp:</strong> Dùng column timestamp để detect row mới và đã modified. Column được update với mỗi write và monotonically incrementing (nhưng không nhất thiết unique).</li>
+  <li><strong>Timestamp+incrementing:</strong> Kết hợp cả hai — detect row mới và modified, và cung cấp globally unique ID cho updates để mỗi row có thể được gán offset stream duy nhất.</li>
+</ul>
+
+<h3>Lợi Ích Của Query-Based Updating</h3>
+
+<p><strong>Customizability:</strong> Bất kỳ data store nào cũng có thể được query với đầy đủ client options.</p>
+<p><strong>Independent polling periods:</strong> Các query khác nhau có thể chạy với tần suất khác nhau để đáp ứng SLAs khác nhau.</p>
+<p><strong>Isolation of internal data models:</strong> Relational databases có thể cung cấp isolation thông qua views hoặc materialized views của underlying data — che giấu thông tin domain model không nên expose ra ngoài.</p>
+
+<h3>Nhược Điểm Của Query-Based Updating</h3>
+
+<p><strong>Yêu cầu updated_at timestamp:</strong> Underlying table phải có column timestamp — và column này phải được populate đúng cách.</p>
+<p><strong>Chỉ detect soft deletes:</strong> Xóa một record thực sự không tạo ra event nào. Phải dùng soft delete (mark record với <code>is_deleted</code> column).</p>
+<p><strong>Phụ thuộc brittle giữa data set schema và output event schema:</strong> Thay đổi schema có thể gây incompatibility với downstream event format rules.</p>
+<p><strong>Có thể bỏ lỡ intermediate data values:</strong> Data chỉ sync tại các polling interval — một chuỗi nhiều thay đổi vào cùng record có thể chỉ hiển thị như một event duy nhất.</p>
+<p><strong>Production resource consumption:</strong> Queries tiêu thụ system resources và có thể gây delay unacceptable trên production system — có thể mitigate bằng read-only replica nhưng phát sinh thêm chi phí tài chính và độ phức tạp.</p>
+<p><strong>Query performance thay đổi theo data size:</strong> Lượng data trả về thay đổi tùy theo số changes. Worst case: toàn bộ dữ liệu thay đổi mỗi lần — có thể gây race condition nếu query tiếp theo bắt đầu trước khi query cũ hoàn thành.</p>
+<p><strong>Transactional data inconsistencies:</strong> Một transaction ghi vào hai tables với foreign key relationship — query hai tables định kỳ có thể tạo records cho một stream tham chiếu đến giá trị chưa được capture từ table kia, gây intermittent errors khi consumer cần reconcile.</p>
+
+<hr class="divider">
+
+<h2>Giải Phóng Dữ Liệu Bằng Transactional Outbox Tables</h2>
+
+<p>Outbox table là một dedicated database table hoạt động như buffer cho dữ liệu sẽ được ghi lên event stream. Khi bạn update <em>internal domain model</em>, bạn chọn chỉ những dữ liệu muốn expose ra ngoài và ghi vào outbox. Sau đó, một asynchronous process riêng biệt (CDC connector hoặc table querying connector) consume từ outbox và ghi lên event stream.</p>
+
+<p>Pattern outbox tận dụng khả năng transaction của data store như một <em>write-ahead log</em>. Update internal table và outbox được bundle vào <em>một transaction duy nhất</em> — updates chỉ xảy ra nếu toàn bộ transaction thành công. Nếu thất bại ở bất kỳ bước nào, rollback đảm bảo hai hệ thống không phân kỳ.</p>
+
+<p>Ví dụ Python (Example 6-1): atomic update của <code>EcomItem</code> trong MySQL database:</p>
+
+<blockquote>
+<pre>try:
+    conn = mysql.connector.connect(host='localhost',
+                                   database='python_db',
+                                   user='abellemare',
+                                   password='definitelynotpassword')
+    conn.autocommit = False
+    cursor = conn.cursor()
+
+    # 1) Update the internal domain model
+    internal_model_update = """
+        Update EcomItem
+        set price = 1299.99
+        where id = 4291"""
+    cursor.execute(internal_model_update)
+
+    # 2) Select data from the internal domain model to write to the outbox
+    internal_sub_model_query = """
+        Select name, price
+        from EcomItem
+        where id = 4291"""
+    cursor.execute(internal_sub_model_query)
+    name_and_price = cursor.fetchone()
+
+    if (name_and_price == None):
+        raise Exception("Unexpected missing record.")
+
+    # 3) Insert the selected data into the outbox
+    outbox_insert = """INSERT INTO EcomItem_Outbox (id, name, price)
+                       VALUES (4291, %s, %s)"""
+    cursor.execute(outbox_insert, name_and_price)
+
+    # Commit the internal and outbox updates atomically
+    conn.commit()
+
+except mysql.connector.Error as error:
+    conn.rollback()
+finally:
+    if conn.is_connected():
+        cursor.close()
+        conn.close()</pre>
+</blockquote>
+
+<p>Schema của <code>EcomItem_Outbox</code> table:</p>
+
+<blockquote>
+<pre>id: INT NOT NULL | name: VARCHAR(255) NOT NULL | price: DECIMAL(13,2) NOT NULL
+Datetime: DEFAULT CURRENT_TIMESTAMP | ordering_id: INT NOT NULL AUTO_INCREMENT</pre>
+</blockquote>
+
+<p>Lưu ý: dùng <code>NOT NULL</code> cho mọi mandatory field — inserting sẽ fail nếu constraints không được thỏa mãn. Field <code>ordering_id</code> là strict ordering identifier để đảm bảo intermediate states được emit đúng thứ tự. <strong>Quan trọng:</strong> Đảm bảo outbox table schema và event schema tương thích — dùng predeployment scripts để validate.</p>
+
+<h3>Hai Chiến Lược Serialization</h3>
+
+<p><strong>Serialize trước khi ghi vào outbox (before-the-fact):</strong> Schema validation xảy ra trong transaction — serialization failure sẽ rollback cả transaction, đảm bảo outbox và internal tables luôn sync. Mỗi dòng trong outbox table chứa: id (auto-increment), created_at, serialized_key, serialized_value, output_stream. Có thể dùng một single outbox cho tất cả transactions. Ưu điểm: đảm bảo consistency mạnh nhất. Nhược điểm: serialization overhead có thể ảnh hưởng performance, và business process không thể hoàn thành nếu serialization fail (transaction phải rollback).</p>
+
+<p><strong>Serialize sau khi ghi vào outbox (after-the-fact):</strong> Downstream publisher đọc raw data từ outbox và serialize trước khi produce lên event stream. Thường dùng nhiều outbox riêng biệt, mỗi outbox tương ứng một entity (User outbox, Account outbox). Nếu serialization fail, đã có completed transaction với incompatible data trong outbox — không thể đảo ngược, phải can thiệp thủ công. Dẫn đến lượng lớn unserializable events trong outbox, yêu cầu manual intervention và possible downtime.</p>
+
+<p>Lời khuyên: <strong>serialize trước khi commit</strong> — đây là bảo đảm mạnh nhất mà change-data capture solution có thể cung cấp, và treat event stream data như first-class citizen, ngang bằng với internal state consistency.</p>
+
+<h3>Lợi Ích Của Outbox Tables</h3>
+
+<p><strong>Multilanguage support:</strong> Bất kỳ client hay framework nào expose transactional capabilities đều hỗ trợ pattern này.</p>
+<p><strong>Exactly-once semantics:</strong> Transaction đảm bảo cả internal model và outbox data được tạo atomically.</p>
+<p><strong>Early schema enforcement:</strong> Outbox table cung cấp schema rõ ràng map với event stream schema. Serialize runtime cung cấp validation bổ sung.</p>
+<p><strong>Internal data model isolation:</strong> Developer chọn lọc field nào ghi vào outbox — giữ internal fields riêng tư.</p>
+<p><strong>Denormalization:</strong> Service có thể denormalize dữ liệu trước khi ghi vào outbox table.</p>
+
+<h3>Nhược Điểm Của Outbox Tables</h3>
+
+<p><strong>Database phải hỗ trợ transactions:</strong> Nếu không, phải chọn data access pattern khác.</p>
+<p><strong>Application code phải thay đổi:</strong> Cần development và testing resources từ application maintainers.</p>
+<p><strong>Business process performance impact:</strong> Có thể không nhỏ, đặc biệt khi validate schema qua serialization. Failed transactions cũng có thể ngăn business operations tiến hành.</p>
+<p><strong>Data store performance impact:</strong> Nontrivial khi số lượng lớn records được ghi, đọc, và xóa từ outbox.</p>
+
+<hr class="divider">
+
+<h2>Capturing Change-Data Bằng Database Triggers</h2>
+
+<p>Triggers predates nhiều auditing, binlog, và write-ahead log patterns. Nhiều relational database cũ dùng triggers để tạo audit tables. Trigger được set up để chạy tự động khi một điều kiện cụ thể xảy ra — nếu thất bại, command gây ra trigger cũng fail, đảm bảo update atomicity.</p>
+
+<p>Bạn có thể dùng <code>AFTER</code> trigger để capture row-level changes vào audit table. Sau mỗi <code>INSERT</code>, <code>UPDATE</code>, hay <code>DELETE</code>, trigger ghi một row tương ứng vào change-data table. Trigger cũng capture timestamp của insertion và auto-incrementing sequence ID cho event publisher.</p>
+
+<h3>Lợi Ích Của Triggers</h3>
+
+<p><strong>Supported by most databases:</strong> Triggers tồn tại trên hầu hết relational databases.</p>
+<p><strong>Low overhead cho small data sets:</strong> Dễ maintain và configure cho data sets nhỏ với ít updates.</p>
+<p><strong>Customizable logic:</strong> Trigger code có thể expose chỉ một subset của specific fields — cung cấp isolation cho downstream consumers.</p>
+
+<h3>Nhược Điểm Của Triggers</h3>
+
+<p><strong>Performance overhead:</strong> Triggers execute inline với actions trên database tables và tiêu thụ nontrivial processing resources.</p>
+<p><strong>Change management complexity:</strong> Thay đổi application code và data set definitions có thể yêu cầu modification trigger tương ứng — dễ bị bỏ qua, dẫn đến data liberation kết quả không nhất quán.</p>
+<p><strong>Poor scaling:</strong> Số triggers cần thiết tăng tuyến tính với số data sets cần capture.</p>
+<p><strong>After-the-fact schema enforcement:</strong> Schema enforcement chỉ xảy ra sau khi record được published vào outbox table — có thể dẫn đến unpublishable events.</p>
+
+<blockquote>
+<strong>Lưu ý quan trọng:</strong> Tránh dùng triggers khi có thể. Thay vào đó, dùng các công nghệ hiện đại hơn như CDC system chuyên dụng. Đừng đánh giá thấp performance overhead và management complexity của trigger-based solution, đặc biệt khi hàng chục hay hàng trăm tables và data models liên quan.
+</blockquote>
+
+<hr class="divider">
+
+<h2>Quản Lý Thay Đổi Data Definition</h2>
+
+<p>Tích hợp data definition changes (DDL changes — thêm/xóa/đổi tên columns, thay đổi column type, thêm/xóa defaults) là thách thức trong data liberation framework. Những thay đổi này hoàn toàn hợp lệ với data store nhưng có thể gây issues cho việc produce dữ liệu lên liberated event streams.</p>
+
+<p>Điều quan trọng nhất: <strong>tích hợp chặt chẽ với change management process</strong> của data store. Các bước cụ thể có thể thực hiện:</p>
+
+<p><strong>Observe data store pull requests:</strong> Đăng ký notifications cho bất kỳ code change nào ảnh hưởng data stores dưới capture. Bạn sẽ thấy mọi proposed changes và có thể identify impact lên code của mình.</p>
+
+<p><strong>Build integration tests:</strong> Add integration tests vào codebase so sánh event-stream schema với schema của data store dưới capture. Notify developer đang thực hiện changes trong development time, cho cả hai phía nhiều thời gian hơn để tìm common solution.</p>
+
+<p><strong>Establish deployment validations:</strong> Add integration tests vào deployment pipeline để đảm bảo không có code được deploy mà không validate (hoặc override) schema validation step.</p>
+
+<p>Một lợi thế lớn của outbox table pattern: code populate outbox nằm trong cùng codebase với main application. Breaking changes trong code đó sẽ gây compilation và testing errors — cảnh báo sớm trước khi làm hỏng production.</p>
+
+<hr class="divider">
+
+<h2>Compromises For Data Liberation</h2>
+
+<p>Liberated event stream cuối cùng phải phản ánh chính xác source data set. Kiến trúc hướng sự kiện dựa vào liberated event streams cho ECST — consumer materialize event data thành bản sao của original table.</p>
+
+<p>Legacy systems, tuy nhiên, thường không rebuild data sets từ liberated event streams. Họ có cơ chế backup-and-restore riêng (snapshots, checkpoints, write-ahead logs). Vẫn còn rủi ro restored state không match với state được tạo từ materialization event stream.</p>
+
+<p>Giải pháp lý tưởng: <strong>publish to stream first, then materialize</strong> — thay đổi application để ghi vào event stream trước, sau đó đọc lại data vừa ghi để build internal state:</p>
+
+<p>Ưu điểm: (1) <em>Single source of truth</em> — producer nhận bản sao đầy đủ của cùng data như mọi service khác, materializations fully convergent; (2) <em>Failure recovery</em> — producer failure được remedied bằng cách đọc lại event stream để có consistent view.</p>
+
+<p>Nhược điểm: (1) <em>Increased latency</em> — data được ghi vào stream trước rồi đọc lại; network round trips tăng latency; (2) <em>Không phù hợp cho mọi data store use case</em> — complex multistep transactions cần IDs và values từ previous steps largely unsuitable; (3) <em>Requires refactoring</em> — legacy systems cần refactoring đáng kể.</p>
+
+<p>Thực tế, legacy systems thường không thể thực hiện thay đổi lớn này. Compromise: dùng data liberation patterns để extract data ra khỏi data store và tạo event streams cần thiết. Đây là unidirectional event-driven architecture — legacy system không đọc lại từ liberated event stream. Mục tiêu cơ bản là giữ internal data set synchronized với external event stream thông qua strictly controlled publishing.</p>
+
+<hr class="divider">
+
+<h2>Sinking Event Data Vào Data Stores</h2>
+
+<p>Sinking là quá trình consume event data từ event streams và insert vào data store. Facilitated bởi centralized framework hoặc standalone microservice. Bất kỳ loại event data nào — entity, keyed events, unkeyed events — đều có thể được sink vào data store.</p>
+
+<p>Event sinking đặc biệt hữu ích để tích hợp các ứng dụng không phải event-driven với event streams. Sink process đọc event streams từ event broker, insert data vào data store chỉ định, theo dõi consumption offsets, và ghi data ngay khi nó đến input — hoàn toàn độc lập với non-event-driven application.</p>
+
+<p>Ví dụ điển hình: thay thế direct point-to-point coupling giữa legacy systems. Khi dữ liệu của source system đã được liberated vào event streams, có thể sink nó vào destination system với ít thay đổi. Sink process hoạt động externally và invisibly với destination system.</p>
+
+<p>Teams cần batch-based big-data analysis thường sink data vào distributed filesystem: HDFS → Amazon S3, Azure Blob Storage, Google Cloud Storage. Table formats như <strong>Apache Iceberg</strong> và <strong>Delta Lake</strong> cũng là destination phổ biến. Kafka Connect cho phép specify sinks bằng configuration đơn giản trên shared infrastructure.</p>
+
+<hr class="divider">
+
+<h2>Tác Động Của Sinking Và Sourcing Lên Tổ Chức</h2>
+
+<p>Centralized framework giảm overhead cho việc giải phóng dữ liệu. Một team vận hành framework ở quy mô lớn, hỗ trợ nhu cầu data liberation của các teams khác. Teams muốn tích hợp chỉ cần quan tâm đến connector configuration và design, không phải operational duties. Approach này hoạt động tốt nhất trong các tổ chức lớn với nhiều teams.</p>
+
+<p>Tuy nhiên, có hai cạm bẫy lớn:</p>
+
+<p><strong>Cạm bẫy 1 — Cross-team dependencies:</strong> Team vận hành centralized framework chịu trách nhiệm về stability, scaling, và health của cả framework lẫn từng connector instance. Trong khi đó, team vận hành hệ thống dưới capture có thể độc lập đưa ra quyết định ảnh hưởng đến performance và stability của connector — thêm/xóa fields, thay đổi logic. Điều này tạo ra direct dependency giữa hai teams, có thể phát triển thành các cross-team dependencies khó quản lý khi số changes tăng.</p>
+
+<p><strong>Cạm bẫy 2 — Tổ chức trở nên tự mãn:</strong> Sau khi dữ liệu được liberated từ internal state stores và published lên event streams, tổ chức có thể trở nên tự mãn về việc tiến lên native event-driven microservices. Teams trở nên quá phụ thuộc vào connector framework để source và sink data, và chọn không refactor ứng dụng hay phát triển event-driven microservices mới. Thay vào đó, họ cứ tiếp tục requisition sources và sinks mới, để ứng dụng underlying hoàn toàn ignorant với events.</p>
+
+<blockquote>
+<strong>CDC tools không phải là điểm đến cuối cùng</strong> trong việc chuyển sang kiến trúc hướng sự kiện. Chúng chủ yếu giúp bootstrap process. Giá trị thực sự của event broker là cung cấp một data communication layer robust, reliable, và truthful — tách rời khỏi implementation layers. Broker chỉ tốt đúng bằng chất lượng và độ tin cậy của data trong nó.
+</blockquote>
+
+<p>Giải pháp: <strong>giảm thiểu việc dùng CDC framework</strong> và có teams tự implement change-data capture (như outbox pattern), dù tốn thêm upfront effort. Teams trở nên solely responsible cho việc publishing system's events, eliminating cross-team dependencies và brittle connector-based CDC.</p>
+
+<p>Đối với sản phẩm với limited resources hay maintenance-only operation: centralized source và sink connector system là lợi thế lớn. Đối với sản phẩm mới đang phát triển: tốt nhất là có teams native event production, chuyển dần sang event-driven thinking, native production, và native consumption.</p>
+
+<hr class="divider">
+
+<h2>Tóm Tắt</h2>
+
+<p>Data liberation là bước quan trọng để cung cấp data communication layer trưởng thành và dễ tiếp cận. Legacy systems thường chứa bulk of core business domain models, được lưu trong centralized implementation communication structures. Dữ liệu này cần được liberated để enable các lĩnh vực khác của tổ chức compose new, decoupled products và services.</p>
+
+<p>Nhiều frameworks, tools, và strategies có thể extract và transform dữ liệu từ implementation data stores. Mỗi cái có benefits, drawbacks, và trade-offs riêng. Lựa chọn phụ thuộc vào use case — hoặc bạn cần tạo cơ chế riêng.</p>
+
+<p>Mục tiêu của data liberation là cung cấp clean và consistent single source of truth cho dữ liệu quan trọng. Data liberated theo hướng "careful integration" (events emit vào event broker khi được ghi vào data store, thậm chí publish to stream before materializing) là mô hình lý tưởng — producer là "good data-producing citizen," thêm protections để ngăn unintentional breaking changes, seek to work với consumers, minimize disruptive changes, và ensure changes compatible với schemas của events đang produce.</p>
+
+<p>Ở đầu kia của phổ — "highly reactive strategies" — owners của source data có little to no visibility vào việc produce data vào event broker, hoàn toàn dựa vào frameworks hay parse change-data capture logs. Broken schemas disrupting downstream consumers là phổ biến. Mô hình này unsustainable về lâu dài, vì bỏ qua responsibility của data owner đảm bảo clean, consistent production of domain events.</p>
+
+<p>Chương tiếp theo sẽ xem xét các patterns và strategies để xử lý relational data trong event streams — vì dữ liệu liberated từ relational systems thường là relational streams, thách thức để xử lý trong thực tế.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch05-edm">← Chương 5</a>
+  <a href="/building-event-driven-microservices/ch07-edm">Chương 7 →</a>
+</nav>
+</body>
+</html>

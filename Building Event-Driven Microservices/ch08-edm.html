@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 8: Microservices Hướng Sự Kiện Có Trạng Thái — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 8</div>
+<h1>Microservices Hướng Sự Kiện Có Trạng Thái</h1>
+<p class="chapter-subtitle">Quản lý trạng thái cục bộ và ngoài, xử lý đúng một lần, và phục hồi sau sự cố trong kiến trúc hướng sự kiện</p>
+
+<p>Hầu hết các microservice hướng sự kiện trong thực tế đều cần lưu trữ <strong>trạng thái</strong> — thông tin về các sự kiện đã xử lý, kết quả tính toán tích lũy, hay dữ liệu tham chiếu cần thiết cho nghiệp vụ. Chương này khám phá đầy đủ các chiến lược quản lý trạng thái: từ kho trạng thái nội bộ (internal state stores) nằm trong cùng container với microservice, đến kho trạng thái ngoại vi (external state stores) được triển khai riêng biệt. Bên cạnh đó, chúng ta sẽ đi sâu vào vấn đề đảm bảo xử lý <em>đúng một lần</em> (effectively-once), cơ chế loại trừ trùng lặp sự kiện, và cách phục hồi trạng thái sau sự cố một cách đáng tin cậy.</p>
+
+<hr class="divider">
+
+<h2>Mô Hình Ba Bước Của Microservice Hướng Sự Kiện</h2>
+
+<p>Mọi microservice hướng sự kiện có trạng thái đều vận hành theo một vòng lặp cơ bản gồm ba bước: <strong>phản ứng</strong> (React) → <strong>xử lý</strong> (Process) → <strong>tạo ra output</strong> (Produce). Đây là trái tim của toàn bộ kiến trúc:</p>
+
+<blockquote>
+<strong>React:</strong> Tiêu thụ sự kiện từ một hoặc nhiều input stream.<br>
+<strong>Process:</strong> Thực hiện nghiệp vụ — tra cứu, tính toán, cập nhật trạng thái nội bộ.<br>
+<strong>Produce:</strong> Phát ra sự kiện kết quả vào output stream để các microservice khác tiêu thụ.
+</blockquote>
+
+<p>Vòng lặp này được lặp đi lặp lại liên tục, tạo nên một dòng chảy xử lý bất đồng bộ không ngừng nghỉ. Tính <strong>có trạng thái</strong> (stateful) phát sinh ở bước Process, khi microservice cần nhớ thông tin từ các sự kiện trước đó để xử lý sự kiện hiện tại — ví dụ như cộng dồn số lượng đơn hàng, tra cứu thông tin khách hàng, hay theo dõi trạng thái phiên làm việc.</p>
+
+<hr class="divider">
+
+<h2>Phân Vùng Event Stream và Giao Việc Cho Consumer</h2>
+
+<p>Event stream trong các hệ thống như Apache Kafka hay Apache Pulsar được chia thành các <strong>partition</strong> (phân vùng) để cho phép xử lý song song. Mỗi partition là một dãy có thứ tự của các sự kiện; nhiều partition trong cùng một topic cho phép nhiều consumer instance cùng đọc song song.</p>
+
+<p>Trong một <strong>consumer group</strong>, việc phân công partition cho từng consumer instance do <em>consumer group leader</em> điều phối — thường là broker-side (phía broker) với Kafka, hoặc do server quản lý với Pulsar. Cơ chế này đảm bảo mỗi partition chỉ được một consumer instance xử lý tại một thời điểm, tránh xử lý trùng lặp trong cùng group.</p>
+
+<p>Khi số lượng instance thay đổi (scale out hoặc scale in), consumer group leader tự động tái phân công partition — gọi là <strong>rebalance</strong>. Đây là một điểm quan trọng: sau rebalance, một instance có thể nhận các partition khác với những partition nó đang xử lý, điều này ảnh hưởng trực tiếp đến trạng thái cục bộ mà nó đang duy trì.</p>
+
+<h3>Repartitioning — Tái Phân Vùng</h3>
+
+<p><strong>Repartitioning</strong> là quá trình phát ra sự kiện vào một topic mới với cấu hình phân vùng khác. Có ba tình huống khiến repartitioning cần thiết:</p>
+
+<p>Đầu tiên, khi <strong>số lượng partition thay đổi</strong> — ví dụ input stream có 6 partition nhưng output stream cần 12 partition để đáp ứng throughput cao hơn. Thứ hai, khi <strong>event key thay đổi</strong> — sự kiện cần được nhóm theo trường khác (ví dụ từ customer_id sang product_id) để đảm bảo cùng key đi vào cùng partition ở downstream. Thứ ba, khi <strong>partition function thay đổi</strong> — thuật toán hash được thay thế bằng một chiến lược phân vùng tùy chỉnh.</p>
+
+<h3>Copartitioning — Đồng Phân Vùng</h3>
+
+<p><strong>Copartitioning</strong> là yêu cầu kỹ thuật khi hai stream cần được join với nhau: cả hai phải có cùng số lượng partition và sử dụng cùng partition assignor (thuật toán phân công partition). Điều này đảm bảo rằng các sự kiện cùng key từ cả hai stream luôn đi vào cùng partition — và do đó được xử lý bởi cùng một consumer instance, giúp việc join có thể thực hiện hoàn toàn cục bộ mà không cần giao tiếp mạng.</p>
+
+<p>Khi thiếu copartitioning, framework phải shuffle dữ liệu qua mạng để đưa các sự kiện cùng key về cùng node — tốn kém cả về thời gian lẫn băng thông.</p>
+
+<hr class="divider">
+
+<h2>Kho Trạng Thái Nội Bộ (Internal State Stores)</h2>
+
+<p>Kho trạng thái nội bộ tồn tại <strong>bên trong cùng container hoặc máy ảo</strong> với microservice instance. Dữ liệu được lưu trực tiếp trên bộ nhớ RAM hoặc đĩa cục bộ của instance, không cần kết nối mạng để truy cập — đây là lợi thế hiệu năng cơ bản nhất của loại storage này.</p>
+
+<p>Hai hình thức phổ biến nhất của internal state store:</p>
+
+<p><strong>In-memory store:</strong> Tốc độ đọc/ghi cực nhanh, đạt hàng triệu request mỗi giây. Nhược điểm chính là dữ liệu bị mất hoàn toàn khi instance restart hay crash — phải rebuild từ đầu. Phù hợp cho trạng thái tạm thời có thể tái tạo nhanh.</p>
+
+<p><strong>Disk-based store (RocksDB):</strong> Apache RocksDB là lựa chọn tiêu chuẩn cho các framework như Kafka Streams và Flink. Dữ liệu được ghi ra đĩa, tồn tại qua các lần restart. Hiệu năng cụ thể trên SSD: khoảng <strong>65 micro-giây</strong> cho một random-access read, tương đương <strong>15.400 request/giây</strong>. Đây là con số đáng kể, đủ cho hầu hết các use case xử lý stream thực tế.</p>
+
+<p>Để so sánh rõ hơn:</p>
+<ul>
+<li>In-memory store: hàng triệu req/giây</li>
+<li>RocksDB trên SSD cục bộ: ~15.400 req/giây (65µs latency)</li>
+<li>Đĩa mạng (network-attached disk, latency 1ms): ~939 req/giây</li>
+</ul>
+
+<p>Con số này cho thấy vì sao internal state store luôn được ưu tiên về hiệu năng: không có round-trip mạng, không có serialization overhead khi giao tiếp với external service.</p>
+
+<h3>Changelog Event Stream</h3>
+
+<p>Mỗi khi internal state store được cập nhật, thay đổi đó được ghi ra một <strong>changelog event stream</strong> — một topic đặc biệt, thường là compacted (nén: chỉ giữ giá trị mới nhất cho mỗi key). Changelog phục vụ hai mục đích:</p>
+
+<p>Thứ nhất, <strong>phục hồi trạng thái</strong> sau crash: một instance mới có thể đọc lại toàn bộ changelog để tái tạo trạng thái mà không cần reprocess toàn bộ input stream từ đầu. Thứ hai, <strong>replication</strong> cho hot standby: các instance dự phòng (standby replicas) theo dõi changelog để luôn có bản sao trạng thái sẵn sàng tiếp quản ngay lập tức.</p>
+
+<p>Quyền truy cập changelog được giới hạn chặt chẽ: chỉ microservice sở hữu mới được đọc và ghi vào changelog của mình. Các microservice khác không thể truy cập trực tiếp — đây là nguyên tắc cô lập trạng thái quan trọng.</p>
+
+<h3>Global State Store (Broadcast State)</h3>
+
+<p><strong>Global state store</strong> là một biến thể đặc biệt của internal state store: thay vì mỗi instance chỉ giữ trạng thái của các partition được giao cho nó, global state store <strong>materialization toàn bộ tất cả các partition</strong> vào mỗi instance. Tức là mọi instance đều có đầy đủ dữ liệu từ tất cả partition của topic nguồn.</p>
+
+<p>Global state store phù hợp nhất cho dữ liệu:</p>
+<ul>
+<li>Kích thước nhỏ (đủ để replicate sang mọi instance)</li>
+<li>Được sử dụng thường xuyên (tra cứu liên tục)</li>
+<li>Thay đổi hiếm (seldom-changing) — ví dụ: bảng tỷ giá, danh mục sản phẩm, cấu hình hệ thống</li>
+</ul>
+
+<p>Một lưu ý quan trọng: global state store chỉ nên dùng cho mục đích <strong>tra cứu</strong> (lookup), không được dùng cho logic hướng sự kiện (event-driven logic). Lý do là nếu nhiều partition cùng tạo ra output dựa trên global state, sẽ khó đảm bảo tính nhất quán và idempotency.</p>
+
+<hr class="divider">
+
+<h2>Ưu Điểm và Nhược Điểm Của Internal State Store</h2>
+
+<h3>Ưu Điểm</h3>
+
+<p><strong>Khả năng scale được offload cho event broker:</strong> Khi cần xử lý nhiều hơn, chỉ cần thêm partition và thêm instance — broker lo việc phân công lại, microservice chỉ nhận partition mới và bắt đầu xử lý. Không cần tự quản lý cluster riêng cho state layer.</p>
+
+<p><strong>Tùy chọn disk-based hiệu năng cao:</strong> RocksDB trên SSD cục bộ mang lại hiệu năng vượt trội so với external database — không có network round-trip, không có connection pooling overhead. Đây là lợi thế cạnh tranh rõ ràng khi latency là yếu tố quan trọng.</p>
+
+<p><strong>Linh hoạt với network-attached disk:</strong> Trong môi trường cloud, có thể attach đĩa mạng (EBS của AWS, Persistent Disk của GCP) vào instance. Tuy chậm hơn SSD cục bộ nhưng vẫn nhanh hơn external database nhiều trường hợp, và có lợi thế là trạng thái không bị mất khi instance bị thay thế (vì đĩa tồn tại độc lập với instance lifecycle).</p>
+
+<h3>Nhược Điểm</h3>
+
+<p><strong>Kích thước đĩa chỉ tăng được, không giảm:</strong> Internal state store gắn với đĩa của instance — bạn chỉ có thể tăng kích thước kho trạng thái ở runtime, không thể thu nhỏ mà không restart. Nếu dữ liệu tăng đột biến rồi giảm xuống, dung lượng đĩa đã cấp phát vẫn bị chiếm.</p>
+
+<p><strong>Lãng phí đĩa với các pattern theo chu kỳ:</strong> Nếu microservice xử lý dữ liệu theo mùa hoặc theo chu kỳ (ví dụ peak vào Black Friday), kho trạng thái phải được cấp phát đủ lớn cho peak — nhưng phần lớn thời gian còn lại đĩa này không được dùng đến.</p>
+
+<hr class="divider">
+
+<h2>Scale và Phục Hồi Trạng Thái Nội Bộ</h2>
+
+<h3>Hot Replicas</h3>
+
+<p><strong>Hot replicas</strong> (standby replicas) là các instance dự phòng đang chạy song song với instance chính, liên tục theo dõi changelog để giữ bản sao trạng thái luôn được cập nhật. Khi instance chính gặp sự cố, hot replica có thể tiếp quản ngay lập tức với độ trễ tối thiểu — không cần rebuild trạng thái từ đầu.</p>
+
+<p>Kafka Streams có sẵn tính năng hot replica tích hợp (standby replicas), cấu hình qua <code>num.standby.replicas</code>. Khi một instance chính fail, Kafka Streams tự động promote standby replica lên làm instance chính mà không cần downtime đáng kể.</p>
+
+<p>Ví dụ triển khai thực tế (Hình 8-9, 8-10, 8-11 trong sách): với 3 instance và replication factor 2, mỗi partition có 1 instance chính và 1 standby. Nếu Instance A fail, Instance B (đang là standby cho các partition của A) tiếp quản ngay, trong khi hệ thống tái cân bằng và khởi tạo một instance mới làm standby mới.</p>
+
+<h3>Phục Hồi Từ Changelog</h3>
+
+<p>Khi một instance mới được khởi động (hoặc sau crash), nó cần phục hồi trạng thái trước khi bắt đầu xử lý sự kiện mới. Quy trình:</p>
+
+<ol>
+<li>Instance mới đọc toàn bộ changelog từ đầu đến offset hiện tại</li>
+<li>Replay lại tất cả thay đổi trạng thái theo thứ tự</li>
+<li>Khi changelog đã được đọc hết, instance bắt đầu tiêu thụ input stream tại offset đã ghi lại</li>
+<li>Xử lý bình thường tiếp tục</li>
+</ol>
+
+<p>Thời gian phục hồi phụ thuộc vào kích thước changelog — một changelog compacted sẽ nhỏ hơn nhiều so với toàn bộ input stream, nhờ đó phục hồi nhanh hơn đáng kể.</p>
+
+<h3>Phục Hồi Từ Input Stream</h3>
+
+<p>Một phương án thay thế là <strong>reprocess toàn bộ input stream từ đầu</strong> để tái tạo trạng thái. Cách này có hai nhược điểm nghiêm trọng:</p>
+
+<p>Đầu tiên, <strong>chậm</strong>: phải đọc lại toàn bộ lịch sử event, có thể mất hàng giờ hoặc hàng ngày với stream lớn. Thứ hai, <strong>nguy cơ phát ra output trùng lặp</strong>: nếu microservice phát ra sự kiện output trong quá trình reprocess, các downstream consumer sẽ nhận được sự kiện đã được xử lý trước đó một lần nữa — gây ra side effect không mong muốn.</p>
+
+<p>Vì những lý do này, phục hồi từ changelog luôn được ưu tiên hơn phục hồi từ input stream.</p>
+
+<hr class="divider">
+
+<h2>Kho Trạng Thái Ngoại Vi (External State Stores)</h2>
+
+<p>External state store là bất kỳ kho lưu trữ nào <strong>nằm ngoài container/VM</strong> của microservice — được truy cập qua mạng. Đây bao gồm: cơ sở dữ liệu quan hệ (PostgreSQL, MySQL), document store (MongoDB, Elasticsearch), key-value store (Redis, DynamoDB), graph database (Neo4j), geospatial store, và các dịch vụ cloud managed.</p>
+
+<p>Nguyên tắc bất biến khi dùng external state: <strong>trạng thái phải được cô lập hoàn toàn về mặt logic</strong>. Không bao giờ chia sẻ external state store giữa các microservice khác nhau — dù thuận tiện về mặt vận hành, việc này vi phạm ranh giới domain và tạo ra coupling ẩn giữa các service.</p>
+
+<h3>Ưu Điểm Của External State</h3>
+
+<p><strong>Full data locality cho tất cả partition:</strong> Không giống internal state, external store chứa toàn bộ dữ liệu của mọi partition. Mọi instance đều có thể truy cập toàn bộ trạng thái — không bị giới hạn bởi partition assignment. Điều này đơn giản hóa các operation như ad-hoc query hay reporting.</p>
+
+<p><strong>Duy trì trạng thái qua outage:</strong> Khi toàn bộ microservice instance bị down (để deploy, maintenance...), external state store vẫn tồn tại và toàn vẹn. Khi instance mới lên, nó kết nối lại với external store mà không mất dữ liệu — không cần rebuild gì cả.</p>
+
+<p><strong>Công nghệ quen thuộc:</strong> Các developer và ops team thường đã có kinh nghiệm với PostgreSQL hay Redis. Không cần học framework mới, có sẵn tooling cho backup, monitoring, và scaling.</p>
+
+<h3>Nhược Điểm Của External State</h3>
+
+<p><strong>Chi phí vận hành:</strong> Cần deploy, monitor, và maintain external store riêng biệt — thêm một hệ thống cần quản lý. Với managed services (RDS, ElastiCache...) chi phí tài chính cũng đáng kể.</p>
+
+<p><strong>Network latency làm giảm hiệu năng:</strong> Mỗi lần đọc/ghi state là một round-trip mạng — thường từ 0.5ms đến vài ms. So với microsecond của RocksDB cục bộ, đây là một bước lùi hiệu năng đáng kể. Với các microservice cần xử lý hàng triệu sự kiện/giây, latency này có thể trở thành bottleneck nghiêm trọng.</p>
+
+<p><strong>Race condition khi nhiều instance ghi đồng thời:</strong> Với external store, nhiều microservice instance có thể cùng ghi vào cùng một key đồng thời — dẫn đến lost updates nếu không có cơ chế optimistic/pessimistic locking. Đây là vấn đề phức tạp cần giải quyết cẩn thận.</p>
+
+<h3>Scale và Phục Hồi External State</h3>
+
+<p>External state có thể được phục hồi bằng ba cách:</p>
+
+<p><strong>Từ source stream:</strong> Đọc lại toàn bộ input stream từ đầu và tái tạo trạng thái. Chậm nhưng không cần changelog riêng.</p>
+
+<p><strong>Từ changelog:</strong> Tương tự internal state — ghi thay đổi vào changelog topic, instance mới replay lại changelog. Nhanh hơn source stream nhưng cần maintain changelog.</p>
+
+<p><strong>Từ snapshot/checkpoint:</strong> Định kỳ lưu toàn bộ trạng thái vào object storage (S3...), kèm theo consumer offset tại thời điểm snapshot. Để phục hồi: load snapshot, rồi tiếp tục đọc input stream từ offset đã lưu. Quan trọng: <strong>phải lưu consumer offset cùng lúc với snapshot một cách atomic</strong> — nếu không đồng bộ, có thể bỏ sót hoặc xử lý lại sự kiện.</p>
+
+<h3>Rebuild External State Store</h3>
+
+<p>Đôi khi cần rebuild hoàn toàn external state — khi cập nhật schema, sửa lỗi nghiêm trọng trong logic xử lý, hay migrate công nghệ. Quy trình rebuild an toàn gồm các bước:</p>
+
+<ol>
+<li><strong>Cập nhật code</strong> microservice với logic mới</li>
+<li><strong>Tạo instance mới</strong> trỏ vào một external store mới (trống)</li>
+<li><strong>Rewind consumer offset</strong> về điểm bắt đầu muốn rebuild</li>
+<li><strong>Reprocess</strong> toàn bộ sự kiện để fill external store mới</li>
+<li><strong>Verify</strong> dữ liệu trong store mới là chính xác</li>
+<li><strong>Chuyển traffic</strong> sang instance mới với store mới</li>
+<li><strong>Xóa instance và store cũ</strong></li>
+</ol>
+
+<p>Nguyên tắc vàng: <strong>không bao giờ migrate dữ liệu trực tiếp từ store cũ sang store mới</strong>. Luôn rebuild từ source (event stream) để đảm bảo kết quả nhất quán và có thể audit được.</p>
+
+<hr class="divider">
+
+<h2>Giao Dịch và Xử Lý Đúng Một Lần</h2>
+
+<p>Một trong những thách thức sâu nhất trong kiến trúc hướng sự kiện là đảm bảo <strong>mỗi sự kiện được xử lý đúng một lần</strong> (effectively-once processing) — không bị bỏ sót, không bị xử lý lại. Điều này đặc biệt quan trọng trong các hệ thống tài chính, thanh toán, hay bất kỳ domain nào cần idempotency.</p>
+
+<p>Ba thành phần cần được commit <strong>atomically</strong> (cùng lúc, hoặc không cái nào) để đảm bảo exactly-once:</p>
+<ul>
+<li>Consumer offset (vị trí đọc trong input stream)</li>
+<li>Output events (sự kiện phát ra downstream)</li>
+<li>Changelog updates (cập nhật trạng thái nội bộ)</li>
+</ul>
+
+<p>Apache Kafka và Apache Pulsar đều hỗ trợ transactions cho phép commit atomic các thành phần này.</p>
+
+<h3>Effectively Once Với Client-Broker Transaction</h3>
+
+<p>Trong trường hợp framework hỗ trợ transaction (Kafka Streams, Flink với Kafka...), quy trình xử lý một sự kiện diễn ra như sau (Hình 8-14):</p>
+
+<ol>
+<li>Consumer đọc sự kiện từ input partition</li>
+<li>Microservice xử lý sự kiện và cập nhật local state</li>
+<li>Mở một transaction với broker</li>
+<li>Ghi changelog update vào changelog topic</li>
+<li>Ghi output events vào output topic</li>
+<li>Commit consumer offset</li>
+<li>Commit transaction — tất cả hoặc không cái nào được persist</li>
+</ol>
+
+<p>Nếu transaction fail giữa chừng (Hình 8-15), broker rollback toàn bộ — consumer offset không được cập nhật, output events không được publish, changelog không được commit. Lần xử lý tiếp theo sẽ đọc lại sự kiện và thử lại từ đầu một cách an toàn.</p>
+
+<h3>Effectively Once Không Có Client-Broker Transaction</h3>
+
+<p>Khi framework hoặc ngôn ngữ không hỗ trợ client-broker transaction (ví dụ consumer viết bằng Go hay Ruby không có library hỗ trợ Kafka transactions), cần dùng cơ chế thay thế: <strong>deduplication</strong> (loại trừ trùng lặp).</p>
+
+<p>Hai cơ chế deduplication chính:</p>
+
+<p><strong>Idempotent writes với unique process ID:</strong> Mỗi lần xử lý sự kiện, assign một unique ID cho operation đó. Khi ghi vào state store hay external system, kiểm tra xem ID này đã tồn tại chưa — nếu rồi thì bỏ qua. ID thường là tổ hợp của partition ID + sequence number (monotonically increasing, tăng đều).</p>
+
+<p><strong>Deduplication store với TTL:</strong> Duy trì một kho lưu trữ (in-memory hoặc Redis) chứa danh sách các sự kiện đã được xử lý trong một khoảng thời gian nhất định (TTL). Trước khi xử lý sự kiện mới, kiểm tra xem nó đã được xử lý trong cửa sổ TTL chưa.</p>
+
+<hr class="divider">
+
+<h2>Sự Kiện Trùng Lặp: Nguyên Nhân Và Cách Nhận Diện</h2>
+
+<h3>Hai Kịch Bản Sinh Ra Duplicate</h3>
+
+<p>Kịch bản 1: <strong>Producer gửi sự kiện nhưng không nhận được ACK</strong>. Producer ghi event lên broker, broker đã persist thành công nhưng ACK bị mất trên đường truyền. Producer không biết sự kiện đã được lưu, retry lại — broker nhận được sự kiện thứ hai giống hệt. Cả hai copy đều tồn tại trong topic.</p>
+
+<p>Kịch bản 2: <strong>Producer crash trước khi cập nhật offset</strong>. Producer đọc sự kiện từ input stream, xử lý và ghi output thành công, nhưng crash trước khi commit consumer offset. Khi restart, nó đọc lại sự kiện cũ (vì offset chưa được update) và xử lý lần nữa — tạo ra output trùng lặp ở downstream.</p>
+
+<h3>Nhận Diện Duplicate</h3>
+
+<p>Cách phổ biến nhất để nhận diện sự kiện trùng lặp là tạo một <strong>unique hash</strong> từ tổ hợp các trường của sự kiện:</p>
+
+<ul>
+<li>Event key (ví dụ: user_id, order_id)</li>
+<li>Event values (các trường nghiệp vụ)</li>
+<li>Event time (timestamp)</li>
+</ul>
+
+<p>Hash này phải đủ <strong>high-cardinality</strong> (đa dạng) để giảm thiểu xung đột (collision). Khi sử dụng nhiều trường cùng lúc, xác suất hai sự kiện khác nhau có cùng hash giảm xuống rất thấp.</p>
+
+<p>Một điểm cần chú ý: deduplication chỉ hoạt động <strong>trong phạm vi một partition</strong>. Nếu cùng một sự kiện được ghi vào nhiều partition khác nhau, cần cơ chế dedup cross-partition phức tạp hơn.</p>
+
+<h3>Phòng Chống Duplicate Với Time-Window và Offset-Window</h3>
+
+<p>Không thể lưu trữ vô hạn các sự kiện đã xử lý — cần TTL để giải phóng bộ nhớ. Hai chiến lược:</p>
+
+<p><strong>Time-window dedup:</strong> Chỉ nhớ các sự kiện được xử lý trong N phút/giờ gần đây. Phù hợp khi duplicate thường xuất hiện sớm sau sự kiện gốc. Nguy cơ: nếu duplicate xuất hiện sau khi TTL hết, vẫn bị xử lý lại.</p>
+
+<p><strong>Offset-window dedup:</strong> Nhớ N sự kiện gần nhất theo offset (vị trí trong stream). Phù hợp khi biết duplicate chỉ xuất hiện trong phạm vi N sự kiện gần nhất. Ổn định hơn time-window vì không phụ thuộc vào thời gian thực.</p>
+
+<p>Cả hai đều là <em>best-effort</em> — không đảm bảo 100% trong mọi trường hợp, nhưng đủ tốt cho hầu hết use case thực tế (Hình 8-17).</p>
+
+<hr class="divider">
+
+<h2>Duy Trì Trạng Thái Nhất Quán Qua State Store Transaction</h2>
+
+<p>Giải pháp mạnh nhất cho vấn đề exactly-once với external state store là <strong>chuyển việc quản lý consumer offset vào trong chính data store</strong> — và cập nhật cả trạng thái lẫn consumer offset trong một transaction duy nhất.</p>
+
+<p>Ý tưởng cốt lõi: thay vì commit consumer offset lên broker (hai hệ thống riêng biệt, không thể commit atomically), lưu consumer offset <em>trực tiếp trong external state store</em>. Mỗi lần cập nhật trạng thái, đồng thời cập nhật offset trong cùng một database transaction:</p>
+
+<blockquote>
+BEGIN TRANSACTION<br>
+  UPDATE state_table SET value = ... WHERE key = ...<br>
+  UPDATE consumer_offsets SET offset = 42 WHERE partition = 3<br>
+COMMIT
+</blockquote>
+
+<p>Nếu transaction thành công, cả hai đều được lưu — đảm bảo nhất quán tuyệt đối. Nếu transaction fail, cả hai đều rollback — lần sau đọc lại từ offset cũ, xử lý lại an toàn vì idempotent.</p>
+
+<p>Hình 8-18, 8-19, 8-20 trong sách minh họa quy trình này chi tiết: instance khởi động bằng cách đọc offset từ external store, xử lý sự kiện, và commit state + offset atomically trong mỗi iteration.</p>
+
+<p>Đây là pattern mạnh nhất để đảm bảo exactly-once semantics mà không cần hỗ trợ transaction từ phía event broker — đặc biệt hữu ích khi dùng external database làm state store trong các ngôn ngữ không có Kafka Streams support.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Chương 8 phác thảo bức tranh toàn diện về quản lý trạng thái trong microservice hướng sự kiện. Internal state stores mang lại hiệu năng vượt trội với RocksDB và khả năng phục hồi qua changelog và hot replicas, nhưng bị giới hạn bởi dung lượng đĩa cục bộ và không thể truy cập cross-instance. External state stores linh hoạt và quen thuộc hơn, nhưng phải trả giá bằng latency mạng, chi phí vận hành, và nguy cơ race condition.</p>
+
+<p>Vấn đề exactly-once processing đòi hỏi cả producer lẫn consumer phối hợp chặt chẽ: commit atomic offset + output events + changelog khi broker hỗ trợ transaction; deduplication và idempotent writes khi không có; và state store transaction là giải pháp toàn diện nhất khi dùng external store.</p>
+
+<p>Hiểu sâu về các cơ chế này — và đặc biệt là các trade-off giữa chúng — là nền tảng để thiết kế hệ thống stream processing đáng tin cậy, có thể scale, và dễ vận hành trong môi trường production thực tế.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch07-edm">← Chương 7</a>
+  <a href="/building-event-driven-microservices/ch09-edm">Chương 9 →</a>
+</nav>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 16: Eventual Consistency — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 16</div>
+<h1>Eventual Consistency</h1>
+<p class="chapter-subtitle">Hội tụ dữ liệu trong hệ thống phân tán — nguyên nhân, hệ quả, và chiến lược xử lý</p>
+
+<p>Eventual consistency là mối lo ngại chính trong hệ thống phân tán. Với event stream, các mối lo ngại về eventual consistency chủ yếu nằm ở phía consumer: mỗi consumer đọc và xử lý event theo tốc độ riêng của mình.</p>
+
+<p>Pat Helland — người đã nghiên cứu và viết về eventual consistency lâu năm — tổng hợp quan điểm của Doug Terry (người đặt ra thuật ngữ này trong Bayou paper năm 1995): khi ông định nghĩa eventual consistency, ý nghĩa là với mỗi object trong một tập hợp, tất cả các bản sao của object đó cuối cùng sẽ có cùng giá trị. Terry nói: "Yeah, tôi đáng lẽ phải gọi nó là eventual convergence."</p>
+
+<p>Quote này quan trọng vì nhiều người nhầm lẫn <em>consistency</em> với thứ gì đó khác <em>convergence</em>. Với event-driven systems, điều ta thực sự quan tâm là đảm bảo các service <em>hội tụ</em>, dù chúng có thể không bao giờ thực sự nhất quán vì mỗi service consume và process event theo tốc độ riêng.</p>
+
+<p>Peter Alvaro định nghĩa trong luận văn PhD 2015 "Data-Centric Programming for Distributed Systems": <em>"Một hệ thống là convergent hay 'eventually consistent' nếu, khi tất cả message đã được deliver, tất cả replica đồng ý về tập hợp các giá trị được lưu trữ."</em></p>
+
+<p>Cả Terry và Alvaro đều đồng thuận: tập trung vào các bản sao độc lập cuối cùng hội tụ về cùng tập giá trị. Ta sẽ tiếp tục dùng thuật ngữ <em>eventual consistency</em>, nhưng hiểu rằng ta đang nói về <em>convergence of data</em>.</p>
+
+<hr class="divider">
+
+<h2>Hai Nguyên Nhân Không Hội Tụ</h2>
+
+<p>Có hai lý do chính khiến hai service chưa hội tụ:</p>
+
+<p><strong>Consumer service đang lag trong việc consume event.</strong> Service đang tụt hậu so với tốc độ consume, process, và lưu trữ dữ liệu so với service khác. Consumer đang trong "time bubble" riêng của mình, ở phía sau về mặt thời gian so với consumer khác đang đọc cùng stream.</p>
+
+<p><strong>Producer service đang lag trong việc produce event.</strong> Producer có thể gặp bug hoặc lỗi ngăn nó ghi update mới lên event stream. Trong trường hợp này, internal state của producer đã up-to-date (converged), nhưng external representation được ghi ra event stream thì không. Consumer của stream này có thể đã converge với nhau, nhưng vẫn thiếu data của producer vì data đơn giản là chưa được ghi.</p>
+
+<p>Hai tình huống này không loại trừ nhau — hoàn toàn có thể cả consumer lẫn producer đều lag cùng lúc.</p>
+
+<p>Thực tế, eventual consistency không đáng sợ như nhiều người nghĩ. Phần lớn thời gian, các event-driven service sẽ up-to-date với event mới nhất — trừ khi đang catch-up từ đầu (như application mới hoặc application được reset).</p>
+
+<hr class="divider">
+
+<h2>Hội Tụ Từng Event Một</h2>
+
+<p>Mỗi event-driven processing instance tồn tại trong "time bubble" riêng của nó, với internal time dựa hoàn toàn vào event timestamp mà nó đã consume và tích hợp vào state (xem "Timestamps" ở Chương 9). Phần lớn event stream cung cấp data theo thứ tự offset và timestamp tăng dần, dù event cũng có thể out-of-order.</p>
+
+<p><strong>Hình 16-1: Vấn đề cơ bản với eventual consistency</strong></p>
+
+<p>Có một event stream với 4 event: Daisies (time=150, offset=1), Daffodils (time=220, offset=2), Sunflowers (time=350, offset=3), Poppies (time=900, offset=4). Consumer 1 đang ở t=220 (đã consume đến offset 2). Consumer 2 đang ở t=900 (đã consume toàn bộ stream). Consumer 2 tại t=900 hỏi Consumer 1: "Do you have sunflowers?" — Consumer 1 trả lời: "Error, not found" — vì Consumer 1 chưa consume đến offset 3 (Sunflowers).</p>
+
+<p>Kết quả mà mỗi service trả về cho thế giới bên ngoài — dù qua request-response API, output event stream, hay cách nào khác — rất khó được sync chính xác với data được materialized tương tự ở service khác. Đây là nơi discrepancy và confusing result có thể xuất hiện.</p>
+
+<p>Ngược lại, hai synchronous service giao tiếp qua request-response API và lưu trữ toàn bộ data trong service của mình sẽ không gặp vấn đề này. Khi một service gọi service kia, nó không tự hỏi "dữ liệu ở đó đang ở thời gian nào?" — giả định là cả hai service đều trong cùng time bubble, clock đủ gần để không cần quan tâm.</p>
+
+<h3>Ví Dụ Truck Và Driver (Hình 16-2)</h3>
+
+<p>Một công ty giao hàng có model: một driver là employee có thể lái truck, cần một driver cho mỗi truck muốn gửi đi giao hàng. Trong môi trường event-driven:</p>
+
+<p><em>Synchronous service world (trái)</em>: Truck Lookup Service và Driver Lookup Service cùng trong một time bubble (t_s = 18:30:01). Query tại bất kỳ thời điểm nào trả về snapshot nhất quán.</p>
+
+<p><em>Asynchronous service world (phải)</em>: Truck Lookup Service (t_c = 11:30:01) và Driver Lookup Service (t_c = 18:30:01) trong hai time bubble khác nhau — chênh lệch 7 giờ. Nếu Driver Service request "get me a new truck" từ Truck Service, kết quả bị ảnh hưởng bởi 7 giờ chênh lệch: Truck Service có thể không biết về các truck được đăng ký sau 11:30.</p>
+
+<p>Cấu trúc Driver và Truck service yêu cầu synchronous communication trong khi dùng asynchronous event-driven data source là một antipattern lớn. Giải pháp tốt hơn: populate Driver service <em>với cả</em> truck data để loại bỏ synchronous lookup. Đạt được kiến trúc decoupled hơn nhiều, giảm complexity, và loại bỏ race condition.</p>
+
+<h3>Data Trong Source Stream Chưa Hội Tụ (Hình 16-3)</h3>
+
+<p>Ngay cả khi service hoàn toàn up-to-date với mọi event stream, data có thể vẫn chưa hội tụ vì event đơn giản là chưa được produce.</p>
+
+<p>Ví dụ Flower Pot Builder Service consume từ Flower stream và Preferred Soil stream để xác định loại đất tốt nhất cho mỗi loại hoa. Flower stream có đủ 4 record (Daisies/Daffodils/Sunflowers/Poppies). Preferred Soil stream chỉ có 2 record (BLL/BRL). Service đã fully caught-up với cả hai stream, nhưng không có matching preferred soil record cho Sunflowers và Poppies — <em>data chưa được produce</em>.</p>
+
+<p>Nhiều lý do có thể xảy ra: hai stream được source từ các domain khác nhau với SLA khác nhau, producer cho preferred soil đang down, network bị partition, hoặc event broker không available. Service phải chờ cho đến khi có thể obtain các Preferred Soil event còn thiếu.</p>
+
+<hr class="divider">
+
+<h2>Chiến Lược Xử Lý Eventual Consistency</h2>
+
+<p>Có hai option chính khi deal với eventual consistency:</p>
+
+<p><strong>Option 1: Chờ cho state trở nên consistent.</strong> Chờ event hoàn thành join, kết thúc session, hoặc finalize aggregation. Cũng hoạt động khi query external service cho kết quả inconsistent — retry sau một khoảng thời gian. Có thể trả về incomplete result chỉ ra sự thiếu nhất quán, nhưng sẽ phải update khi nhận được final result.</p>
+
+<p><strong>Option 2: Từ bỏ sau một khoảng thời gian nhất định.</strong> <em>Giving up is final.</em> Nếu event bị thiếu xuất hiện một giây sau khi bạn give up, đã quá muộn. Nếu service bạn đang query cuối cùng có kết quả, nó không quan trọng vì bạn sẽ không được notify hay nhận follow-up request.</p>
+
+<h3>Dùng State Event Types</h3>
+
+<p>Divergence do vô tình luôn có thể xảy ra vì hiểu nhầm về các event trong một event stream. <em>Delta event types</em> thách thức hơn với consumer trong việc reconcile data về dạng nhất quán với các consumer khác. Dù vẫn hoàn toàn có thể đạt convergence qua delta events, added complexity trong việc reconcile delta events làm tăng khả năng end up ở inconsistent state.</p>
+
+<p><em>State events</em> đơn giản hơn nhiều cho consumer trong việc đọc, process, và tích hợp vào state store. Consumer ít có khả năng mắc lỗi trong việc process và interpret data, dẫn đến converge về cùng kết quả như các consumer khác.</p>
+
+<h3>Expose Eventual Consistency Trong Server Response</h3>
+
+<p>Chiến lược phổ biến: bộc lộ trạng thái eventually consistent trong response. Đây là practice thường thấy trong web UI ("Please wait to confirm, do not hit refresh"). Ta có thể áp dụng cho server-to-server communication:</p>
+
+<p><strong>Halt serving requests khi lag vượt threshold:</strong> Service monitor consumer lag của input event stream offset, và chỉ serve data nếu lag thấp hơn threshold. Thay vì trả về data, service trả về HTTP 503 (Service Unavailable) — có thể kèm Retry-After response chỉ ra khi nào service sẽ ready dựa trên throughput thông thường. Khi lag thấp hơn threshold, service serve query bình thường.</p>
+
+<p><strong>Provide stale data to requester:</strong> Service trả về response bất kể data stale đến mức nào, nhưng include indicator trong payload cho thấy data có thể stale và để client quyết định cách proceed. Trong một số trường hợp client không quan tâm đến stale data; trong các trường hợp khác nó là critical và client có thể hold off processing tiếp theo cho đến khi có up-to-date data.</p>
+
+<p><strong>Provide a callback API:</strong> Client đăng ký để nhận callback khi service không còn lag và có thể phục vụ request với data up-to-date. Phức tạp hơn vì client phải block-wait cho callback hoặc implement context-switching logic để làm việc khác trong khi chờ callback. Service cũng cần buffer requests và provide SLA cho users.</p>
+
+<p><em>Lưu ý về event time:</em> Bạn có thể dùng event time của last event để infer lag trong một số trường hợp (high-frequency streams), nhưng không phải trong nhiều use case khác. Với stream update slowly (user entity chỉ update khi đăng ký mới, thay đổi email, hoặc bị xóa), có thể nhiều giờ hoặc ngày giữa các event. Service đã fully caught up nhưng không biết điều đó từ event time. Nên dựa vào <em>offset</em> để detect và expose lag bất cứ khi nào có thể.</p>
+
+<h3>Dùng Event-Driven Communication Thay Vì Request-Response</h3>
+
+<p>Tránh direct call đến remote service hoàn toàn. Embrace asynchronous nature của event-driven microservices và dùng events để communicate giữa các service. Khi cần relate data từ hai service khác nhau (như driver và truck), dùng microservices approach:</p>
+
+<ul>
+<li>Tạo service mới.</li>
+<li>Materialize cả driver và truck event streams vào service đó.</li>
+<li>Query service trực tiếp cho bất kỳ query nào liên quan đến driver và truck, như web UI quản trị hay accounting portal.</li>
+</ul>
+
+<p>Bằng cách đặt data trong một service duy nhất, bạn có thể reason về time, latency, và consistency dễ dàng hơn nhiều. Dễ hơn nhiều so với việc reconcile giữa các service, dù yêu cầu sẵn sàng và khả năng xây dựng purpose-built microservices.</p>
+
+<h3>Prevent Failures to Avoid Inconsistency</h3>
+
+<p>Bạn có thể chọn từ nhiều technology, cloud, broker, connector, và tool để xây dựng event-driven microservices. Thay vì cố gắng iterate qua toàn bộ list, hãy giả định sẽ có failure. Các failure có thể bao gồm: service crash, network connectivity issues, broker connectivity issues, cloud storage connectivity issues.</p>
+
+<p>Bạn có thể giảm khả năng failure thông qua DevOps practices tốt, monitoring, resource scaling, và testing. Cũng quan trọng là đảm bảo consumer service có đủ resource để scale up và stay up-to-date với event mới nhất, và mọi outage hoặc failure ở phía producer được identify và fix nhanh chóng. Tóm lại, bất kỳ điều gì bạn có thể làm để giữ consumers và producers đọc và ghi mà không có lag đều góp phần giảm tác động của eventual consistency.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Eventual consistency có những lợi ích rất đáng kể. Nó cho phép bạn temporal decouple các service sao cho chúng có thể độc lập scale, fail, và recover mà không gây gián đoạn đáng kể. Nó giảm complexity của coordination nhiều microservice và cho phép xây dựng kiến trúc choreographed rất loosely coupled. Cuối cùng, nhiều system đơn giản là không yêu cầu full consistency, và có thể được implement dễ dàng hơn nhiều như eventually consistent event-driven microservices.</p>
+
+<p>Nhưng dealing với eventual consistency có thể khó khăn hơn khi bạn <em>thực sự</em> yêu cầu full consistency. Phần lớn liên quan đến nhận biết <em>như thế nào</em> nó có thể được đưa vào và xác định <em>liệu</em> nó có cần được giảm thiểu không. Event stream cung cấp cho consumer phương tiện để converge về cùng final state, dù mỗi consumer phải uphold end của mình bằng cách correct process và integrate data vào domain của mình.</p>
+
+<p>Trong event-driven space, lagging consumer service có thể inconsistent với service hoặc dataset khác. So sánh data giữa lagging service và non-lagging service có thể cho thấy inconsistency, vì cả hai đang operate trong time frame riêng của mình. Tránh direct request-response query giữa các asynchronous service giúp tránh phải deal với data inconsistency. Nếu bắt buộc phải deal với inconsistency, tốt nhất là account for time frames của service và incorporate chúng vào interservice communication.</p>
+
+<p>Eventual-consistency issues cũng có thể phát sinh khi data trong một event stream tham chiếu đến data trong stream khác mà chưa được produce. Lagging producer thường là nguyên nhân, và consumer phải chờ producer eventually produce data còn thiếu. Quan trọng là design application để accommodate late-arriving data, đồng thời cũng tính đến bất kỳ end-to-end latency metric nào có thể yêu cầu action trước với incomplete data.</p>
+
+<p>Tiếp theo, ta sẽ xem xét cách kết hợp request-response pattern vào event-driven microservices.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch15-edm">← Chương 15</a>
+  <a href="/building-event-driven-microservices/ch17-edm">Chương 17 →</a>
+</nav>
+</body>
+</html>

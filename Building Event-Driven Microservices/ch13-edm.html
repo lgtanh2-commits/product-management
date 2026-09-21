@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 13: Microservices Framework Nhẹ — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 13</div>
+<h1>Microservices Framework Nhẹ</h1>
+<p class="chapter-subtitle">Kafka Streams — xử lý stream mạnh mẽ không cần cluster riêng, dựa vào event broker và CMS</p>
+
+<p>Trong khi heavyweight framework (Chương 12) yêu cầu một cluster chuyên dụng riêng biệt, <strong>lightweight framework</strong> hoạt động theo mô hình hoàn toàn khác: không có dedicated cluster, không cần resource manager riêng — thay vào đó, chúng dựa hoàn toàn vào <em>event broker</em> và <em>Cluster Management System (CMS)</em> để cung cấp khả năng scaling, shuffling dữ liệu, và durability. Bạn deploy lightweight framework microservice như bất kỳ microservice nào khác trong hệ thống.</p>
+
+<p>Ấn bản đầu tiên của cuốn sách này giới thiệu cả Kafka Streams lẫn Apache Samza. Đến ấn bản thứ hai này, Samza đã suy giảm đáng kể về độ phổ biến, số người dùng, và hoạt động của project. <strong>Kafka Streams hiện là lightweight framework duy nhất được sử dụng rộng rãi</strong>. Faust (Python) cũng được nhắc đến nhưng chưa đạt critical mass. Chương này tập trung vào Kafka Streams như đại diện chính của lightweight framework.</p>
+
+<hr class="divider">
+
+<h2>Ví Dụ Thực Tế: Join Sản Phẩm Với Dữ Liệu Thương Hiệu</h2>
+
+<p>Để hiểu Kafka Streams hoạt động như thế nào trong thực tế, hãy xem xét một use case phổ biến: <strong>enrichment qua foreign key join</strong> — kết hợp dữ liệu sản phẩm (Product) với dữ liệu thương hiệu (Brand) để tạo ra EnrichedProduct.</p>
+
+<p>Tình huống (Hình 13-1): Một ecommerce database chứa hai bảng — Brands và Products. Hai connector riêng biệt convert dữ liệu từ database thành event stream: <em>Brands stream</em> (stream thương hiệu) và <em>Products stream</em> (stream sản phẩm). Mỗi product có trường <code>brandId</code> là foreign key tham chiếu đến Brand tương ứng. Nhiệm vụ là join hai stream này để tạo ra một stream EnrichedProduct chứa đầy đủ thông tin brand.</p>
+
+<h3>Code Kafka Streams (Ví Dụ 13-1)</h3>
+
+<blockquote>
+<pre>
+public Topology buildTopology(Properties envProps) {
+    // 1) Tạo Serde (Serializer/Deserializer)
+    BrandSerde brandSerde = new BrandSerde(...);
+    ProductSerde productSerde = new ProductSerde(...);
+    EnrichedProductSerde enrichedProductSerde = new EnrichedProductSerde(...);
+
+    // 2) Tạo stream builder
+    KStreamBuilder builder = new KStreamBuilder();
+
+    // 3) Khai báo hai KTable
+    KTable&lt;Long, Brand&gt; brandTable =
+        builder.table(Serdes.Long(), brandSerde, "brand-topic");
+    KTable&lt;Long, Product&gt; productTable =
+        builder.table(Serdes.Long(), productSerde, "product-topic");
+
+    // 4) Khai báo join với joiner function
+    productTable
+        .join(brandTable, Product::getBrandId, new ProductToBrandJoiner())
+
+    // 5) Chuyển về stream và ghi ra output
+        .toStream()
+        .to("enriched-product-topic",
+            Produced.with(Serdes.Long(), enrichedProductSerde));
+
+    // 6) Build và trả về topology
+    return builder.build();
+}
+</pre>
+</blockquote>
+
+<p>Code này làm rõ sự đơn giản của Kafka Streams API. Bước 1 khai báo các Serde — serializer/deserializer chuyển đổi byte array từ Kafka topic thành Java object (Brand, Product) và ngược lại. Có thể dùng Avro, Protobuf, hoặc JSON Schema.</p>
+
+<p>Bước 3 là trọng tâm: khai báo hai <strong>KTable</strong> — một abstraction của Kafka Streams đại diện cho <em>materialized view</em> của một Kafka topic. KTable lưu state trong internal state store (RocksDB mặc định), tự động được cập nhật khi có event mới trên topic tương ứng. Key của KTable là brandId (Long) cho brandTable và productId (Long) cho productTable.</p>
+
+<p>Bước 4 là table-to-table join: <code>productTable.join(brandTable, Product::getBrandId, joiner)</code> — với mỗi Product record, join với Brand record có cùng brandId (foreign key). Hàm joiner (ProductToBrandJoiner) nhận một cặp (Product, Brand) và trả về EnrichedProduct.</p>
+
+<h3>ProductToBrandJoiner (Ví Dụ 13-2)</h3>
+
+<blockquote>
+<pre>
+public class ProductToBrandJoiner
+    implements ValueJoiner&lt;Product, Brand, EnrichedProduct&gt; {
+
+  public EnrichedProduct apply(Product p, Brand b) {
+    return EnrichedProduct
+        .newBuilder()
+        .setId(p.getId())
+        .setName(p.getName())
+        .setDescription(p.getDescription())
+        .setPrice(p.getPrice())
+        .setBrandName(b.getBrandName())
+        .setBrandLogoURI(b.getBrandLogoURI())
+        .build();
+  }
+}
+</pre>
+</blockquote>
+
+<p>Đây là <em>denormalization</em> thuần túy: kết hợp Product data với Brand data thành một record phẳng EnrichedProduct, giúp downstream consumer không cần query riêng để lấy brand info.</p>
+
+<p>Bước 5 convert kết quả join trở lại thành KStream và ghi ra <code>enriched-product-topic</code>. Bước cuối gọi <code>builder.build()</code> — Kafka Streams sẽ dùng topology này để start processing.</p>
+
+<p>Điểm mạnh: lightweight framework như Kafka Streams cung cấp khả năng join, table materialization, foreign-key join, groupings, windowing, aggregation — tất cả các tính năng mà BPC pattern thiếu — mà không cần cluster riêng.</p>
+
+<hr class="divider">
+
+<h2>Bên Dưới Mui Xe: Cơ Chế Của Lightweight Framework</h2>
+
+<p>Bạn deploy lightweight framework microservice <em>như bất kỳ event-driven microservice nào khác</em> — dùng CMS native functions (Kubernetes deployment, replica set) để tăng/giảm parallelism bằng cách thêm hoặc bỏ instance. Không có secondary resource cluster nào (Flink/Spark) được đặt ở đâu đó để cung cấp durable state storage, failure recovery, hay scalability. Tất cả đều dựa vào <strong>event broker</strong> (Kafka) và, ở mức độ thấp hơn, CMS.</p>
+
+<h3>Event Shuffling Và Repartitioning</h3>
+
+<p>Khi cần repartition dữ liệu cho key-based operation (join, groupByKey, reduce/aggregation), lightweight framework không có external shuffle service như Spark. Thay vào đó, nó dùng <strong>internal event stream</strong> được host trên chính event broker.</p>
+
+<p>Hình 13-2 minh họa: có hai input stream (P0 và P1). Microservice instances đọc từ input streams, rồi ghi event ra <em>Internal stream</em> theo đúng partition của key tương ứng (đây là repartition/shuffle). Sau đó, chính các instances đó đọc lại từ Internal stream để xử lý đúng key set của mình.</p>
+
+<p><strong>Internal streams là private</strong> — chỉ dùng nội bộ trong bounded context của microservice. <em>Không bao giờ dùng internal stream để kết nối giữa các microservice khác nhau</em> — làm vậy sẽ tạo ra coupling ngầm và phá vỡ boundary giữa các service.</p>
+
+<p>Bằng cách dựa vào internal event stream trên event broker cho shuffling, lightweight application có thể scale dynamically — mọi in-flight event đều được lưu bền vững trong broker. Đánh đổi là tăng latency (không thể tránh được vì không có shuffle option nào khác). Kafka Streams, ví dụ, hoàn toàn bị ràng buộc vào Apache Kafka.</p>
+
+<h3>State Và Changelog</h3>
+
+<p>In-memory và disk-based key-value store là dạng state store phổ biến nhất trong lightweight framework — hoàn toàn có lý vì toàn bộ DSL (domain-specific language) của framework dựa trên việc thao tác và lưu trữ các cặp key-value.</p>
+
+<p>Mặc định, lightweight framework dùng <strong>internal state store được backed bởi changelog stream</strong> lưu trên event broker. Changelog là cơ chế đã được mô tả trong Chương 8: mỗi thay đổi state được ghi ra changelog stream, cho phép state được rebuild từ đầu khi cần thiết (instance failure, scale up).</p>
+
+<p>Framework cho phép plug in storage mode khác nhau — ví dụ, Kafka Streams có StateStore Interface để implement custom state store. Thay vì dùng RocksDB local, bạn có thể dùng Amazon DynamoDB làm backing store. Tuy nhiên, điều này thay đổi behavior của framework đáng kể và cần hiểu rõ trade-off.</p>
+
+<hr class="divider">
+
+<h2>Scaling Và Phục Hồi Sau Sự Cố</h2>
+
+<p>Scaling và recovering từ instance failure trong lightweight framework là hai quá trình rất giống nhau — cả hai đều đòi hỏi reassign partition và state. Đây là điểm khác biệt lớn so với heavyweight framework: <strong>không cần restart toàn bộ application để thay đổi parallelism</strong>.</p>
+
+<p>Hình 13-3 minh họa quá trình scale up (từ 2 lên 3 instance):</p>
+
+<ol>
+<li><strong>Scale up:</strong> Instance 2 mới được khởi động bởi CMS (Kubernetes tăng replica count).</li>
+<li><strong>Rebalance input stream:</strong> Kafka consumer group rebalancing tự động reassign các partition (cả input stream và internal stream) cho 3 instances. Instance 2 nhận một subset partition từ Instance 0 và/hoặc Instance 1.</li>
+<li><strong>Reload from changelog:</strong> Instance 2 phải load state của các partition vừa được assign từ changelog stream. Đây là giai đoạn <em>state restoration</em> — trong thời gian này, Instance 2 chưa xử lý event mới.</li>
+</ol>
+
+<p>Có thể có delay xử lý trong giai đoạn rebalancing và rematerialization state. Khi một instance bị failure (thay vì intentional scale down), quá trình giống hệt: CMS phát hiện instance chết, khởi động instance thay thế, consumer group rebalance, state được reload từ changelog. Phần lớn quá trình này là tự động.</p>
+
+<h3>State Assignment Chi Tiết</h3>
+
+<p>Khi instance mới nhận partition assignment, nó phải load state trước khi xử lý event mới — tương tự cách heavyweight framework load checkpoint trước khi tiếp tục. Hai loại state:</p>
+
+<p><strong>Operator state</strong> (partitionId → offset): được lưu trong consumer group metadata trên Kafka broker. Đây là thông tin "đã đọc đến đâu" trong mỗi partition — cả partition input stream lẫn internal stream. Kafka broker quản lý consumer group offset, nên operator state tự động consistent sau rebalance.</p>
+
+<p><strong>Keyed state</strong> (key → state): được lưu trong changelog stream. Mỗi state store có changelog topic riêng. Instance mới phải consume toàn bộ changelog topic của partition được assign để rebuild local state store. Đây là bước tốn thời gian nhất trong state restoration.</p>
+
+<p><em>Lưu ý quan trọng:</em> Instance phải load toàn bộ stateful data trước khi xử lý event mới. Nếu xử lý event trong khi state chưa đầy đủ, kết quả có thể nondeterministic. Đây là <em>state restoration phase</em> — trong thời gian này, instance đang trong trạng thái "catching up", không xử lý event mới từ input stream.</p>
+
+<h3>State Replication Và Hot Replicas</h3>
+
+<p>Hot replica (giới thiệu trong Chương 8) là copy của state store — một instance đang theo dõi changelog của partition khác và giữ state đó trong local store của mình. Hot replica cung cấp fallback ngay lập tức khi primary instance serving data bị fail, và cho phép graceful scale-down stateful application.</p>
+
+<p>Khi scale up có hot replica, workflow là:</p>
+
+<ol>
+<li>Start instance mới.</li>
+<li>Join consumer group, rebalance partition ownership.</li>
+<li>Pause trong khi state được materialized từ changelog — bước này có thể tốn thời gian.</li>
+<li>Resume processing.</li>
+</ol>
+
+<p>Một option cải tiến: trước khi rebalance, populate một replica của state trên instance mới, đợi đến khi replica này caught up với đầu changelog, rồi mới trigger rebalance để assign partition cho instance mới. Cách này giảm outage do materializing từ changelog, và chỉ cần thêm bandwidth từ event broker. <em>Tính năng này hiện đang được phát triển cho Kafka Streams.</em></p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Lightweight framework, với Kafka Streams là đại diện chính, cung cấp các tính năng xử lý stream nâng cao — joins, table materialization, windowing, aggregation — mà BPC pattern thiếu, nhưng không đòi hỏi dedicated cluster riêng như heavyweight framework. Thay vào đó, chúng tận dụng event broker (Kafka) và CMS để cung cấp scaling, data durability, và failure recovery.</p>
+
+<p>Kafka Streams hiện là lightweight framework phổ biến nhất, dựa sâu vào Kafka để thực hiện xử lý dữ liệu quy mô lớn. Apache Samza, từng được giới thiệu cùng Kafka Streams trong ấn bản trước, đã giảm đáng kể về độ phổ biến và hoạt động project kể từ ấn bản đầu tiên.</p>
+
+<p>Chương tiếp theo đi sâu hơn về lớp abstraction: <strong>Streaming SQL</strong> — cách viết streaming query bằng cú pháp SQL quen thuộc, chạy trên top của các framework như Flink và Spark.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch12-edm">← Chương 12</a>
+  <a href="/building-event-driven-microservices/ch14-edm">Chương 14 →</a>
+</nav>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 1: Tại Sao Event-Driven Microservices — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 1</div>
+<h1>Tại Sao Event-Driven Microservices</h1>
+<p class="chapter-subtitle">Kiến trúc hướng sự kiện giải quyết những vấn đề cốt lõi của giao tiếp dữ liệu trong tổ chức — từ silos thông tin đến monolith phân tán</p>
+
+<blockquote>
+<p><em>"The medium is the message."</em> — Marshall McLuhan</p>
+</blockquote>
+
+<p>Trong thế giới phần mềm, cách các dịch vụ giao tiếp với nhau — phương tiện truyền tải — định hình sâu sắc cách tổ chức hoạt động. Event-driven microservices ra đời như một câu trả lời cho những giới hạn căn bản của kiến trúc truyền thống, cho phép các nhóm kỹ thuật nhỏ làm chủ toàn bộ vòng đời sản phẩm của mình mà không bị ràng buộc bởi cấu trúc dữ liệu tập trung.</p>
+
+<h2>Event-Driven Microservices là gì?</h2>
+
+<p>Event-driven microservices là những dịch vụ nhỏ, có mục đích rõ ràng, được xây dựng để <strong>tiêu thụ các sự kiện (consume events)</strong> từ các luồng sự kiện đầu vào, xử lý chúng, và <strong>phát ra sự kiện (produce events)</strong> vào các luồng sự kiện đầu ra. Mỗi microservice hoạt động độc lập, tự quản lý dữ liệu của mình, và giao tiếp với phần còn lại của hệ thống thông qua các sự kiện bất đồng bộ.</p>
+
+<p>Mô hình này tạo ra một <strong>cấu trúc giao tiếp dữ liệu (data communication structure)</strong> thay thế cho các cấu trúc giao tiếp điểm-đến-điểm truyền thống, nơi dữ liệu được chia sẻ thông qua các API request-response đồng bộ. Thay vì mỗi dịch vụ phải "hỏi" dịch vụ khác để lấy dữ liệu, tất cả dữ liệu được phát quảng bá qua các luồng sự kiện — bất kỳ dịch vụ nào cần đều có thể đăng ký và tự xây dựng dữ liệu cục bộ của mình.</p>
+
+<h3>Bảy lợi ích cốt lõi</h3>
+
+<p><strong>1. Linh hoạt về công nghệ (Technological flexibility):</strong> Mỗi microservice có thể được viết bằng ngôn ngữ lập trình và framework phù hợp nhất với bài toán của nó — Go cho hiệu suất cao, Python cho machine learning, Java cho hệ thống doanh nghiệp. Ranh giới giữa các dịch vụ được xác định rõ qua schema sự kiện, không phải qua API framework.</p>
+
+<p><strong>2. Linh hoạt về yêu cầu nghiệp vụ (Business requirement flexibility):</strong> Khi yêu cầu nghiệp vụ thay đổi, một microservice có thể được tái cấu trúc hoặc thay thế hoàn toàn mà không ảnh hưởng đến các dịch vụ khác. Dữ liệu lịch sử vẫn còn trong luồng sự kiện, cho phép dịch vụ mới "replay" và tự xây dựng lại trạng thái.</p>
+
+<p><strong>3. Loose coupling (Tích hợp lỏng lẻo):</strong> Producer không biết và không cần quan tâm đến consumer sẽ là ai. Consumer không cần producer phải online để lấy dữ liệu. Điều này tạo ra sự độc lập thực sự giữa các nhóm và dịch vụ.</p>
+
+<p><strong>4. Tích hợp và triển khai liên tục (Continuous integration and deployment):</strong> Với ranh giới rõ ràng và ít phụ thuộc, các nhóm có thể deploy dịch vụ của mình bất kỳ lúc nào mà không cần phối hợp release với các nhóm khác. CI/CD pipeline trở nên đơn giản hơn rất nhiều.</p>
+
+<p><strong>5. Khả năng kiểm thử cao (High testability):</strong> Microservice có thể được test độc lập bằng cách inject các sự kiện giả vào luồng đầu vào và kiểm tra các sự kiện đầu ra. Không cần mock phức tạp cho hàng chục dependency.</p>
+
+<p><strong>6. Khả năng mở rộng (Scalability):</strong> Mỗi microservice có thể scale độc lập dựa trên tải thực tế của nó. Dịch vụ xử lý đơn hàng có thể scale lên 100 instances trong peak season, trong khi dịch vụ báo cáo vẫn chạy với 2 instances.</p>
+
+<p><strong>7. Độ chi tiết cao (Granularity):</strong> Dịch vụ nhỏ có ranh giới rõ ràng cho phép một nhóm nhỏ sở hữu và hiểu toàn bộ codebase. Amazon nổi tiếng với nguyên tắc "two-pizza team" — nếu cần nhiều hơn hai pizza để nuôi cả nhóm, nhóm đó đã quá lớn. Microservices biến điều này thành hiện thực kỹ thuật.</p>
+
+<hr class="divider">
+
+<h2>Domain-Driven Design và Bounded Contexts</h2>
+
+<p>Để hiểu event-driven microservices, cần nắm chắc các khái niệm của <strong>Domain-Driven Design (DDD)</strong> — phương pháp luận phần mềm tập trung vào việc mô hình hóa phần mềm xung quanh lĩnh vực nghiệp vụ thực tế, không phải xung quanh cấu trúc kỹ thuật.</p>
+
+<h3>Domain (Lĩnh vực)</h3>
+<p>Domain là lĩnh vực hoạt động tổng thể của tổ chức — toàn bộ không gian vấn đề mà tổ chức giải quyết. Với một công ty thương mại điện tử, domain có thể bao gồm mọi thứ từ quản lý sản phẩm, xử lý đơn hàng, thanh toán, đến logistics và chăm sóc khách hàng. Domain là cái nhìn tổng thể nhất.</p>
+
+<h3>Subdomain (Miền con)</h3>
+<p>Domain lớn được chia thành các subdomain nhỏ hơn, mỗi cái đại diện cho một khu vực chức năng cụ thể. Trong ví dụ thương mại điện tử: subdomain Catalog (quản lý sản phẩm), subdomain Order (xử lý đơn hàng), subdomain Payment (thanh toán), subdomain Fulfillment (vận chuyển). Một tổ chức lớn có thể có hàng chục subdomain.</p>
+
+<h3>Domain Model (Mô hình lĩnh vực)</h3>
+<p>Domain model là sự trừu tượng hóa có cấu trúc của một subdomain cụ thể — tập hợp các khái niệm, quy tắc, và hành vi phản ánh chính xác cách nghiệp vụ hoạt động trong subdomain đó. Model này tồn tại trong code dưới dạng các entities, value objects, aggregates, và domain events.</p>
+
+<h3>Bounded Context (Ngữ cảnh ranh giới)</h3>
+<p>Bounded context là ranh giới rõ ràng trong đó một domain model cụ thể được áp dụng. Trong phạm vi bounded context, ngôn ngữ nghiệp vụ (ubiquitous language) phải nhất quán và không mơ hồ. Cùng một khái niệm "khách hàng" có thể có ý nghĩa khác nhau trong bounded context của Marketing (khách hàng tiềm năng) so với bounded context của Order (người đã mua hàng) — và đó là điều bình thường, miễn là mỗi context tự nhất quán.</p>
+
+<p>Bounded context là đơn vị quan trọng nhất để thiết kế microservices. Lý tưởng nhất, mỗi microservice nên ánh xạ 1:1 với một bounded context — hoặc trong một bounded context lớn, có thể có vài microservice cùng phục vụ một context nhưng mỗi cái tập trung vào một chức năng cụ thể.</p>
+
+<h3>Hai loại sở hữu bounded context</h3>
+
+<p><strong>Sole ownership (Sở hữu đơn độc):</strong> Một nhóm duy nhất sở hữu và duy trì toàn bộ bounded context. Đây là mô hình lý tưởng — một nhóm, một bounded context, trách nhiệm rõ ràng. Mọi thay đổi trong context đều do nhóm đó quyết định.</p>
+
+<p><strong>Cross-cutting ownership (Sở hữu giao thoa):</strong> Khi một bounded context trải rộng qua nhiều nhóm, hoặc nhiều nhóm cùng chỉnh sửa cùng một codebase. Đây là tình huống cần tránh vì nó tạo ra sự phụ thuộc giữa các nhóm, làm chậm tốc độ phát triển, và mờ nhạt trách nhiệm.</p>
+
+<hr class="divider">
+
+<h2>Ba loại Cấu trúc Giao tiếp</h2>
+
+<p>Để hiểu tại sao event-driven microservices ưu việt, cần phân tích ba loại cấu trúc giao tiếp tồn tại trong bất kỳ tổ chức phần mềm nào. Ba cấu trúc này tương tác và xung đột với nhau theo những cách không ngờ tới.</p>
+
+<h3>1. Cấu trúc Giao tiếp Nghiệp vụ (Business Communication Structure)</h3>
+
+<p>Đây là cách tổ chức thực sự vận hành — luồng thông tin, luồng công việc, và luồng ra quyết định giữa các phòng ban và nhóm. Cấu trúc này thường được thể hiện qua sơ đồ tổ chức, nhưng thực tế phức tạp hơn nhiều: ai nói chuyện với ai, ai có thẩm quyền phê duyệt gì, thông tin di chuyển theo đường nào.</p>
+
+<p>Trong một công ty, cấu trúc nghiệp vụ có thể bao gồm: nhóm Sales báo cáo cho VP Sales, nhóm Customer Success báo cáo cho Chief Revenue Officer, nhóm Product báo cáo cho CPO. Nhưng luồng thực tế: Sales cần dữ liệu từ Product để pitch, Customer Success cần dữ liệu từ Engineering để hỗ trợ khách hàng, Product cần feedback từ Sales để ưu tiên roadmap.</p>
+
+<h3>2. Cấu trúc Giao tiếp Triển khai (Implementation Communication Structure)</h3>
+
+<p>Đây là cách code thực sự giao tiếp — API calls, database queries, message queues, shared libraries. Trong một monolith truyền thống, toàn bộ application là một khối code lớn: mọi module giao tiếp với mọi module khác thông qua function calls nội bộ. Không có ranh giới thực sự.</p>
+
+<p>Khi monolith phát triển, cấu trúc triển khai trở nên rối rắm. Một thay đổi nhỏ trong module A có thể ảnh hưởng bất ngờ đến module B, C, D. Team không thể deploy độc lập vì mọi thứ đều phụ thuộc lẫn nhau. Kiểm thử trở nên khổng lồ vì cần test toàn bộ hệ thống trước mỗi deployment.</p>
+
+<h3>3. Cấu trúc Giao tiếp Dữ liệu (Data Communication Structure)</h3>
+
+<p>Đây là cách dữ liệu thực sự chảy qua hệ thống — ai tạo ra dữ liệu gì, ai cần đọc dữ liệu gì, dữ liệu được lưu trữ ở đâu và dưới dạng nào. Trong các hệ thống truyền thống, cấu trúc dữ liệu thường là <em>ad hoc</em> — tức là không có thiết kế rõ ràng, dữ liệu chảy theo cách tiện lợi nhất cho người viết code lúc đó.</p>
+
+<p>Vấn đề của cấu trúc dữ liệu ad hoc: dữ liệu bị giam cầm trong các "silos" của từng nhóm, không có nguồn sự thật duy nhất (single source of truth), và truy cập dữ liệu trở thành nút thắt cổ chai. Khi một dịch vụ cần dữ liệu của dịch vụ khác, nó phải request trực tiếp — tạo ra tight coupling và single point of failure.</p>
+
+<hr class="divider">
+
+<h2>Conway's Law và Hệ quả của Nó</h2>
+
+<p>Năm 1968, kỹ sư Melvin Conway đưa ra quan sát nổi tiếng:</p>
+
+<blockquote>
+<p><em>"Organizations which design systems are constrained to produce designs which are copies of the communication structures of those organizations."</em><br>— Melvin Conway, tháng 4 năm 1968</p>
+</blockquote>
+
+<p>Dịch: Các tổ chức thiết kế hệ thống bị ràng buộc phải tạo ra các thiết kế phản chiếu cấu trúc giao tiếp của chính tổ chức đó. Nói đơn giản hơn: nếu bạn có 4 nhóm làm việc trên một compiler, bạn sẽ có một 4-pass compiler. Cấu trúc tổ chức và cấu trúc phần mềm luôn hội tụ về nhau.</p>
+
+<h3>Hai nhược điểm của cấu trúc giao tiếp triển khai truyền thống</h3>
+
+<p><strong>Nhược điểm 1: Dữ liệu bị sở hữu bởi một dịch vụ, nhưng nhiều dịch vụ cần nó.</strong> Khi một dịch vụ "sở hữu" một tập dữ liệu (ví dụ: dịch vụ User sở hữu dữ liệu người dùng), mọi dịch vụ khác cần thông tin người dùng đều phải gọi đến dịch vụ User. Điều này tạo ra traffic khổng lồ vào dịch vụ User, biến nó thành single point of failure, và làm chậm toàn hệ thống.</p>
+
+<p><strong>Nhược điểm 2: Tight coupling giữa teams.khiến việc phát triển độc lập trở nên bất khả thi.</strong> Khi Team A cần thay đổi API của dịch vụ họ quản lý, mọi team khác đang gọi API đó đều bị ảnh hưởng. Phải phối hợp release, viết migration scripts, maintain backward compatibility — tất cả điều này làm giảm tốc độ phát triển và tạo ra xung đột ưu tiên giữa các nhóm.</p>
+
+<h3>Tình huống điển hình: Vòng lặp tái cơ cấu bất tận</h3>
+
+<p>Hãy hình dung một team nhỏ 5 người phát triển một service quản lý đơn hàng. Khi business phát triển, team lớn lên thành 10, 15 người. Codebase trở nên phức tạp hơn, merge conflict xảy ra thường xuyên hơn, deployment trở nên rủi ro hơn.</p>
+
+<p>Giải pháp tự nhiên: tách team thành hai nhóm nhỏ hơn, mỗi nhóm phụ trách một phần của service. Nhưng vấn đề xuất hiện: cả hai nhóm vẫn đang truy cập cùng một database, cùng một cấu trúc dữ liệu. Tách team về mặt tổ chức không giải quyết được vấn đề sở hữu dữ liệu.</p>
+
+<p>Khi một nhóm muốn thay đổi schema database, nhóm kia bị ảnh hưởng. Khi một nhóm muốn optimize query, nhóm kia phải review. Rốt cuộc, tái cơ cấu team không tạo ra sự độc lập thực sự — chỉ tạo ra ảo tưởng về autonomy trong khi sự phụ thuộc vẫn tồn tại ở tầng dữ liệu.</p>
+
+<hr class="divider">
+
+<h2>Event-Driven Data Communication: Giải pháp</h2>
+
+<p>Event-driven data communication giải quyết bài toán giao tiếp dữ liệu bằng cách tạo ra một lớp trung gian — event stream — nơi tất cả dữ liệu nghiệp vụ được phát quảng bá và bất kỳ dịch vụ nào cũng có thể đăng ký. Đây là sự thay đổi căn bản từ mô hình "pull" (dịch vụ kéo dữ liệu khi cần) sang mô hình "push" (dữ liệu được đẩy vào luồng và ai cần thì đọc).</p>
+
+<h3>Năm ưu điểm của giao tiếp dữ liệu hướng sự kiện</h3>
+
+<p><strong>1. Bản ghi chuẩn tắc bền vững (Durable canonical record):</strong> Event stream là nguồn sự thật duy nhất và bền vững cho dữ liệu nghiệp vụ. Mỗi sự kiện được lưu trữ vĩnh viễn (hoặc theo retention policy xác định). Không có dữ liệu nào bị mất do crash, không có "version" nào bị ghi đè mất dấu. Lịch sử đầy đủ luôn có thể được truy vết.</p>
+
+<p><strong>2. Giới hạn trách nhiệm của producer (Limitation of producer responsibilities):</strong> Producer chỉ cần lo một việc: phát ra sự kiện chính xác và đầy đủ. Producer không cần biết ai sẽ consume events của mình, không cần maintain API cho từng consumer, không cần lo việc scale cho nhu cầu đọc của consumer. Trách nhiệm được phân tách rõ ràng.</p>
+
+<p><strong>3. Tách biệt trách nhiệm consumer (Separation of consumer responsibilities):</strong> Mỗi consumer tự chịu trách nhiệm về việc đọc và xử lý events theo nhu cầu của mình. Một consumer có thể chọn chỉ đọc events trong 7 ngày gần nhất; consumer khác cần replay toàn bộ lịch sử từ đầu. Mỗi consumer tự quyết định cách lưu trữ và xử lý dữ liệu mà không ảnh hưởng đến consumer khác.</p>
+
+<p><strong>4. Bản ghi chuẩn tắc có thể replay (Canonical replayable record):</strong> Khả năng "replay" — đọc lại toàn bộ lịch sử events từ đầu — là một trong những superpower quan trọng nhất của kiến trúc event-driven. Khi một dịch vụ mới được tạo ra, nó có thể replay toàn bộ lịch sử để xây dựng trạng thái ban đầu. Khi có bug và dữ liệu bị corrupted, bạn có thể reprocess events để tái tạo trạng thái đúng. Khi muốn test behavior mới, bạn có thể chạy service mới song song với service cũ trên cùng luồng events thực tế.</p>
+
+<p><strong>5. Độc lập với implementation cụ thể (Independence from specific implementation):</strong> Event schema là hợp đồng duy nhất giữa producer và consumer. Producer có thể đổi database từ PostgreSQL sang MongoDB, đổi ngôn ngữ từ Java sang Kotlin, đổi framework hoàn toàn — miễn là event schema không thay đổi, mọi consumer vẫn hoạt động bình thường. Điều này cho phép tổ chức tiến hóa kỹ thuật một cách linh hoạt mà không cần "big bang migration".</p>
+
+<hr class="divider">
+
+<h2>Ví dụ Thực tế: Team Dùng Event-Driven Microservices</h2>
+
+<p>Quay lại team xử lý đơn hàng trong ví dụ trước, nhưng lần này với kiến trúc event-driven. Team nhận được yêu cầu nghiệp vụ mới — thêm tính năng liên quan đến đơn hàng nhưng đủ khác biệt để tách thành service riêng.</p>
+
+<p>Với event-driven architecture, team có thể tạo một microservice mới và "ingest" dữ liệu cần thiết từ các event streams có sẵn. Service mới xử lý và lưu trữ dữ liệu model theo nhu cầu của nó — chỉ giữ lại các fields và values cần thiết, bỏ qua phần còn lại. Storage và data modeling hoàn toàn do service đó quyết định, vòng đời ứng dụng cũng vậy.</p>
+
+<p>Rủi ro nghiệp vụ cũng được giảm thiểu: các service nhỏ, fine-grained cho phép single team ownership, giúp các nhóm có thể scale và tái cơ cấu khi cần thiết. Khi team phát triển quá lớn để quản lý dưới một business owner, họ có thể tách và giao lại ownership của microservices theo cách granular hơn nhiều. Event-stream ownership gắn với service sản xuất nó — tạo ra lineage và responsibility model rõ ràng, mạch lạc.</p>
+
+<p>Microservice architectures ngăn spaghetti code và expansive monoliths phát triển tiếp, với overhead tối thiểu để tạo microservices mới và truy cập event-stream data. Các scaling concerns tập trung vào từng event-processing service, mỗi cái có thể scale CPU, memory, disk, và instance count độc lập theo nhu cầu. Các yêu cầu scaling còn lại được offload lên data communication structure — phải đảm bảo xử lý được tải từ các services consume và produce vào event streams của nó.</p>
+
+<p>Để làm được tất cả điều này, team cần đảm bảo dữ liệu thực sự có mặt trong data communication structure, và phải có phương tiện dễ dàng để spin up và quản lý một fleet các microservices. Điều này đòi hỏi tổ chức phải adopt event-driven microservice architecture trên toàn tổ chức.</p>
+
+<hr class="divider">
+
+<h2>Request-Response Microservices</h2>
+
+<p>Trước khi đi sâu vào event-driven microservices, cần hiểu rõ về request-response microservices — không phải để loại bỏ chúng, mà để biết khi nào dùng cái nào.</p>
+
+<p>Request-response là mô hình giao tiếp trực tiếp: một service gọi đến service khác, chờ response, rồi tiếp tục xử lý. Đây là mô hình "synchronous" theo nghĩa hai bên phải phối hợp về thời gian. Tuy nhiên, kỹ thuật có thể là đồng bộ (requestor block đến khi nhận response) hoặc bất đồng bộ (requestor wrap request trong một Future, check kết quả sau). Để chính xác hơn: "request-response" là kiến trúc nơi một service giao tiếp trực tiếp với service khác qua request — không phải qua luồng sự kiện.</p>
+
+<h3>Nhược điểm của Request-Response Microservices</h3>
+
+<p><strong>Point-to-point couplings (Liên kết điểm-đến-điểm):</strong> Request-response microservices phụ thuộc vào các services khác để thực hiện business tasks. Các services đó lại có dependent services của riêng chúng, và cứ thế tiếp tục. Điều này dẫn đến fanout quá mức và khó truy vết service nào đang thực hiện phần nào của business logic. Số lượng connections giữa các services có thể tăng chóng mặt, làm cho các communication structures hiện tại ngày càng khó thay đổi.</p>
+
+<p><strong>Dependent scaling (Scaling phụ thuộc):</strong> Khả năng scale service của bạn phụ thuộc vào khả năng scale của tất cả dependent services. Đây là vấn đề trực tiếp liên quan đến mức độ communications fanout. Implementation technologies có thể trở thành bottleneck về scalability. Điều này càng phức tạp hơn bởi các request-response load patterns rất biến đổi, tất cả phải được xử lý đồng bộ trên toàn architecture.</p>
+
+<p><strong>Service failure handling (Xử lý lỗi service):</strong> Nếu một dependent service bị down, calling service phải quyết định cách xử lý exception — khi nào retry, khi nào fail, và cách recover để đảm bảo data consistency. Điều này càng khó khi có nhiều services trong ecosystem hơn.</p>
+
+<p><strong>API versioning and dependency management (Quản lý phiên bản API):</strong> Thường cần nhiều API definitions và service versions cùng tồn tại. Không phải lúc nào cũng có thể hoặc đáng mong muốn force clients upgrade lên API mới nhất. Điều này tạo ra nhiều phức tạp trong việc orchestrate API change requests across multiple services, đặc biệt khi kèm theo thay đổi data structures.</p>
+
+<p><strong>Data access tied to the implementation (Truy cập dữ liệu gắn với implementation):</strong> Request-response microservices có cùng các vấn đề như traditional services khi truy cập dữ liệu bên ngoài. Mặc dù có các service design strategies để giảm nhu cầu truy cập dữ liệu từ bên ngoài, microservices vẫn thường cần truy cập dữ liệu phổ biến từ các services khác. Điều này đặt gánh nặng về data access và scalability lên implementation communication structure.</p>
+
+<p><strong>Distributed monoliths (Monolith phân tán):</strong> Các services có thể được thiết kế sao cho chúng hoạt động như một distributed monolith, với nhiều intertwining calls được thực hiện giữa chúng. Tình huống này thường xảy ra khi một team đang decompose một monolith và quyết định dùng synchronous point-to-point calls để mô phỏng các ranh giới hiện có trong monolith đó. Point-to-point services làm mờ ranh giới giữa các bounded contexts, vì function calls đến remote systems có thể slot vào line-for-line với existing monolith code.</p>
+
+<p><strong>Testing (Kiểm thử):</strong> Integration testing rất khó, vì mỗi service cần tất cả dependent services phải hoạt động đầy đủ — và các dependents đó lại cần dependents của chúng. Stubbing chúng ra có thể hiệu quả cho unit tests, nhưng hiếm khi đủ cho các yêu cầu testing mở rộng hơn.</p>
+
+<h3>Lợi ích của Request-Response Microservices</h3>
+
+<p>Mặc dù nhiều nhược điểm, request-response microservices vẫn có những lợi ích không thể phủ nhận trong các trường hợp thích hợp:</p>
+
+<p><strong>Các pattern truy cập dữ liệu có lợi thế khi kết nối trực tiếp:</strong> Authenticating người dùng, reporting trên AB test — đây là những tác vụ phù hợp tự nhiên với request-response. Integrations với external third-party solutions hầu như luôn dùng request-response mechanism và thường cung cấp flexible, language-agnostic communication mechanism qua HTTP.</p>
+
+<p><strong>Tracing operations dễ hơn:</strong> Trong môi trường request-response, việc trace operations across multiple systems đôi khi dễ hơn trong event-driven asynchronous environment. Detailed logs có thể cho thấy functions nào được gọi trên systems nào, cung cấp high debuggability và visibility vào business operations.</p>
+
+<p><strong>Web và mobile experiences:</strong> Services hosting web và mobile experiences phần lớn được powered bởi request-response designs. Clients nhận được timely response dedicated cho nhu cầu của họ.</p>
+
+<p><strong>Developer experience:</strong> Experience factor cũng khá quan trọng — nhiều developers trong thị trường ngày nay quen thuộc hơn với request-response, monolithic-style coding. Điều này làm cho việc tuyển dụng talent cho request-response systems dễ hơn, nói chung, so với tuyển talent cho asynchronous event-driven development.</p>
+
+<blockquote>
+<p><em>Kiến trúc của một công ty gần như không bao giờ, nếu có thể, chỉ hoàn toàn dựa trên event-driven microservices. Hybrid architectures là chuẩn, nơi synchronous, asynchronous, request-response, và event-driven solutions hoạt động song song nhau tùy theo bài toán yêu cầu.</em></p>
+</blockquote>
+
+<p>Chương 17 sẽ đề cập lại request-response architectures và trình bày một số common patterns để tích hợp chúng vào event-driven architectures.</p>
+
+<hr class="divider">
+
+<h2>Tổng kết</h2>
+
+<p>Event-driven microservices cung cấp một framework mạnh mẽ để xây dựng các ứng dụng có mục đích rõ ràng, giải quyết bài toán nghiệp vụ của bạn. Điều cơ bản nhất của sự thành công nằm ở việc tái tư duy cách bạn tạo ra và giao tiếp dữ liệu trong toàn công ty. Data communication structures thường bị underdeveloped và ad hoc, nhưng khi có một durable, easy-to-access set of domain events — như được thể hiện qua event-driven systems — nó cho phép các implementations nhỏ hơn, mục đích rõ ràng hơn.</p>
+
+<p>Chương này chỉ là bề mặt của event-driven microservices. Hai chương tiếp theo sẽ đào sâu hơn vào cả event streams và microservices, cung cấp cho bạn các building blocks cơ bản cho phần còn lại của cuốn sách.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/fundamentals-events-and-streams">Chương 2 →</a>
+</nav>
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 21: Triển Khai Event-Driven Microservices — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 21</div>
+<h1>Triển Khai Event-Driven Microservices</h1>
+<p class="chapter-subtitle">Full-stop, Rolling Update, Breaking Schema Change (3 biến thể), Blue-Green — các mẫu triển khai với CI/CD và phân tích trade-offs</p>
+
+<nav class="chapnav">
+  <a href="ch20-edm.html">← Chương 20: Kiểm Thử</a>
+  <a href="ch22-edm.html">Chương 22: Kết Luận →</a>
+</nav>
+
+<p>Triển khai microservices hướng sự kiện phức tạp hơn đáng kể so với triển khai một monolith duy nhất. Khi số lượng microservices tăng lên hàng chục, hàng trăm, không thể duy trì các quy trình triển khai tùy chỉnh riêng cho mỗi service. Tổ chức nghiêm túc đầu tư vào microservices phải đầu tư vào chuẩn hóa và tự động hóa quy trình triển khai. Chương này bàn về các nguyên tắc triển khai, các thành phần kiến trúc cần thiết, và các mẫu triển khai phổ biến cùng với trade-offs của chúng.</p>
+
+<hr class="divider">
+
+<h2>Nguyên Tắc Triển Khai Microservices</h2>
+
+<p>Có bảy nguyên tắc cần tuân theo để tối ưu hóa quy trình triển khai:</p>
+
+<dl>
+<dt><em>Give teams deployment autonomy (Trao quyền tự chủ triển khai cho teams)</em></dt>
+<dd>Teams phải kiểm soát quy trình test và triển khai của riêng mình, có quyền tự chủ deploy microservice của họ khi họ quyết định. Microservices yêu cầu service khác phải phối hợp deploy là dấu hiệu bounded context được định nghĩa chưa tốt — trừ trường hợp ngoại lệ khi có vài service tightly coupled trong cùng một bounded context và cùng một team.</dd>
+
+<dt><em>Implement a standardized deployment process (Triển khai quy trình chuẩn hóa)</em></dt>
+<dd>Quy trình triển khai phải nhất quán giữa các services. Microservice mới phải được tạo ra với quy trình triển khai đã sẵn sàng — thường thông qua continuous integration framework. Không có service nào được deploy theo cách riêng của mình.</dd>
+
+<dt><em>Provide necessary supportive tooling (Cung cấp công cụ hỗ trợ cần thiết)</em></dt>
+<dd>Teams cần reset consumer group offsets, purge state stores, kiểm tra và cập nhật schema evolution, xóa internal event streams. Supportive tooling cung cấp các chức năng này để tiếp tục tự động hóa deployment và hỗ trợ team autonomy.</dd>
+
+<dt><em>Consider event-stream reprocessing impacts (Cân nhắc tác động của việc reprocess event streams)</em></dt>
+<dd>Việc reconsume input event streams có thể tốn thời gian, dẫn đến kết quả stale cho downstream consumers. Service đó cũng có thể generate lượng lớn output events, tạo tải cao cho downstream consumers. Event streams rất lớn hoặc có nhiều consumers có thể gây surge về compute. Phải cân nhắc các side effects, đặc biệt những cái có thể disruptive (ví dụ: resending nhiều năm promotional emails).</dd>
+
+<dt><em>Adhere to service-level agreements (SLAs) (Tuân thủ SLAs)</em></dt>
+<dd>Deployment có thể disruptive cho các service khác. Ví dụ, rebuilding state stores có thể gây downtime đáng kể. Phải tính đến worst-case scenario khi rebuild state khi xác định SLAs, để đảm bảo service có thể đáp ứng cam kết.</dd>
+
+<dt><em>Minimize dependent service changes (Tối thiểu hóa các thay đổi yêu cầu service phụ thuộc)</em></dt>
+<dd>Deployments có thể yêu cầu các service khác thay đổi API hoặc data models (ví dụ: khi tương tác qua REST API hoặc giới thiệu domain schema change). Những thay đổi này phải được tối thiểu hóa vì chúng vi phạm quyền tự chủ deploy của team khác.</dd>
+
+<dt><em>Negotiate breaking changes with downstream consumers (Đàm phán breaking changes với downstream consumers)</em></dt>
+<dd>Breaking schema changes đôi khi không thể tránh khỏi — chúng có thể yêu cầu tạo event streams mới và renegotiate data contract với downstream consumers. Những cuộc thảo luận này phải xảy ra trước bất kỳ deployment nào, và migration plan cho consumers phải được xác định rõ.</dd>
+</dl>
+
+<hr class="divider">
+
+<h2>Các Thành Phần Kiến Trúc Triển Khai</h2>
+
+<h3>Hệ Thống CI/CD</h3>
+
+<p>Continuous integration, delivery, và deployment systems cho phép microservices được build, test, và deploy khi code thay đổi được commit vào repository. Đây là phần của microservice tax phải trả để quản lý và deploy microservices ở quy mô lớn.</p>
+
+<p><strong>Continuous Integration (CI)</strong> là thực hành tự động hóa việc tích hợp code changes từ nhiều contributors vào một software project duy nhất. Team quản lý microservice tích hợp các thay đổi tùy theo quyết định của họ, với mục tiêu giảm thời gian giữa việc viết code và thấy nó được deploy lên production.</p>
+
+<p>CI frameworks có thể tự động thực hiện các process khi code được merge vào main branch (hoặc bất kỳ branch nào khác), bao gồm build operations, unit testing, integration testing. Các process khác trong CI pipeline có thể bao gồm: validate code style, validate schema evolution, apply linter. <em>Final output của CI pipeline là một ready-to-deploy container hoặc virtual machine.</em></p>
+
+<p><strong>Continuous Delivery</strong> là thực hành giữ codebase luôn ở trạng thái deployable. Microservices tuân theo continuous delivery dùng CI pipeline để validate rằng build đã sẵn sàng deploy. Bản thân việc deployment <em>không</em> tự động — nó yêu cầu một số can thiệp thủ công từ phía service owner.</p>
+
+<p><strong>Continuous Deployment</strong> là automated deployment của build. Trong continuous deployment end-to-end, một committed code change đi qua CI pipeline, đạt trạng thái deliverable, và được tự động deploy lên production theo deployment configuration. Điều này tạo ra một vòng lặp phát triển chặt chẽ với thời gian turnaround ngắn.</p>
+
+<blockquote>
+<p><strong>Lưu ý:</strong> Continuous deployment khó thực hiện trong thực tế với stateful services, vì deployments có thể yêu cầu rebuilding state stores và reprocessing event streams. Luôn cân nhắc impact của deployment khi chọn giữa automatic và manual deployments.</p>
+</blockquote>
+
+<h3>Container Management Systems và Commodity Hardware</h3>
+
+<p>Container management system (CMS) cung cấp phương tiện để quản lý, deploy, và kiểm soát resource usage của các ứng dụng containerized. Container được build trong quá trình CI được đặt vào repository, nơi nó chờ deployment instructions từ CMS. Integration giữa CI pipeline và CMS là điều thiết yếu để có streamlined deployment process và thường được cung cấp bởi CMS.</p>
+
+<p>Nhiều event-driven microservices không yêu cầu phần cứng chuyên dụng và chạy trên commodity hardware thông thường: rẻ, đủ đáng tin cậy, cho phép horizontal scaling. Có thể thêm bớt hardware vào resource pool, recover từ failures bằng cách spin up instances mới trên commodity server tiếp theo có sẵn. Có thể tạo các pools resource đặc biệt cho microservices yêu cầu hardware cụ thể (GPU, fast storage, high-parallelization).</p>
+
+<hr class="divider">
+
+<h2>The Basic Full-Stop Deployment Pattern</h2>
+
+<p>Full-stop deployment pattern là cơ sở của tất cả các patterns khác. Nó phác thảo các bước liên quan — như minh họa trong Figure 21-1 — với 5 bước chính:</p>
+
+<pre><code>Continuous delivery: manual deployment
+┌──────────────┐
+│ 1) Code      │ → │ 2) Unit &amp;    │ → │ 3) Pre-      │ - - → │ 4)         │ - - → │ 5) Post-     │
+│    committed │   │ integration  │   │ deployment   │       │ Deployment │       │ deployment   │
+│              │   │ tests        │   │ validation   │       │            │       │ validation   │
+└──────────────┘
+Continuous deployment: automatic deployment
+(Figure 21-1: CI pipeline từ commit đến validation)</code></pre>
+
+<h3>Bước 1: Commit Code</h3>
+
+<p>Trigger phổ biến nhất để kick off CI pipeline là khi bạn commit code vào branch liên quan. Thường dùng webhooks (hoặc hook khác) để kích hoạt pipeline.</p>
+
+<h3>Bước 2: Execute Automated Unit và Integration Tests</h3>
+
+<p>Validate rằng code đã commit pass tất cả unit và integration tests. Integration tests có thể yêu cầu transient environments riêng được populate với data để thực hiện các test phức tạp hơn. Môi trường test independent cho phép tránh common multitenancy issues: resource contention, contaminated data sources, versioning mismatches.</p>
+
+<h3>Bước 3: Run Predeployment Validation Tests</h3>
+
+<p>Đảm bảo microservice sẽ deploy đúng cách bằng cách phát hiện vấn đề trước khi release. Các validations phổ biến:</p>
+
+<ul>
+<li><em>Event stream validation:</em> Verify sự tồn tại và configuration của input/output event streams. Verify rằng các streams còn thiếu có thể được tạo tự động, và microservice có đúng read/write permissions.</li>
+<li><em>Schema validation:</em> Verify rằng cả input và output schemas đều tuân theo evolution rules. Có thể validate schema changes theo schema registry để đảm bảo restrictions không bị vi phạm. Store event schemas trong repository của microservice; sau khi validate schema evolution, dùng code generators để biến schemas thành structs/classes cho code của microservice.</li>
+</ul>
+
+<h3>Bước 4: Deployment</h3>
+
+<p>Cần stop microservice đang chạy trước khi deploy cái mới. Gồm 2 sub-steps:</p>
+
+<ul>
+<li><em>Stop instances và perform cleanup trước khi deploy:</em> Stop microservice instances. Thực hiện mọi state store resets và/hoặc consumer group resets cần thiết, xóa internal streams. Nếu rebuilding state (trong trường hợp deployment failure) là tốn kém, bạn có thể để state, consumer group, và internal topics nguyên và thay vào đó deploy như một parallel service mới — điều này cho phép rollback nhanh trong trường hợp failure, nhưng phức tạp hơn để thực thi.</li>
+<li><em>Deploy:</em> Thực hiện deployment thực. Deploy containerized code và start số lượng instances cần thiết. Đợi chúng boot up và signal rằng chúng đã sẵn sàng trước khi chuyển sang bước tiếp. Trong trường hợp failure, abandon bước này và deploy version đã hoạt động trước đó.</li>
+</ul>
+
+<h3>Bước 5: Run Post-Deployment Validation Tests</h3>
+
+<p>Validate rằng microservice đang hoạt động bình thường: consumer lag đang trở về normal, không có logging errors, các endpoints đang hoạt động như mong đợi.</p>
+
+<blockquote>
+<p><strong>Cân nhắc:</strong> Hãy xem xét impacts cho tất cả dependent services: SLAs, downtime, stream processing catch-up time, output event load, new event streams, và breaking schema changes. Communicate với dependent service owners để đảm bảo các impacts được chấp nhận.</p>
+</blockquote>
+
+<hr class="divider">
+
+<h2>The Rolling Update Pattern</h2>
+
+<p>Rolling update pattern hữu ích để giữ service chạy trong khi cập nhật từng microservice instance riêng lẻ. Prerequisites bắt buộc:</p>
+
+<ul>
+<li>Không có breaking changes với bất kỳ state stores nào</li>
+<li>Không có breaking changes với internal microservice topology (đặc biệt quan trọng với lightweight framework implementations)</li>
+<li>Không có breaking changes với internal event schemas</li>
+<li>Không replay event-stream inputs</li>
+</ul>
+
+<p>Pattern này phù hợp khi:</p>
+<ul>
+<li>Có các fields mới trong input event streams cần integrate vào code</li>
+<li>Đã mở rộng microservice để consume từ event streams mới</li>
+<li>Deploying bug fixes cho các issues không yêu cầu rewinding và reprocessing events</li>
+</ul>
+
+<blockquote>
+<p><strong>Cảnh báo:</strong> Vô tình thay đổi internal microservice topology là một trong những lỗi phổ biến nhất khi cố dùng rolling update pattern. Làm vậy là một breaking change và sẽ yêu cầu full application reset thay vì rolling update.</p>
+</blockquote>
+
+<p>Trong rolling update, chỉ bước 4 của basic full-stop pattern thay đổi. Thay vì stop tất cả instances cùng một lúc, chỉ stop một instance tại một thời điểm, update nó, rồi start lại. Hậu quả là sẽ có sự pha trộn giữa instances mới và cũ đang chạy trong quá trình deployment, và cả logic cũ và mới đều sẽ hoạt động đồng thời.</p>
+
+<p>Lợi ích chính: services có thể được cập nhật trong khi near-real-time processing tiếp tục không bị gián đoạn, loại bỏ downtime. Hạn chế chính: prerequisites của nó giới hạn việc sử dụng vào các scenarios cụ thể.</p>
+
+<hr class="divider">
+
+<h2>The Breaking Schema Change Pattern</h2>
+
+<p>Khi tổ chức phát triển, breaking schema change là điều không thể tránh khỏi. Chúng thường phản ánh sự thay đổi cơ bản trong business domain, hoặc sửa chữa một poorly defined initial schema. Có hai lựa chọn chính: produce các events breaking schema mới vào cùng stream cũ, hoặc produce chúng vào stream mới. Ba biến thể được explore dưới đây.</p>
+
+<h3>Biến Thể 1: Ghi Breaking Events Vào Cùng Stream Cũ</h3>
+
+<p>Đây là lựa chọn đơn giản nhất cho producer: chỉ cần update schema và redeploy service. Chỉ có các events mới được tạo ra với breaking schema change, trong khi mọi events trong output stream dưới schema gốc vẫn giữ nguyên.</p>
+
+<pre><code>[Figure 21-2]
+Input stream → Microservice → Output stream
+                              [▲▲▲○○○]
+                               Events  Events
+                               from    from
+                               old     new
+                               schema  schema</code></pre>
+
+<p>Lưu ý quan trọng: không có reprocessing hay reconstruction nào của events dưới schemas cũ. Consumers chịu trách nhiệm xử lý cả old event schema và new breaking event schema. Chúng cũng sẽ (hopefully) throw exceptions khi gặp những new events này nếu chúng chưa update service của mình, ngăn ngừa erroneous progress. Tuy nhiên, chúng có thể silently fail, discard new events, hoặc tệ nhất là incorrectly deserialize hoặc decode chúng thành bad data.</p>
+
+<h3>Biến Thể 2: Ghi Breaking Events Vào Stream Mới</h3>
+
+<p>Biến thể thứ hai có microservice produce các breaking events mới vào dedicated output event stream riêng của nó.</p>
+
+<pre><code>[Figure 21-3]
+Input stream → Microservice → Old output stream (old schema) [▲▲▲]
+                    │                              ↗ Crossover
+                    └────────────────────────────→ New output stream (new schema) [○○]
+               "Write to old output, then cross over to new output when service is updated"</code></pre>
+
+<p>Biến thể này gây ra breaking change cho tất cả consumers hiện có. Mọi downstream consumer phải được notify về impending change, và coordinate các updates của mình với stream output mới. Đây là một <em>big bang</em> change, và nó có thể rủi ro nếu bạn không test các producer và consumer changes trước.</p>
+
+<blockquote>
+<p><strong>Cảnh báo quan trọng:</strong> Điều thiết yếu là producer microservice owners test và validate rộng rãi schema mới trước khi deploy. Nếu nó không tạo được events với schema mới, hoặc nếu consumers không đọc và process được events, thì bạn sẽ thấy mình có multiple service outages.</p>
+</blockquote>
+
+<p>Breaking schema changes thường do các thay đổi cơ bản trong business definitions, và old schema definitions có thể không còn map được vào new schema definition. Biến thể này phù hợp khi business changes <em>yêu cầu</em> consumers phải dùng new schema trong data models của họ. Ví dụ: deprecating <code>Account</code> entity và re-creating nó thành hai new entity types <code>BuyerAccount</code> và <code>SellerAccount</code> — đây là một important business domain change (regulatory compliance yêu cầu tách chức năng buying và selling).</p>
+
+<p>Rủi ro lớn nhất: có thể có consumers không nhận ra old output stream không còn active, dẫn đến stale data và ngày càng inaccurate computations. Cần track tất cả consumers có read access vào stream đang thay đổi.</p>
+
+<h3>Biến Thể 3: Ghi Cả Old và New Events Song Song</h3>
+
+<p>Ghi old và new events vào các respective streams riêng là một cách để tránh tước bỏ data của consumers chưa migrate.</p>
+
+<pre><code>[Figure 21-4]
+Input stream → Microservice → Old output stream (old schema) [▲▲▲▲]
+                    │          "Indefinite dual production to each output stream"
+                    └────────→ New output stream (new schema) [○○○]
+                               "Duplicate output (in own schema)"</code></pre>
+
+<p>Eventual migration thông qua hai event streams yêu cầu producer ghi events với cả old và new format vào các respective streams của chúng. Bạn mark old stream là deprecated, và encourage consumers migrate sang new stream. Một khi consumers migrate, bạn có thể remove old stream hoặc offload nó vào long-term archival storage.</p>
+
+<p>Chiến lược này giả định hai điều:</p>
+<ul>
+<li><em>Producer có thể ghi events vào cả hai streams:</em> Producer phải có data cần thiết để tạo events ở cả old và new format. Một số breaking changes dẫn đến remodeling data làm cho việc map sang cả old format và new format là impossible.</li>
+<li><em>Eventual migration sẽ không gây downstream inconsistencies:</em> Các downstream services có thể tiếp tục consume hai event definitions khác nhau mà không có hậu quả. Small breaking changes như type expansion có thể không quan trọng, trong khi more major changes likely will.</li>
+</ul>
+
+<blockquote>
+<p><strong>Cảnh báo:</strong> Tránh prolonged dual production của old và new schemas. Đây là giải pháp <em>tạm thời</em> có thể trở thành permanent nếu bạn không theo sát schedule deprecation event stream, consumer migration, và eventual data deletion (hoặc archiving). Dùng metadata tagging để mark streams là deprecated và giữ migration windows nhỏ.</p>
+</blockquote>
+
+<p>Ngoài ra, bạn có thể dùng một second microservice để produce records mới dưới new schema, trong khi old records vẫn được coupled với old version:</p>
+
+<pre><code>[Figure 21-5: Hai dedicated services]
+Input stream → Microservice (old) → Old output stream (old schema) [▲▲▲▲]
+     │
+     └────→ Microservice (new) → New output stream (new schema) [○○○]
+            "Option: reprocess the input stream (or other source data store)"</code></pre>
+
+<p>Lợi ích của option này: có thể terminate old microservice một khi mọi người đã migrate xong — không cần patch code để stop producing vào old version rồi redeploy service. Chỉ cần turn off old service.</p>
+
+<blockquote>
+<p><strong>Lưu ý kỹ thuật:</strong> Offsets trong new output stream rất có thể sẽ không match offsets của old output stream. Late-arriving events và repartitioning có thể thay đổi output stream order trong khi intermittent failures có thể dẫn đến duplicate events.</p>
+</blockquote>
+
+<hr class="divider">
+
+<h2>Reprocessing Historical Data Cho Breaking Schema Changes</h2>
+
+<p>Một concern quan trọng khi xử lý breaking schema changes là liệu có cần re-create historical data trong new stream không. Với nhiều trường hợp, chỉ cần follow preferred variant và ghi new data vào new format là đủ — đặc biệt đúng với event streams time-limited (ví dụ: 24 giờ worth of data) hoặc khi historical data không quan trọng.</p>
+
+<p>Tuy nhiên, với streams của entities (xem Entity Events) và các infinite-duration data khác, bạn sẽ likely cần migrate historical data sang new format. Consumers — hiện tại và tương lai — sẽ cần một reliable source of truth. Converting old broken-format data sang new schema một lần và tại một location duy nhất sẽ giảm complexity của consumer và giảm khả năng vô tình giới thiệu bad data trong quá trình conversion.</p>
+
+<p>Có hai cách chính để convert historical events sang new format:</p>
+
+<h3>Từ Internal State Store(s) Của Producer</h3>
+
+<p>Producer service cần iterate qua internal database và produce historical entities vào new event stream dựa trên new schema. Đây là một one-time process phải xảy ra trước khi consumers có thể đọc từ new stream, để họ có thể rebuild internal state stores của mình như một phần của migration process. Producer service có thể ghi events một cách native, hoặc nếu nó đang dựa vào một connector, nó có thể lấy một snapshot mới của state store.</p>
+
+<h3>Từ Upstream Event Stream(s)</h3>
+
+<p>Lựa chọn khác: producer rewinds offsets cho input streams của mình và reprocesses các incoming events. Đổi lại, nó produces historical entities với new schema vào new event stream. Lưu ý rằng producer có thể dựa vào nhiều sets of input streams và cũng có thể dựa vào event broker để cung cấp entirely durable state của mình.</p>
+
+<p>Bất kể cách bạn store state, cần cẩn thận về việc event streams nào nên được re-created dưới new format và cái nào có thể để nguyên. Almost always, entity events cần porting sang new schema format, trong khi time-based events (như interactions xảy ra trong recent-to-distant past) thường không phải là ứng viên để re-creation dưới new data format.</p>
+
+<p>Rủi ro lớn nhất: consumers có thể fail khi migrate sang new event stream, nhưng không thể gracefully fall back vào old data source. Integration testing (preferably dùng programmatically generated environments và source data) có thể giảm risk này bằng cách cung cấp môi trường để hoàn toàn exercise migration process. Bạn có thể create và register producer và consumers cùng nhau trong test environment để validate migration trước khi thực hiện trong production.</p>
+
+<blockquote>
+<p><strong>Lưu ý thực tế:</strong> Synchronized migrations tend to be uncommon trong thực tế. Core business entities thường có rất stable domain models, nhưng khi major breaking changes xảy ra, một synchronous migration có thể là không thể tránh khỏi.</p>
+</blockquote>
+
+<hr class="divider">
+
+<h2>The Blue-Green Deployment Pattern</h2>
+
+<p>Mục tiêu chính của blue-green deployment pattern là đạt được zero downtime trong khi deploying new functionality. Pattern này chủ yếu được dùng trong request-response microservice deployments, vì nó cho phép request handling tiếp tục trong khi service được cập nhật.</p>
+
+<pre><code>[Figure 21-6: Blue-Green Deployment Pattern]
+
+                        ┌─────────────────────────────────────────────┐
+                        │ Blue (new)                                   │
+                        │ ┌──────────────┐  Microservice instance     │
+                        │ │ External     │                             │
+                        │ │ state store  │◄── Consumer group Blue      │
+                        │ └──────────────┘                 │10% traffic│
+                        └─────────────────────────────────────────────┘
+Entity event stream ──────────────────────────────────────► Router ◄── Requests
+                        ┌─────────────────────────────────────────────┐
+                        │ Green (old)                      │90% traffic│
+                        │ ┌──────────────┐  Microservice instance     │
+                        │ │ External     │                             │
+                        │ │ state store  │◄── Consumer group Green     │
+                        │ └──────────────┘                             │
+                        └─────────────────────────────────────────────┘</code></pre>
+
+<p>Trong example này, một bản copy đầy đủ của new microservice (Blue, ở phía trên) được bring up song song với old microservice (Green, ở phía dưới). Blue service có một fully isolated instance của external data store, own consumer group riêng, và own IP addresses để remote access. Nó consumes input events cho đến khi monitoring chỉ ra rằng nó đã sufficiently caught up với green service, tại đó traffic từ green instances có thể bắt đầu được rerouted.</p>
+
+<h3>Quy Trình Chi Tiết</h3>
+
+<p>Router xử lý traffic ở phía trước các services, routing một số requests đến blue service và phần còn lại đến green service. Bắt đầu nhỏ — chỉ routing một số requests tại một thời điểm — để validate rằng blue service đang hoạt động như expected. Nếu không phát hiện failures hay abnormalities, có thể route nhiều traffic hơn sang blue trong khi đồng thời giảm traffic sang green, giữ watch cho bất kỳ new errors nào (watch for scaling issues). Eventually, nếu mọi thứ suôn sẻ, tất cả traffic sẽ được routed sang blue instances và green instances không còn xử lý requests.</p>
+
+<p>Tại thời điểm này, tùy thuộc vào sensitivity của application và nhu cầu cung cấp quick fallback, green instances có thể được turn off hoặc để idle cho đến khi đủ thời gian mà không có incident. Trong trường hợp có error trong cooldown period, router có thể nhanh chóng reroute traffic trở lại green instances để restore service-level objectives.</p>
+
+<blockquote>
+<p><strong>Yêu cầu bắt buộc:</strong> Phải tích hợp monitoring và alerting — bao gồm resource usage metrics, consumer group lag, autoscaling triggers, và system alerts — như một phần của blue-green deployment pattern.</p>
+</blockquote>
+
+<p>Blue-green deployment pattern phù hợp cho microservices cần minimal downtime, đặc biệt những cái power customer experiences hoặc cung cấp around-the-clock services. Tuy nhiên, khi được vận hành bởi event streams, cần thận trọng về các issues có thể phát sinh từ asynchronous materializations và computations, cũng như multiple consumer group management.</p>
+
+<blockquote>
+<p><strong>Cảnh báo quan trọng:</strong> Cẩn thận khi dùng blue-green deployment để ghi vào common output stream. Hai independent microservice instances có thể overwrite work của nhau hoặc tạo duplicate events. Trong scenario này, tốt hơn là dùng rolling update pattern hoặc basic full-stop deployment pattern.</p>
+</blockquote>
+
+<hr class="divider">
+
+<h2>Tóm Tắt</h2>
+
+<p>Streamlining deployment của microservices yêu cầu tổ chức phải pay the microservice tax và đầu tư vào các deployment và monitoring systems của mình. Do lượng lớn microservices cần quản lý, tốt nhất là delegate deployment responsibilities cho các teams sở hữu microservices. Những teams này sẽ cần supportive tooling để kiểm soát và quản lý deployments của mình.</p>
+
+<p>Continuous integration pipelines là phần thiết yếu của deployment process. Chúng cung cấp framework để set up và execute tests, validate builds, và đảm bảo containerized services đã sẵn sàng deploy lên production. Container management system cung cấp phương tiện để quản lý deployment của containers vào compute clusters, allocate resources, và cung cấp scalability.</p>
+
+<p>Có thể deploy services theo nhiều cách, đơn giản nhất là stop microservice hoàn toàn và redeploy code mới nhất — điều này có thể gây downtime đáng kể và có thể không phù hợp tùy thuộc vào SLAs. Còn có một số deployment patterns khác, mỗi cái với benefits và drawbacks riêng. Các patterns được thảo luận trong chương này không phải là danh sách comprehensive, nhưng cho bạn một good starting point để xác định nhu cầu của services của mình.</p>
+
+<nav class="chapnav">
+  <a href="ch20-edm.html">← Chương 20: Kiểm Thử</a>
+  <a href="ch22-edm.html">Chương 22: Kết Luận →</a>
+</nav>
+</body>
+</html>

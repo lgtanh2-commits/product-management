@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 14: Streaming SQL — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 14</div>
+<h1>Streaming SQL</h1>
+<p class="chapter-subtitle">Truy vấn stream bằng cú pháp SQL khai báo — continuous query, stream-as-table, và UDF tùy chỉnh</p>
+
+<p>Streaming SQL là cơ chế <strong>khai báo</strong> (declarative) để xây dựng microservice-like query. Thay vì viết code Java/Python để xử lý từng event, bạn mô tả <em>kết quả bạn muốn</em> bằng cú pháp SQL quen thuộc — SQL engine sẽ lo phần implementation bên dưới. Đây là cách giảm đáng kể overhead khi bắt đầu với stream processing, đặc biệt phù hợp với những ai đã quen với SQL truyền thống.</p>
+
+<p>Streaming SQL phổ biến nhất được implement như một layer trên top của heavyweight framework: Apache Flink cung cấp <strong>Flink SQL</strong>, Apache Spark cung cấp <strong>Spark SQL</strong> (trong Structured Streaming). Các framework khác cũng có SQL API trên streaming engine của họ.</p>
+
+<p>Một lưu ý quan trọng: <em>hiện tại không có chuẩn Streaming SQL thống nhất</em> (ANSI hay bất kỳ chuẩn nào khác). Đây là "vùng hoang dã" — mỗi framework có dialect riêng với syntax và semantics khác nhau. Nhưng các khái niệm nền tảng đều nhất quán, và syntax không quá khác biệt để không thể học được khi chuyển framework.</p>
+
+<hr class="divider">
+
+<h2>Continuous Query — Nền Tảng Của Streaming SQL</h2>
+
+<p>SQL truyền thống hoạt động trên bảng (table) trong database — bạn chạy một query, nó đọc dữ liệu tại thời điểm đó, trả về kết quả, rồi kết thúc. Streaming SQL lấy lại SQL quen thuộc này và áp dụng cho event stream.</p>
+
+<p>Hình 14-1 minh họa một streaming SQL query đơn giản nhất: lọc ra các event có value ≤ 5.</p>
+
+<blockquote>
+<pre>
+SELECT *
+FROM input_stream
+WHERE value > 5;
+</pre>
+</blockquote>
+
+<p>Stream <code>input_stream</code> chứa các event [1, 4, 8, 7, 3]. Query trả về output [8, 7] — chỉ những event có value > 5. Sự khác biệt then chốt: <strong>streaming SQL query chạy vô thời hạn</strong> — không kết thúc sau khi xử lý xong batch dữ liệu, mà tiếp tục lắng nghe và xử lý event mới khi chúng đến. Trong khi đó, query SQL truyền thống kết thúc sau khi đã iterate qua dataset có giới hạn của nó.</p>
+
+<p>Cả hai đều hoạt động trên <em>table</em> — streaming SQL cũng vậy, chỉ là table được tạo ra từ event stream chứ không phải database tĩnh. Bước đầu tiên bắt buộc khi dùng Streaming SQL là <strong>khai báo table trên top của stream</strong>.</p>
+
+<hr class="divider">
+
+<h2>Ba Loại Table Trong Streaming SQL</h2>
+
+<p>Khi khai báo một table từ event stream, có ba loại table chính:</p>
+
+<h3>1. Upsert Table</h3>
+
+<p>Upsert table yêu cầu <strong>primary key</strong>. Mỗi event là một upsert hoặc delete — event mới có cùng key sẽ ghi đè record cũ. Đây là loại table phổ biến nhất, giống hệt với <em>materialized table từ entity events</em> được mô tả trong Chương 2. Phù hợp cho việc track trạng thái hiện tại của entity (user profile, product info, order status).</p>
+
+<h3>2. Append-Only Table</h3>
+
+<p>Append-only table <strong>không</strong> yêu cầu primary key. Mỗi event chỉ được insert, không bao giờ bị update hay delete — record là immutable. Đây là history đầy đủ của tất cả event, giống như chính append-only log backing event stream. Phù hợp cho audit log, event history, hoặc khi cần giữ toàn bộ lịch sử thay đổi.</p>
+
+<h3>3. Retraction Table</h3>
+
+<p>Retraction table là loại nâng cao hơn — không phải mọi streaming SQL framework đều hỗ trợ. Nó hỗ trợ insert, update, và delete, với <em>toàn bộ row đóng vai trò key</em>. Insert một row qua event <code>+I["Gary", 123]</code>, xóa qua event <code>+D["Gary", 123]</code>. Retraction table chủ yếu dùng để phản ánh kết quả của upstream computation — ví dụ khi emit event từ Flink dynamic table.</p>
+
+<p><em>Thực tiễn tốt:</em> Đảm bảo framework bạn chọn hỗ trợ ít nhất append-only và upsert table. Một số framework chỉ hỗ trợ append-only, điều này sẽ hạn chế đáng kể khả năng xử lý.</p>
+
+<hr class="divider">
+
+<h2>Ví Dụ: Enrich Dữ Liệu Bằng Flink SQL</h2>
+
+<p>Hãy xem qua một ví dụ đầy đủ: join bảng Photographs với bảng Photographers để tạo ra EnrichedPhotographs — mỗi ảnh được enrich với thông tin đầy đủ của nhiếp ảnh gia.</p>
+
+<h3>Khai Báo Table Photographs</h3>
+
+<blockquote>
+<pre>
+CREATE TABLE Photographs (
+  id BIGINT PRIMARY KEY NOT ENFORCED,
+  photographer_id BIGINT NOT NULL,
+  camera_id BIGINT NOT NULL,
+  photo_url STRING NOT NULL,
+  height INT,
+  width INT
+) WITH (
+  'connector' = 'upsert-kafka',
+  'topic' = 'Photographs',
+  'key.format' = 'raw',
+  'value.format' = 'json',
+  'properties.bootstrap.servers' = 'broker.url:9092',
+  'properties.group.id' = 'Photographs_group_id'
+);
+</pre>
+</blockquote>
+
+<p>Flink SQL đọc cú pháp <code>CREATE TABLE</code> này và đăng ký table definition vào <em>metadata catalog</em> — catalog cho phép các streaming SQL engine khác cũng query table này. Framework tạo Photographs table bằng <code>upsert-kafka</code> connector — event mới trên topic được upsert vào table (key trùng thì overwrite).</p>
+
+<p>Lưu ý: primary key được đặt là <code>NOT ENFORCED</code> — vì data ownership thuộc về producer service ghi vào Photographs topic, không thuộc về Flink job. Enforcement tính toàn vẹn là trách nhiệm của producer.</p>
+
+<h3>Khai Báo Table Photographers (Với Avro Schema Registry)</h3>
+
+<blockquote>
+<pre>
+CREATE TABLE Photographers (
+  kafka_key_id BIGINT PRIMARY KEY NOT ENFORCED,
+  first_name STRING,
+  last_name STRING,
+  signup_date TIMESTAMP WITH TIME ZONE
+) WITH (
+  'connector' = 'upsert-kafka',
+  'topic' = 'Photographers',
+  'properties.bootstrap.servers' = 'broker.url:9092',
+  'properties.group.id' = 'Photographers_group_id',
+  'key.format' = 'raw',
+  'key.fields' = 'kafka_key_id',
+  'value.avro-confluent.url' = 'http://schema.registry.url:8082',
+  'value.format' = 'avro-confluent',
+  'value.fields-include' = 'EXCEPT_KEY'
+);
+</pre>
+</blockquote>
+
+<p>Table Photographers dùng <code>avro-confluent</code> value format thay vì JSON — Flink table job tự động deserialize Avro data từ Kafka topic dùng schema information từ Confluent Schema Registry. Đây là pattern phổ biến trong production: schema registry đảm bảo compatibility, Flink SQL tự động handle deserialization.</p>
+
+<p>Về metadata catalog: Flink hỗ trợ nhiều catalog type (JDBC-based, Apache Hive). Spark hỗ trợ local catalog và Hive. Trong production, bạn sẽ cần Hive hoặc Hive-compatible catalog để duy trì durable metadata — cho phép query thấy tất cả available table sau khi job restart.</p>
+
+<h3>Khai Báo Output Table Và JOIN Query</h3>
+
+<blockquote>
+<pre>
+CREATE TABLE Enriched_Photographs (
+  id BIGINT PRIMARY KEY NOT ENFORCED,
+  photographer_id BIGINT NOT NULL,
+  camera_id BIGINT NOT NULL,
+  photo_url STRING NOT NULL,
+  height INT,
+  width INT,
+  first_name STRING,
+  last_name STRING
+) WITH (
+  'connector' = 'upsert-kafka',
+  'topic' = 'Enriched_Photographs',
+  ...
+);
+
+INSERT INTO Enriched_Photographs
+  SELECT pics.id,
+         pics.photographer_id,
+         pics.camera_id,
+         pics.photo_url,
+         pics.height,
+         pics.width,
+         people.first_name,
+         people.last_name
+  FROM Photographs AS pics
+  INNER JOIN Photographers AS people
+  WHERE pics.photographer_id = people.kafka_key_id;
+</pre>
+</blockquote>
+
+<p>Kết quả join được ghi liên tục vào Enriched_Photographs topic. State về photograph và photographer được giữ <em>vô thời hạn</em> trong Flink job (mirroring key-space của source topic). Tombstone event trên bất kỳ source topic nào sẽ propagate deletion sang Enriched_Photographs — đảm bảo lifecycle consistency.</p>
+
+<hr class="divider">
+
+<h2>Bốn Cách Thực Thi Streaming SQL Code</h2>
+
+<h3>1. Command-Line Interface (CLI)</h3>
+
+<p>Flink cung cấp <code>./bin/sql-client.sh</code>, Spark cung cấp <code>./bin/spark-sql</code>. Đây là cách đơn giản nhất để test và phát triển local. Bạn type SQL query vào CLI và thấy kết quả ngay lập tức.</p>
+
+<blockquote>
+<pre>
+flink-2.0.0 ./bin/sql-client.sh
+Flink SQL&gt;
+&gt; SELECT *
+&gt; FROM Photographs
+&gt; WHERE first_name = "Adam"
+&gt; AND last_name = "Bellemare";
+</pre>
+</blockquote>
+
+<p>Streaming SQL query yêu cầu CLI chạy vô thời hạn — nếu bạn terminate CLI, bạn terminate job. Dù vậy, CLI hoàn toàn có thể chạy trong container như microservice thông thường. Tuy nhiên, với production workload, các option phía sau thường phù hợp hơn.</p>
+
+<h3>2. Embedded SQL Trong Application</h3>
+
+<p>Nhúng SQL query trực tiếp vào native application code. Ví dụ Flink với Java:</p>
+
+<blockquote>
+<pre>
+// Tạo Flink table environment
+TableEnvironment tableEnv = TableEnvironment.create(...);
+
+// Chỉ định catalog và database bên ngoài
+tableEnv.useCatalog("hive_ext");
+tableEnv.useDatabase("photo_db");
+
+// Tạo Photographs table bằng SQL DDL
+// (metadata được ghi vào Hive catalog)
+tableEnv.executeSql(
+    "CREATE TABLE Photographs (id BIGINT ...) WITH (...)");
+
+// Query Photographs table bằng SQL
+tableEnv.executeSql(
+    "SELECT * from Photographs where first_name = 'Alice'");
+</pre>
+</blockquote>
+
+<p>Embedded SQL tích hợp tốt với microservice deployment pipeline — test, CI/CD, scaling, monitoring đều được quản lý như microservice thông thường. Hạn chế là bị giới hạn bởi ngôn ngữ framework hỗ trợ (Java, Python, v.v.). Code generator có thể tự động tạo boilerplate và dependency, để team chỉ cần viết SQL logic.</p>
+
+<h3>3. Notebooks (Zeppelin, Jupyter)</h3>
+
+<p>Notebook là môi trường interactive browser-based kết hợp code thực thi, rich text, equations, và visualization. Data analyst và data scientist từ lâu đã dùng notebook (Apache Zeppelin, Jupyter) để explore dữ liệu và build transformation pipeline. Interpreter bridge notebook với processing engine bên dưới (ví dụ: Apache Zeppelin interpreter for Flink).</p>
+
+<p>Ưu điểm của notebook: <strong>interactive development</strong> (viết, chạy, sửa code theo từng cell nhỏ, thấy kết quả ngay), <strong>visualization và documentation</strong> (kết hợp code với Markdown và chart), <strong>isolation</strong> (include environment details và hardcoded data), <strong>multilanguage support</strong> (Python, Java, Scala, R), và <strong>shareable</strong> (download và chia sẻ như file bình thường).</p>
+
+<p>Nhược điểm cần lưu ý: <strong>version control phức tạp</strong> (file lớn, binary data khó integrate với Git — dùng nbdime hoặc nbstripout để giảm thiểu), <strong>performance hạn chế</strong> (không phải giải pháp hiệu quả nhất cho large-scale data), <strong>testing hạn chế</strong> (không phù hợp cho unit/integration test), <strong>promotion khó khăn</strong> (promote và rollback notebook giữa environments phức tạp).</p>
+
+<p><em>Thực tiễn tốt:</em> Notebook tối ưu cho exploration và analysis. Với production use case, extract logic ra một dedicated microservice project đầy đủ với unit/integration testing framework.</p>
+
+<h3>4. SQL Gateway</h3>
+
+<p>SQL gateway là service cho phép nhiều client thực thi SQL code đồng thời và từ xa. Client submit job đến gateway, gateway thực thi trong session riêng của nó. Nhiều session độc lập có thể chạy song song trong cùng gateway, tất cả dùng chung processing cluster.</p>
+
+<p>Hình 14-2: Hai client kết nối đến SQL gateway — một client submit job mới, client kia get status của job đang chạy. Gateway quản lý nhiều session, tất cả dispatch đến processing cluster. Catalog chứa table definitions được share giữa tất cả session.</p>
+
+<p>Ví dụ: Spark distributed SQL engine, Flink SQL gateway. Phù hợp nhất cho các SQL query đơn giản, ít thay đổi theo thời gian — ví dụ joiner service để denormalize relational data. Lợi ích: không cần tạo full application chỉ để chạy một query đơn giản.</p>
+
+<hr class="divider">
+
+<h2>SQL Như Một Sidecar</h2>
+
+<p>Streaming SQL có thể đóng vai trò <strong>SQL sidecar</strong> — một pattern mạnh mẽ cho phép tận dụng SQL cho phần xử lý phức tạp trong khi giữ business logic trong microservice framework ưa thích.</p>
+
+<p>Hình 14-3 minh họa: Enriched_photographs stream và Cameras stream được fed vào một SQL joiner. SQL joiner tạo ra Private_Stream_F2AZ — đây là private internal stream chỉ dùng nội bộ trong bounded context. Microservice đọc từ Private_Stream_F2AZ và thực hiện business logic.</p>
+
+<p>Tên <code>Private_Stream_F2AZ</code> là tên placeholder ngẫu nhiên — chủ ý tránh tên có ý nghĩa để nhắc nhở rằng đây là internal stream không được dùng bởi service nào khác bên ngoài bounded context này.</p>
+
+<p>Lợi ích của SQL sidecar: bạn có thể dùng <em>bất kỳ thư viện, ngôn ngữ, hay framework nào</em> tương thích với basic event consumption/production cho microservice, trong khi offload joins/windowing/aggregation/complex state machine sang SQL engine. Microservice nhận dữ liệu đã được enrich và processed sẵn, chỉ cần lo business logic thuần túy.</p>
+
+<p><em>Cảnh báo:</em> Khi terminate microservice, đảm bảo SQL job cũng được terminate. Zombie SQL process sẽ tiếp tục chạy và consume resource. SQL joiner và microservice phải được quản lý lifecycle tightly coupled.</p>
+
+<hr class="divider">
+
+<h2>User-Defined Function (UDF)</h2>
+
+<p>Khi business logic không thể biểu diễn thuần túy bằng SQL syntax, Streaming SQL framework cho phép định nghĩa <strong>User-Defined Function (UDF)</strong> — viết bằng ngôn ngữ native của framework (Java cho Flink, Python/Scala cho Spark) và gọi inline trong SQL code.</p>
+
+<p>Ví dụ: UDF đơn giản trong Flink Java thêm <code>_modified</code> vào string value:</p>
+
+<blockquote>
+<pre>
+import org.apache.flink.table.functions.ScalarFunction;
+
+public class AppendModifiedUDF extends ScalarFunction {
+  public String eval(String input) {
+    if (input == null) {
+      return null;
+    }
+    // Thêm '_modified' vào cuối input string
+    return input + "_modified";
+  }
+}
+</pre>
+</blockquote>
+
+<p>Đây là <em>scalar UDF</em> (input 1 record → output 1 record). Có ba loại UDF chính:</p>
+
+<ul>
+<li><strong>Scalar UDF:</strong> Input 1 record → output 1 record (như ví dụ trên). Dùng để transform giá trị.</li>
+<li><strong>Aggregate UDF (UDAF):</strong> Input N records → output 1 aggregated record. Dùng để build aggregation phức tạp (ví dụ median, percentile, custom window function).</li>
+<li><strong>Table UDF (UDTF):</strong> Input 1 record → output N records. Dùng để explode một record thành nhiều record (ví dụ unnest array).</li>
+</ul>
+
+<p>UDF không chỉ transform data — bạn có thể dùng UDF để xây dựng aggregation, complex state machine dựa trên record data, và thậm chí <strong>gọi external system</strong>: tích hợp với third-party service, gọi GenAI model để classify hoặc enrich data inline trong SQL pipeline.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Streaming SQL đơn giản hóa việc build microservice-like query thông qua cơ chế khai báo quen thuộc với bất kỳ ai biết SQL. Thay vì viết boilerplate code để consume event, manage state, và produce output, bạn chỉ cần mô tả kết quả mong muốn — SQL engine lo implementation.</p>
+
+<p>Khái niệm cốt lõi là <strong>continuous query</strong>: query chạy vô thời hạn trên stream dữ liệu, áp dụng logic cho mỗi event đến. Stream-as-table abstraction (upsert, append-only, retraction table) là bước chuyển đổi then chốt giúp SQL làm việc với streaming data.</p>
+
+<p>Bốn cách thực thi — CLI, embedded SQL, notebook, SQL gateway — phục vụ các giai đoạn khác nhau từ development đến production. UDF điền vào khoảng trống khi SQL thuần túy không đủ — cho phép custom logic, aggregation phức tạp, và tích hợp external system.</p>
+
+<p>Flink SQL và Spark SQL là hai implementation chính, mỗi cái có thế mạnh riêng. Streaming SQL thường được cung cấp như một phần của serverless framework — chương tiếp theo sẽ xem xét Functions as a Service (FaaS), một serverless option khác trong kiến trúc event-driven.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch13-edm">← Chương 13</a>
+  <a href="/building-event-driven-microservices/ch15-edm">Chương 15 →</a>
+</nav>
+</body>
+</html>

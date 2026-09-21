@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 17: Tích Hợp Microservices Event-Driven và Request-Response — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 17</div>
+<h1>Tích Hợp Microservices Event-Driven và Request-Response</h1>
+<p class="chapter-subtitle">Kết nối thế giới event-driven với API request-response: chuyển đổi request thành event, phục vụ dữ liệu qua REST, xây dựng micro frontends</p>
+
+<p>Trong thế giới thực, event-driven microservices không tồn tại đơn độc. Chúng phải tương tác với hệ thống bên ngoài — các client web, mobile app, API của bên thứ ba — vốn giao tiếp qua kiến trúc request-response. Chương này khám phá các chiến lược để kết nối hai thế giới đó: làm thế nào để biến request thành event, cách expose dữ liệu nội bộ ra ngoài qua API, và kiến trúc micro frontend giúp UI cũng được tổ chức theo cách event-driven.</p>
+
+<hr class="divider">
+
+<h2>Biến Request Thành Event</h2>
+
+<p>Khi một external system — be it a client application, a third party service, or a human — muốn tương tác với hệ thống event-driven, cần có cơ chế để serialize input của họ thành event stream. Có hai cách tiếp cận chính: <strong>dedicated serialization endpoint</strong> và <strong>REST proxy</strong>.</p>
+
+<h3>Dedicated Serialization Endpoint</h3>
+
+<p>Trong mô hình này, server expose một HTTP endpoint chuyên dụng để nhận request từ client và convert thành event. Có hai variant:</p>
+
+<p><strong>Client-side serialization</strong> (Hình 17-1): Client tự serialize data thành định dạng event (ví dụ Avro byte array) rồi gửi lên endpoint. Server chỉ cần forward thẳng vào event stream. Đây là cách đơn giản nhất nhưng đòi hỏi client phải có serialization logic.</p>
+
+<p><strong>Server-side serialization với schema registry</strong> (Hình 17-2): Client gửi payload bình thường (JSON hoặc plain text), server dùng schema registry để validate và serialize thành event. Client không cần biết gì về schema — server xử lý toàn bộ. Đây là cách phổ biến hơn trong production.</p>
+
+<h3>Ví Dụ: MediaClick Event (Ví Dụ 17-1 và 17-2)</h3>
+
+<p>Giả sử cần capture sự kiện người dùng click vào media content. Với Proto3:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-1: Proto3 MediaClick event definition
+message MediaClick {
+  string id = 1;
+  int64 time = 2;
+  string mediaId = 3;
+  enum Media {
+    Movie = 0;
+    Show = 1;
+    MovieTrailer = 2;
+    ShowTrailer = 3;
+  }
+  Media media = 4;
+  string mediaType = 5;
+}
+</pre>
+</blockquote>
+
+<p>Còn nếu dùng plain-text format (Ví dụ 17-2) với <code>schemaId</code> field:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-2: Plain-text MediaClick với schemaId
+id: "abc-123"
+time: 1698765432000
+mediaId: "movie-456"
+mediaType: "Movie"
+schemaId: 623
+</pre>
+</blockquote>
+
+<p>Field <code>schemaId</code> cho phép server tra cứu đúng schema từ schema registry để validate và serialize event này. Client không cần biết chi tiết schema — chỉ cần biết schemaId.</p>
+
+<h3>REST Proxy</h3>
+
+<p>REST proxy là một layer trung gian cho phép client tương tác với event broker (Kafka) hoàn toàn qua HTTP — không cần Kafka client library. Các implementation phổ biến: <strong>Confluent REST Proxy</strong>, <strong>Azure REST Proxy</strong>, và Apache Pulsar (built-in HTTP proxy). Đây là lựa chọn hữu ích khi client không thể hoặc không muốn dùng native Kafka client.</p>
+
+<p><strong>Producing qua REST proxy</strong> (Ví dụ 17-3): Client POST đến <code>/topics/{topic-name}</code> với payload chứa danh sách record:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-3: POST đến /topics/test với binary records
+POST /topics/test
+{
+  "records": [
+    {
+      "key": "somekey",
+      "value": "SGVsbG8gV29ybGQ=",
+      "partition": 0
+    },
+    {
+      "key": "anotherkey",
+      "value": "SGVsbG8gV29ybGQ=",
+      "partition": 1
+    },
+    {
+      "value": "SGVsbG8gV29ybGQ="
+    }
+  ]
+}
+</pre>
+</blockquote>
+
+<p><strong>Producing với schema validation</strong> (Ví dụ 17-4): Thêm <code>value_schema</code> để REST proxy tự động validate data trước khi ghi vào topic:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-4: POST với value_schema (Avro)
+POST /topics/test
+{
+  "value_schema": "{\"type\":\"record\",\"name\":\"MediaClick\",...}",
+  "records": [
+    {
+      "value": {
+        "id": "abc-123",
+        "time": 1698765432000,
+        "mediaId": "movie-456"
+      }
+    }
+  ]
+}
+</pre>
+</blockquote>
+
+<p><strong>Consuming qua REST proxy</strong>: Quy trình gồm 5 bước: (1) tạo durable consumer trong consumer group, (2) subscribe vào topic, (3) consume records theo lô, (4) commit offset thủ công sau khi xử lý xong, (5) delete consumer khi không cần nữa.</p>
+
+<p>Lưu ý quan trọng: REST proxy không phải high-performance solution. Overhead HTTP mỗi request là đáng kể. Với load vừa phải, có thể cần multiple proxy instance để scale. Nếu performance là yêu cầu quan trọng, hãy dùng native Kafka client thay thế.</p>
+
+<hr class="divider">
+
+<h2>Tích Hợp Với Third-Party Request-Response API</h2>
+
+<p>Nhiều khi microservice event-driven cần gọi ra ngoài để tương tác với API bên thứ ba — payment gateway, geo-coding service, email provider, v.v. Những API này vận hành theo mô hình request-response, đối lập với event-driven. Hình 17-3 minh họa pattern cơ bản: microservice consume event từ input stream, gọi external API, parse response, apply business logic, rồi produce event ra output stream.</p>
+
+<h3>Blocking HTTP Call Trong Event-Driven Microservice</h3>
+
+<p>Ví dụ 17-5 cho thấy cách tích hợp blocking HTTP call vào consumer loop, dùng Kafka transactions để đảm bảo exactly-once semantics:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-5: Blocking HTTP call với Kafka transactions
+producer.initTransactions();
+while (true) {
+    ConsumerRecords&lt;String, Event&gt; records =
+        consumer.poll(Duration.ofMillis(1000));
+    if (records.isEmpty()) continue;
+    try {
+        producer.beginTransaction();
+        for (ConsumerRecord&lt;String, Event&gt; record : records) {
+            Event event = record.value();
+            Request request = generateRequest(event, ...);
+            Response response = RequestService
+                .makeBlockingRequest(request, timeout, retries, ...);
+            if (response.code == 200) {
+                &lt;Class Type&gt; parsedObj =
+                    parseResponseToObject(response);
+                OutputEvent outEvent =
+                    applyBusinessLogic(parsedObj, event, ...);
+                producer.send(new ProducerRecord&lt;&gt;(
+                    "output-stream-name", outEvent));
+            } else {
+                // Handle non-200: log, DLQ, hoặc abort
+            }
+        }
+        Map&lt;TopicPartition, OffsetAndMetadata&gt; offsets =
+            new HashMap&lt;&gt;();
+        for (TopicPartition partition : records.partitions()) {
+            List&lt;ConsumerRecord&lt;String, Event&gt;&gt; pr =
+                records.records(partition);
+            long lastOffset = pr.get(pr.size() - 1).offset();
+            offsets.put(partition,
+                new OffsetAndMetadata(lastOffset + 1));
+        }
+        producer.sendOffsetsToTransaction(
+            offsets, consumer.groupMetadata());
+        producer.commitTransaction();
+    } catch (Exception e) {
+        producer.abortTransaction();
+    }
+}
+</pre>
+</blockquote>
+
+<p>Code này wrap toàn bộ process trong Kafka transaction: chỉ commit offset sau khi đã successfully produce output event. Nếu HTTP call fail hoặc bất kỳ lỗi nào xảy ra, transaction được abort — event sẽ được retry từ đầu. Nhờ vậy tránh được tình trạng event được consume nhưng output chưa được produce.</p>
+
+<h3>Cân Nhắc Khi Gọi Third-Party API</h3>
+
+<p>Có một số vấn đề cần lưu ý khi tích hợp với external API theo pattern này:</p>
+
+<p><strong>Head-of-line blocking:</strong> Nếu một HTTP call bị treo (timeout lâu), toàn bộ consumer partition bị block. Event sau không thể được xử lý cho đến khi call hiện tại hoàn thành hoặc timeout. Cần set timeout timeout hợp lý và retry limit.</p>
+
+<p><strong>Nondeterminism khi retry:</strong> Nếu HTTP call thành công nhưng Kafka commit fail, event sẽ được retry. Nếu HTTP call không idempotent (ví dụ: charge credit card, gửi email), việc retry có thể tạo ra side effects không mong muốn. Cần đảm bảo external API hỗ trợ idempotent operations hoặc xử lý riêng.</p>
+
+<p><strong>API schema thay đổi:</strong> Third-party API có thể thay đổi response format mà không báo trước. Code parsing response cần được cập nhật kịp thời để tránh lỗi.</p>
+
+<p><strong>Rate limiting khi rewind stream:</strong> Nếu cần reprocess event từ đầu (rewind consumer offset), microservice sẽ gọi external API với tốc độ cao hơn bình thường — có thể vi phạm rate limit của provider. Cần có cơ chế throttling khi rewind.</p>
+
+<hr class="divider">
+
+<h2>Phục Vụ Dữ Liệu Qua Request-Response API</h2>
+
+<p>Khi downstream consumer cần query dữ liệu từ microservice event-driven, cần expose một request-response API. Có hai chiến lược chính: dùng <strong>internal state store</strong> hoặc <strong>external state store</strong>.</p>
+
+<h3>Internal State Store</h3>
+
+<p>Trong chiến lược này, mỗi microservice instance duy trì local state store (thường là RocksDB) của riêng mình, được populate từ input event streams. Instance đồng thời expose REST API để serve data từ local store đó.</p>
+
+<p><strong>Single instance</strong> (Hình 17-4): Đơn giản nhất. REST API, materialized table, processing topology, và changelog đều trong cùng một instance. Hoạt động tốt cho low-load service.</p>
+
+<p><strong>Multiple instances với load balancer</strong> (Hình 17-5): Khi scale up, mỗi instance sở hữu một subset partition của event stream. Instance 0 có P0, Instance 1 có P1 và P2. Vấn đề: nếu query cho key thuộc P1 đến Instance 0, Instance 0 không có data đó.</p>
+
+<p><strong>Request forwarding</strong> (Hình 17-6): Khi Instance 0 nhận request cho key thuộc partition của Instance 1, Instance 0 forward request sang Instance 1. Điều này đòi hỏi mỗi instance biết partition topology của toàn bộ cluster. Với random load balancer, xác suất hit đúng instance = 1/(số instances).</p>
+
+<p><strong>Smart load balancer</strong> (Hình 17-7): Load balancer duy trì routing table ánh xạ partition → instance. Khi có rebalance (scale up/down, failure recovery), routing table được cập nhật. Request được forward đến đúng instance ngay lập tức, không cần forwarding chain.</p>
+
+<p>Nhược điểm của internal state store: trong quá trình rebalancing (scale up/down, failure recovery), một số partition đang trong trạng thái không available do state restoration. Thời gian "catch up" từ changelog có thể gây outage ngắn.</p>
+
+<h3>External State Store</h3>
+
+<p>Thay vì lưu state nội bộ trong microservice instance, state được materialize ra một <em>external store</em> dùng chung — ví dụ như Redis, Cassandra, hoặc DynamoDB. Microservice consume events và write/update vào external store; API layer đọc từ external store để serve requests.</p>
+
+<p>Ưu điểm rõ ràng:</p>
+<ul>
+<li>Không cần request forwarding — mọi instance đều có thể serve mọi request từ shared store.</li>
+<li>Zero-downtime scaling — thêm/bớt instance API không ảnh hưởng state.</li>
+<li>Scale request serving và data processing độc lập nhau.</li>
+</ul>
+
+<p>Quan trọng: <em>consumer không được access trực tiếp vào external state store</em> — họ vẫn phải đi qua microservice request-response API. Điều này bảo đảm data ownership và cho phép microservice áp dụng business logic, authorization, caching trước khi trả về data.</p>
+
+<h3>All-in-One Microservice vs Composite Service</h3>
+
+<p><strong>All-in-One Microservice</strong> (Hình 17-8): Cùng một instance vừa consume events (event processing) vừa serve API requests (REST). Load balancer có thể route request đến bất kỳ instance nào vì tất cả đều read từ shared external state store. Đây là pattern đơn giản, phù hợp khi load tương đối thấp và đồng đều.</p>
+
+<p><strong>Composite Service</strong> (Hình 17-9): Tách biệt thành hai microservice riêng biệt nhưng cùng bounded context và code repo:</p>
+<ul>
+<li><strong>Microservice A</strong> (REST API): Chỉ serve request-response, read-only từ external state store.</li>
+<li><strong>Microservice B</strong> (Event Processing): Consume events và materialize vào external state store.</li>
+</ul>
+<p>Composite Service cho phép scale hai chiều độc lập: tăng API capacity khi có nhiều request, tăng processing capacity khi có nhiều event — mà không ảnh hưởng lẫn nhau. Cả hai được deploy cùng nhau như một đơn vị release.</p>
+
+<hr class="divider">
+
+<h2>Xử Lý Request Trong Event-Driven Workflow</h2>
+
+<p>Khi một external request cần được xử lý trong event-driven workflow (ví dụ: đặt vé, đăng ký dịch vụ), có hai cách tiếp cận (Hình 17-10):</p>
+
+<p><strong>Direct handling</strong> (xử lý trực tiếp): Request được xử lý ngay tại endpoint, trả về response đồng bộ. Đơn giản nhưng mất đi khả năng audit trail và không tận dụng được event-driven architecture.</p>
+
+<p><strong>Convert-to-event</strong> (chuyển thành event): Request được serialize thành event, pushed vào stream, rồi xử lý asynchronously bởi downstream consumer. Mang lại durable audit record, khả năng cross-reference timestamp, và tận dụng toàn bộ sức mạnh event-driven — nhưng thêm latency và đòi hỏi UI phải hỗ trợ async pattern.</p>
+
+<p>Trade-off rõ ràng: nếu cần audit trail hoặc nếu processing phức tạp và cần nhiều service phối hợp, convert-to-event là lựa chọn tốt hơn. Nếu response cần ngay lập tức và workflow đơn giản, direct handling hợp lý hơn.</p>
+
+<hr class="divider">
+
+<h2>Xử Lý Event Cho User Interface</h2>
+
+<p>Khi backend là event-driven, UI cần thiết kế theo <em>asynchronous pattern</em>. Không giống request-response truyền thống — gửi request, nhận response ngay — event-driven backend có thể mất vài giây để hoàn thành một operation.</p>
+
+<p>Pattern phổ biến là "making reservation, please wait": khi user submit một action, UI ngay lập tức hiển thị trạng thái đang xử lý (spinner, progress bar, "đang xử lý yêu cầu của bạn..."), rồi poll hoặc nhận push notification khi backend hoàn thành.</p>
+
+<p>Khi thiết kế async UI cho event-driven backend, cần trả lời hai câu hỏi: (1) <em>Tác động của quyết định từ stale state là gì?</em> Nếu user thấy data cũ và đưa ra quyết định dựa trên đó, hậu quả là gì? (2) <em>Tác động performance của UI push là gì?</em> Nếu push notification đến mọi client khi có event, bandwidth và server load có thể tăng đột ngột.</p>
+
+<hr class="divider">
+
+<h2>Approval Pattern: Quy Trình Xuất Bản Báo</h2>
+
+<p>Để minh họa cách kết hợp event-driven với request-response trong workflow phức tạp, tác giả dùng ví dụ quy trình xuất bản báo hàng ngày — một workflow cần nhiều bên approve trước khi in.</p>
+
+<h3>Workflow Tổng Quan</h3>
+
+<p>Hình 17-11 mô tả quy trình: Populate (populate nội dung báo) → Editor approval (biên tập viên duyệt) → Advertiser approval (nhà quảng cáo duyệt) → Release to printer (gửi đi in).</p>
+
+<p>Hình 17-12 cho thấy hai microservice chính: <strong>Newspaper Populator</strong> (tạo và populate nội dung báo) và <strong>Approvals</strong> (quản lý luồng duyệt).</p>
+
+<h3>Event Schemas</h3>
+
+<p><strong>Populated Newspaper Event</strong> (Ví dụ 17-6): Sự kiện khi tờ báo đã được populate đầy đủ nội dung:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-6: Populated Newspaper event
+{
+  "pn_key": "newspaper-2024-01-15",
+  "pdf_uri": "s3://papers/2024-01-15.pdf",
+  "version": 3,
+  "page_metadata": [
+    {
+      "page_number": 1,
+      "content": "article",
+      "id": "article-front-page"
+    },
+    {
+      "page_number": 4,
+      "content": "Ad",
+      "id": "ad-sponsor-001"
+    }
+  ]
+}
+</pre>
+</blockquote>
+
+<p><strong>Editor Approval Event</strong> (Ví dụ 17-7): Kết quả editor review:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-7: Editor Approval event
+{
+  "pn_key": "newspaper-2024-01-15",
+  "marked_up_pdf_uri": "s3://markups/2024-01-15-ed.pdf",
+  "version": 3,
+  "status": "approved",   // awaiting_approval | approved | rejected
+  "editor_id": "editor-42",
+  "editor_comments": "Looks good, minor typo fixed on page 3",
+  "rejectedAds": []
+}
+</pre>
+</blockquote>
+
+<p><strong>Advertiser Approval Event</strong> (Ví dụ 17-8): Từng nhà quảng cáo approve/reject quảng cáo của họ:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-8: Advertiser Approval event
+{
+  "pn_key": "newspaper-2024-01-15",
+  "advertiser_pdf_uri": "s3://ads/page4.pdf",
+  "version": 3,
+  "page_number": 4,
+  "approved": true,
+  "advertisement_id": "ad-sponsor-001",
+  "advertiser_id": "sponsor-corp",
+  "advertiser_comments": "Approved as is"
+}
+</pre>
+</blockquote>
+
+<h3>Tách Editor và Advertiser Services</h3>
+
+<p>Khi workflow trở nên phức tạp hơn, Hình 17-13 cho thấy cách tách thành hai service độc lập: <strong>Editor Approvals Service</strong> và <strong>Advertiser Approvals Service</strong>. Hai service này giao tiếp qua event stream, không phụ thuộc trực tiếp vào nhau.</p>
+
+<p><strong>Advertiser Approval Summary Event</strong> (Ví dụ 17-9): Aggregate tất cả advertiser approvals thành một summary event:</p>
+
+<blockquote>
+<pre>
+// Ví dụ 17-9: Advertiser Approval Summary event
+{
+  "pn_key": "newspaper-2024-01-15",
+  "version": 3,
+  "ad_approval_statuses": [
+    {
+      "status": "Approved",   // Waiting | Approved | Rejected | Timedout
+      "page_number": 4,
+      "advertisement_id": "ad-sponsor-001",
+      "advertiser_id": "sponsor-corp",
+      "advertiser_comments": "Approved as is"
+    },
+    {
+      "status": "Timedout",
+      "page_number": 7,
+      "advertisement_id": "ad-local-002",
+      "advertiser_id": "local-biz",
+      "advertiser_comments": null
+    }
+  ]
+}
+</pre>
+</blockquote>
+
+<p>Status <code>Timedout</code> xử lý trường hợp advertiser không phản hồi trong thời gian quy định — workflow không bị block vô thời hạn.</p>
+
+<hr class="divider">
+
+<h2>Micro Frontends Cho Request-Response Applications</h2>
+
+<p>Microservices đã cách mạng hóa backend, nhưng frontend vẫn thường là monolith lớn. <strong>Micro frontends</strong> mở rộng nguyên tắc của microservices ra phía frontend: mỗi business concern có một micro frontend riêng, tự quản lý và deploy độc lập.</p>
+
+<h3>Ba Mô Hình Tổ Chức Frontend (Hình 17-14)</h3>
+
+<p><strong>Monolithic backend approach</strong>: Backend team lớn (thường nhiều sub-team) quản lý toàn bộ backend monolith. Frontend team hoàn toàn tách biệt, giao tiếp với backend qua request-response API. Phối hợp giữa team khó khăn khi cần thay đổi cross-boundary.</p>
+
+<p><strong>Microservice backend approach</strong>: Backend được tách thành nhiều independent, product-focused microservices — mỗi service do một team sở hữu. Tuy nhiên, vẫn cần một <em>aggregation layer</em> để stitching các backend interface lại cho frontend. Đây là nơi business logic dễ "rò rỉ" vào aggregation layer thay vì ở đúng service — không phải vì đó là nơi tốt hơn, mà vì team và deployment boundary thuận tiện hơn.</p>
+
+<p><strong>Micro frontend approach</strong>: Mỗi team (Team 1, Team 2...) sở hữu cả backend microservice lẫn frontend component tương ứng. Không cần aggregation layer trung tâm — từng micro frontend tự stitch với backend của mình. Áp dụng các nguyên tắc: modularity, separation of business concerns, team autonomy, codebase và deployment independence.</p>
+
+<h3>Ví Dụ: Experience Search and Review Application</h3>
+
+<p>Ứng dụng kết nối du khách với local guides, attractions, và ẩm thực. Users có thể search experiences theo thành phố, xem thông tin chi tiết, và để lại review.</p>
+
+<p><strong>Version 1 — Monolithic frontend</strong> (Hình 17-15): Một service duy nhất materialize cả experience entities lẫn customer reviews vào một endpoint. UI mockup đơn giản: nhập tên thành phố, xem danh sách experiences bên trái, thông tin chi tiết ở giữa, reviews bên phải. Data store là key-value store cơ bản, chỉ hỗ trợ searching hạn chế.</p>
+
+<p><strong>Version 2 — Micro frontends</strong> (Hình 17-16): Tách thành ba micro frontends:</p>
+<ul>
+<li><strong>Experiences search micro frontend</strong>: Handle search theo địa lý (geolocation), convert địa chỉ thành lat/lon để tìm experiences gần đó.</li>
+<li><strong>Product micro frontend</strong>: Aggregate hai micro frontend còn lại thành UI tổng thể — đây là "compositional layer".</li>
+<li><strong>Experiences reviews micro frontend</strong>: Handle tất cả review-related functionality, hoàn toàn độc lập với search service.</li>
+</ul>
+
+<p>Hình 17-17 minh họa sự linh hoạt của kiến trúc này với backend event-driven:</p>
+<ul>
+<li>Reviews được publish <em>trước</em> thành events vào review event stream, <em>sau đó</em> mới được ingested vào data store — đúng với nguyên tắc ECST (event-carried state transfer). Cả v1 lẫn v2 đều source từ cùng event streams, không cần migrate data.</li>
+<li>Review service được tách ra thành microservice độc lập mà không cần data migration — chỉ cần replay từ event stream.</li>
+<li>Search service thay thế state store bằng geo-location capable store, hỗ trợ search theo khoảng cách.</li>
+<li>Search service consume user profile stream để personalize kết quả — v2 làm rõ hơn v1 service nào đang dùng dữ liệu nào.</li>
+</ul>
+
+<p>Điểm mấu chốt: <em>"The ability to materialize and consume any stream of business events, however the service needs them, is what makes event-driven microservice backends pair so effectively with micro frontends."</em></p>
+
+<h3>Lợi Ích Của Micro Frontends</h3>
+
+<p><strong>Composable:</strong> Micro frontends cho phép compose interface từ các service độc lập, suited với business requirements cụ thể. Sourcing data từ event stream, spin up service mới nhanh và dễ. Nếu không hoạt động tốt, tắt đi mà không để lại code remnants.</p>
+
+<p><strong>Pluggable:</strong> Thêm frontend mới mà không làm gián đoạn frontends hiện có. Cùng một micro frontend có thể power nhiều sản phẩm và experiences khác nhau — chỉ cần plug vào interface cần nó.</p>
+
+<p><strong>Independent:</strong> Giống backing microservices, micro frontends độc lập với nhau — có thể dùng bất kỳ framework, language, state store, technology nào phù hợp. Test và release theo lịch riêng. Ownership rõ ràng hơn nhiều so với monolith lớn.</p>
+
+<p><strong>Leverages full-stack skill sets:</strong> Lợi ích thường bị bỏ qua — preserve và tận dụng full-stack skill set mà developers đã xây dựng qua nhiều năm. Họ vẫn có cơ hội làm cả frontend, backend, và data store layer, chỉ là scope hẹp hơn và tập trung vào business requirements cụ thể.</p>
+
+<h3>Nhược Điểm Của Micro Frontends</h3>
+
+<p><strong>Inconsistent UI elements and styling:</strong> Với nhiều frontend service độc lập, màu sắc, font, sizing, layout dễ bị không nhất quán. Cần coordination effort để có unified look and feel. Style guide và common library of basic elements giúp giảm friction, nhưng cross-team coordination và testing vẫn cần thiết.</p>
+
+<p><strong>Cross-service updates:</strong> Cập nhật mandatory fixes đồng thời trên nhiều service khó khăn hơn monolith. Micro frontends thường phải thay đổi thường xuyên hơn backend counterparts do shared libraries định hình user experience.</p>
+
+<p><strong>Varying performance and load times:</strong> Các micro frontends có thể load ở tốc độ khác nhau, hoặc thậm chí fail load hoàn toàn. Composite frontend cần xử lý gracefully — cung cấp consistent experience cho các phần vẫn hoạt động (spinner cho elements đang chờ, error boundaries...). Stitching các micro frontends lại là bài tập proper UI design, vượt ra ngoài phạm vi cuốn sách này.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Chương này đã khám phá sự tích hợp giữa event-driven microservices và request-response APIs — hai thế giới vốn vận hành theo cơ chế khác nhau nhưng cần phối hợp trong hệ thống thực tế.</p>
+
+<p>External systems giao tiếp chủ yếu qua request-response APIs, và input của họ có thể cần được chuyển thành event để hệ thống event-driven xử lý. Machine input có thể được schematized trước để emit event qua dedicated endpoint hoặc REST proxy. Third-party APIs thường cần parsing và wrapping response vào event definition riêng — và có xu hướng dễ bị ảnh hưởng bởi API thay đổi hơn.</p>
+
+<p>Requests cũng có thể được convert thành event để xử lý asynchronously bởi consuming microservice. Điều này đòi hỏi UI được thiết kế cho async pattern, nơi user được thông báo request đang được xử lý.</p>
+
+<p>Cuối cùng, micro frontends cung cấp kiến trúc cho full-stack development của products dựa trên event-driven microservices. Mỗi micro frontend serve business logic và functionality cụ thể, với một compositional layer tổng hợp các ứng dụng lại. Architectural style này mirror autonomy và deployment patterns của backend microservices, cung cấp full product alignment và cho phép flexible frontend options cho experimentation, segmentation, và delivery of custom user experiences.</p>
+
+<p>Chương tiếp theo đi vào chủ đề quan trọng: <strong>Handling Bad Data in Event Streams</strong> — cách ngăn dữ liệu xấu xâm nhập vào stream, và phải làm gì khi nó đã vào rồi.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch16-edm">← Chương 16</a>
+  <a href="/building-event-driven-microservices/ch18-edm">Chương 18 →</a>
+</nav>
+</body>
+</html>

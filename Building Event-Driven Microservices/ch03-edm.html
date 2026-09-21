@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 3: Nền Tảng Microservice Hướng Sự Kiện — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 3</div>
+<h1>Nền Tảng Microservice Hướng Sự Kiện</h1>
+<p class="chapter-subtitle">Vai trò, trách nhiệm, topology, và những gì tạo nên một event-driven microservice thực thụ</p>
+
+<nav class="chapnav">
+  <a href="ch02-edm.html">← Chương 2: Nền Tảng Sự Kiện và Event Streams</a>
+  <a href="ch04-edm.html">Chương 4: Schemas và Data Contracts →</a>
+</nav>
+
+<p>Một <em>event-driven microservice</em> là một ứng dụng giống như bất kỳ ứng dụng nào khác. Nó cần cùng loại tài nguyên compute, storage và network như bất kỳ ứng dụng nào. Nó cũng cần chỗ lưu source code, công cụ để build và deploy ứng dụng, và monitoring và logging để đảm bảo hoạt động lành mạnh. Là một event-driven application, nó đọc events từ một stream (hoặc nhiều streams), thực hiện công việc dựa trên những events đó, và sau đó output kết quả — dưới dạng events mới, API calls, hoặc các dạng công việc khác.</p>
+
+<p>Chương 1 đã giới thiệu ngắn gọn những lợi ích chính của event-driven microservices. Trong chương này, tác giả sẽ đề cập đến nền tảng của event-driven microservices, khám phá vai trò và trách nhiệm của chúng, cùng với các yêu cầu, quy tắc và khuyến nghị để xây dựng các ứng dụng lành mạnh.</p>
+
+<hr class="divider">
+
+<h2>Những Điều Cơ Bản Về Event-Driven Microservices</h2>
+
+<p><em>Event-driven</em> có nghĩa là các events <em>drive</em> (điều khiển) business logic, giống như cách nước từ một dòng chảy quay bánh xe cối xay (Figure 3-1). Các event-driven applications, dù micro hay macro, thường chỉ thực hiện công việc khi có events đến (hoặc khi một timer hết hạn — cũng là một event). Nếu không, chúng ngồi idle cho đến khi có events mới để xử lý.</p>
+
+<p>Consumer microservice đọc events từ stream. Mỗi consumer có trách nhiệm cập nhật các con trỏ của riêng mình tới các read indices đã đọc trước đó trong event stream. Index này, được gọi là <em>offset</em>, là measurement của event hiện tại từ đầu event stream. Offsets cho phép nhiều consumers consume và theo dõi tiến trình của họ một cách độc lập với nhau, như minh họa trong Figure 3-2.</p>
+
+<p><em>Consumer group</em> cho phép nhiều consumers được xem như cùng một logical entity và cho phép horizontal scaling của việc consume messages. Khi một consumer instance mới tham gia consumer group, các partitions thường được tự động phân phối lại giữa các instances đang hoạt động trong một quá trình gọi là <em>rebalancing</em>. Các instances chỉ nhận events từ các partitions được gán cho chúng. State, đặc biệt là <em>local state</em>, cũng có thể cần rebalancing (điều này được thảo luận thêm trong Chương 8).</p>
+
+<p>Bạn có thể đang tự hỏi: <em>vậy điều gì tạo nên một event-driven microservice?</em> Có lẽ cách tốt nhất là nhìn vào một vài ví dụ trước, rồi làm việc ngược lại từ đó.</p>
+
+<hr class="divider">
+
+<h2>Basic Producer/Consumer</h2>
+
+<p>Ví dụ này được gọi là <em>basic producer/consumer</em> vì đó thực sự là tất cả những gì nó là — producer tạo ra events, consumer consume events, và bạn, software developer, phải viết tất cả các operations để kết hợp business logic lại với nhau. Chương 11 sẽ đi sâu hơn vào quá trình này, nhưng hiện tại, chỉ cần bắt đầu với một basic Python microservice ví dụ là đủ.</p>
+
+<p>Example 3-1 consume events từ một Kafka topic tên là <code>input_topic</code>, tổng hợp một sum, và emit tổng cập nhật tới một event stream mới nếu giá trị vượt quá 1000.</p>
+
+<p>Đầu tiên, nó tạo <code>KafkaConsumer</code> (1) và <code>KafkaProducer</code> (2). <code>KafkaConsumer</code> sẽ đọc events từ topic được chỉ định, convert events từ serialized bytes thành các objects mà ứng dụng hiểu; trong trường hợp này là plain-text keys và JSON values. Tiếp theo, code tạo một simple state store (3). Bước thứ tư là enter một endless loop (4) để poll input topic cho một batch events (5) và xử lý từng event trên mỗi partition (6). Với mỗi event, business logic cập nhật key sum (7), và nếu nó lớn hơn 1000 (8), thì nó tạo một event với sum để ghi vào output topic <code>key_sums</code> (9 và 10).</p>
+
+<pre><code>from kafka import KafkaConsumer, KafkaProducer
+import json
+import time
+
+# 1) Initialize Kafka consumer
+consumer = KafkaConsumer(
+    'input_topic',
+    bootstrap_servers=['localhost:9092'],
+    value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+    key_deserializer=lambda x: x.decode('utf-8'),
+    group_id='ch03_python_example_consumer_group_name',
+    auto_offset_reset='earliest'
+)
+
+# 2) Initialize Kafka producer
+producer = KafkaProducer(
+    bootstrap_servers=['localhost:9092'],
+    value_serializer=lambda x: json.dumps(x).encode('utf-8'),
+    key_serializer=lambda x: x.encode('utf-8')
+)
+
+# 3) The state store is a simple dictionary
+key_sums = {}
+
+# 4) Polling loop
+while True:
+    # 5) Poll for new events
+    event_batch = consumer.poll(timeout_ms=1000)
+
+    # 6) Process each partition's events
+    for partition_batch in event_batch.values():
+        for event in partition_batch:
+            key = event.key
+            number = event.value['number']
+
+            # 7) Update sum for this key
+            if key not in key_sums:
+                key_sums[key] = 0
+            key_sums[key] += number
+
+            # 8) Check if sum exceeds 1000
+            if key_sums[key] &gt; 1000:
+                # Prepare and send new event
+                output_event = {
+                    'key': key,
+                    'total_sum': key_sums[key]
+                }
+                # 9) Write to topic named "key_sums"
+                producer.send('key_sums',
+                              key=key,
+                              value=output_event)
+                # 10) Flushes the events to the broker
+                producer.flush()</code></pre>
+
+<p>Đây là một ứng dụng rất đơn giản. Nhưng nó thể hiện các thành phần key phổ biến với phần lớn event-driven microservices: event-stream consumers, producers, state stores, và một processing loop liên tục được điều khiển bởi sự xuất hiện của events mới trên input streams. Business logic được nhúng trong processing loop, và dù ví dụ này rất đơn giản, còn có nhiều operations mạnh mẽ và phức tạp hơn mà chúng ta có thể thực hiện.</p>
+
+<hr class="divider">
+
+<h2>The Stream-Processing Event-Driven Microservice</h2>
+
+<p>Stream-processing event-driven microservice được xây dựng bằng cách sử dụng một stream-processing framework. Các ví dụ phổ biến bao gồm Apache Kafka Streams, Apache Flink, và Apache Spark, chỉ nêu vài cái tên hàng đầu.</p>
+
+<p>Các streaming frameworks cung cấp tích hợp chặt chẽ hơn với event broker, và giảm lượng overhead bạn phải xử lý khi xây dựng EDM. Ngoài ra, chúng có xu hướng cung cấp các computations mạnh mẽ hơn với các higher-level constructs, chẳng hạn như cho phép bạn <code>join</code> streams và materialized tables với rất ít effort từ phía bạn.</p>
+
+<p>Điểm khác biệt quan trọng của stream-processing frameworks so với basic producer/consumer là stream processors <em>yêu cầu</em> một standalone cluster riêng biệt (ví dụ: Flink và Spark), hoặc một implementation tích hợp chặt với một <em>specific</em> event broker (ví dụ: Kafka Streams).</p>
+
+<p>Flink và Spark (và những cái tương tự) sử dụng processing clusters độc quyền của riêng chúng để quản lý state, scaling, và routing data nội bộ. Kafka Streams, mặt khác, chỉ dựa vào Kafka cluster để cung cấp durable storage cho application state, cung cấp topic repartitioning, và cung cấp application scaling functionality.</p>
+
+<p>Ví dụ thực tế (và concatenated) sử dụng Apache Flink với Java — join giữa Payments và Sales:</p>
+
+<pre><code>// 1) TableEnvironment manages table access for the Flink application
+TableEnvironment tableEnv =
+  TableEnvironment.create(EnvironmentSettings.inStreamingMode());
+
+// 2) Create the output table for joined results
+tableEnv.executeSql(
+    "CREATE TABLE PaymentsInnerJoinOrders (" +
+    "  order_id STRING," +
+    "  /* Add all columns you want to output here */" +
+    ") WITH (" +
+    "  'connector' = 'kafka'," +
+    "  'topic' = 'PaymentsInnerJoinOrders'," +
+    "  'properties.bootstrap.servers' = 'localhost:9092'," +
+    ")"
+);
+
+// Payments and Sales table definitions removed for brevity
+
+// 3) Reference the Sales and Payments tables
+Table sales = tableEnv.from("Sales");
+Table payments = tableEnv.from("Payments");
+
+// 4) Perform inner join between Sales and Payments tables on order_id
+Table result = sales
+    .filter($("sale.total") &gt;= 100)
+    .join(payments)
+    .where($("Sales.order_id"))
+    .isEqual($("Payment.order_id")))
+    // 5) Declare your output schema in the JoinFunction
+    .apply(new JoinFunction&lt;&gt; (...));
+
+// 6) Insert the joined results into the output Kafka topic
+result.executeInsert("PaymentsInnerJoinOrders");</code></pre>
+
+<p>Đầu tiên (1), tạo kết nối <code>tableEnv</code> sẽ quản lý table environment work. Tiếp theo, khai báo output table (2), được kết nối với Kafka topic <code>PaymentsInnerJoinOrders</code>. Bạn chỉ cần tạo một lần. Thứ ba (3), tạo references tới các bảng Sales và Payments — đây là <em>materialized streams</em>. Thứ tư (4), <em>khai báo các transformations</em> để thực hiện. Transformation đầu tiên là filter <em>in</em> bất kỳ records nào có <code>sales.total &gt;= 100</code>. Bất cứ thứ gì với <code>sales.total &lt; 100</code> sẽ bị lọc <em>ra</em>. Thứ năm (5), tại đây bạn khai báo output event schema của mình. Thứ sáu (6) và cuối cùng, ứng dụng ghi data vào output table.</p>
+
+<p>Streaming frameworks cung cấp khả năng rất mạnh, nhưng thường yêu cầu đầu tư upfront lớn hơn vào supporting architecture. Chúng cũng thường chỉ cung cấp language support hạn chế (Python và JVM phổ biến nhất), mặc dù một số đã thêm hỗ trợ cho các ngôn ngữ khác. Thực tế, SQL hoặc SQL-like languages đã là nhóm phát triển nhanh nhất.</p>
+
+<hr class="divider">
+
+<h2>The Streaming SQL Query</h2>
+
+<p>Liệu microservice của tôi có thực sự chỉ là một SQL query không?</p>
+
+<p>Đó là một câu hỏi hay, đặc biệt với sự phát triển của streaming SQL như managed services. Những thứ tương tự làm cho SQL phổ biến trong thế giới database cũng làm cho nó phổ biến trong thế giới streaming. Bản chất declarative của nó có nghĩa là bạn chỉ khai báo kết quả bạn muốn. Bạn không phải chỉ định <em>cách</em> thực hiện, vì đó là công việc của underlying processing engine.</p>
+
+<p>Ngoài ra, SQL cho phép bạn viết các statements rõ ràng và súc tích về những gì bạn muốn thực hiện với event streams. Ví dụ, bạn có thể viết lại ứng dụng Flink tương tự bằng Flink SQL:</p>
+
+<pre><code>-- Assume that the tables have already been declared
+
+INSERT INTO PaymentsInnerJoinOrders
+SELECT *
+FROM Sales s
+INNER JOIN Payment p
+ON s.order_id = p.order_id;</code></pre>
+
+<p>Đơn giản nhưng mạnh mẽ. Streaming SQL queries như thế này tạo ra các long-running processes liên tục thực thi business logic, giống như bất kỳ microservice nào khác. Nó sẽ chạy vô thời hạn, scaling up và down khi cần.</p>
+
+<p>Streaming SQL không được chuẩn hóa, và nó phụ thuộc nặng nề vào các frameworks bạn chọn để xây dựng microservices. Ví dụ Flink project có một số lớp APIs, mỗi lớp phụ thuộc vào các lớp bên dưới (Figure 3-3): Stateful stream processing (Low-level building block) → DataStream (Core APIs) → Table API (Declarative DSL) → SQL (High-level language).</p>
+
+<p>Streaming SQL được đề cập chi tiết hơn trong Chương 14.</p>
+
+<hr class="divider">
+
+<h2>The Legacy Application</h2>
+
+<p>Legacy applications thường không được viết với event-driven processing trong tâm trí. Chúng thường là những hệ thống cũ nhưng quan trọng phục vụ các chức năng kinh doanh quan trọng, nhưng không còn trong giai đoạn phát triển tích cực nữa. Các thay đổi đối với những dịch vụ này rất hiếm và chỉ được thực hiện khi thực sự cần thiết. Legacy applications cũng thường là gatekeepers của các business data quan trọng, bị siloed trong database hoặc file stores của hệ thống.</p>
+
+<p>Legacy application về cơ bản là một cấu trúc cứng nhắc mà bạn khó có thể thay đổi. Nhưng bạn vẫn <em>có thể</em> tích hợp nó vào kiến trúc event-driven tổng thể của mình thông qua việc sử dụng <em>connectors</em>, như minh họa trong Figure 3-4.</p>
+
+<p>Connectors có thể đọc events từ một source system hoặc database, convert data thành events, và ghi vào một event stream. Tương tự, connectors cũng có thể đọc events từ một stream, convert chúng thành định dạng phù hợp, và ghi chúng vào API hoặc database của legacy system. Chúng cung cấp phương tiện để tích hợp các existing applications này vào event-driven architecture mà không cần phải redesign toàn bộ hệ thống.</p>
+
+<p>Connectors cho phép bạn bắt đầu với event streams mà không cần phải phát minh lại toàn bộ architecture của mình. Chúng giúp dễ dàng đưa data vào streams, để bạn có thể bắt đầu nhận giá trị từ event-driven microservices của mình sớm nhất có thể. Chương 6 đề cập đến connectors chi tiết hơn.</p>
+
+<hr class="divider">
+
+<h2>Topologies và Event-Driven Microservices</h2>
+
+<p>Bạn có thể thấy thuật ngữ <em>topology</em> trong nhiều sách, blogs, và presentations về event-driven microservices. Nó có thể được sử dụng như một mô tả cho các logical steps tạo nên processing logic của một individual microservice. Nó cũng có thể được sử dụng một cấp cao hơn, để chỉ mối quan hệ graph-like giữa các individual microservices, event streams, và request-response APIs.</p>
+
+<h3>Microservice Topology</h3>
+
+<p>Một <em>microservice topology</em> là event-driven business logic nội tại của một single microservice. Nó định nghĩa các data-driven operations mà service thực hiện trên events, bao gồm transformation, storage, và production của events mới. Bạn có thể biểu diễn topology dưới dạng một image (Figure 3-5).</p>
+
+<p>Microservice topology trong hình minh họa một service ingesting events từ event stream A và materializing chúng vào một data store. Service cũng ingests events từ stream B, filters và transforms chúng trước khi joining chúng trên materialized state. Cuối cùng, service outputs kết quả tới một event stream mới.</p>
+
+<h3>Business Topology</h3>
+
+<p>Một <em>business topology</em> giống như một microservice topology, nhưng được zoomed out thêm một cấp. Nó là tập hợp các microservices, event streams, và APIs hoàn thành các business functions phức tạp. Đó là một nhóm tùy ý các services và có thể đại diện cho các services thuộc sở hữu của một team hoặc department duy nhất, hoặc những services hoàn thành một superset của complex business functionality.</p>
+
+<p>Business communication structures tạo nên business topology. Microservices triển khai các business bounded contexts, và event streams cung cấp data communication mechanism để chia sẻ cross-context domain data.</p>
+
+<p>Figure 3-6 minh họa một business topology với ba independent microservices và event streams. Microservice 1 consume và transform data từ event stream A và produce kết quả tới event stream B. Microservice 2 và microservice 3 đều consume từ event stream B. Microservice 2 hoạt động thuần túy như một consumer và cung cấp một REST API để data có thể được truy cập synchronously. Trong khi đó, microservice 3 thực hiện các transformations của riêng nó theo bounded context requirements và outputs tới event stream C. Các microservices và event streams mới có thể được thêm vào business topology khi cần, được coupled asynchronously thông qua event streams.</p>
+
+<blockquote>Một <em>microservice topology</em> mô tả inner workings của một single microservice. Một <em>business topology</em>, mặt khác, mô tả các relationships <em>giữa</em> các services.</blockquote>
+
+<hr class="divider">
+
+<h2>Trách Nhiệm Của Event-Driven Microservice</h2>
+
+<p>Tất cả microservices đều có chung một tập trách nhiệm, bất kể bạn xây dựng chúng như thế nào và công nghệ bạn sử dụng. Bạn sẽ cần tính toán đến những trách nhiệm này khi xây dựng các services của mình:</p>
+
+<dl>
+  <dt>Service boundaries và scope</dt>
+  <dd>Microservice có trách nhiệm enforce một tập boundaries được xác định rõ ràng. Service này chịu trách nhiệm về điều gì? Và điều gì không phải là trách nhiệm của nó? Điều sau trở nên quan trọng hơn khi bạn có nhiều microservices làm việc cùng nhau để hoàn thành một workflow phức tạp, nơi có thể khó phân biệt rõ trách nhiệm của từng service. Bằng cách map microservices tới bounded contexts rõ ràng nhất có thể, chúng ta có thể tránh nhiều phỏng đoán và sự mơ hồ.</dd>
+
+  <dt>Scalability</dt>
+  <dd>Microservice có trách nhiệm đảm bảo khả năng mở rộng của chính nó. Cụ thể, nó phải được viết theo cách cho phép scale horizontally (nhiều instances hơn) hoặc vertically (một instance mạnh hơn), tùy thuộc vào requirements của nó. Các EDM frameworks cung cấp scaling out-of-the-box có sức hấp dẫn lớn hơn nhiều do các built-in scaling capabilities liền mạch.</dd>
+
+  <dt>State management</dt>
+  <dd>Microservice có toàn quyền trách nhiệm về các creates, reads, updates, và deletes được thực hiện đối với data store của nó. Bất kỳ operations nào modify state trong microservice đều nằm hoàn toàn trong phạm vi kiểm soát của nó. Chương 8 đi sâu hơn về cách build và manage state cho event-driven microservices.</dd>
+
+  <dt>Keep track of stream progress</dt>
+  <dd>Mỗi microservice phải theo dõi tiến trình đọc các input event streams. Ví dụ, Apache Kafka theo dõi tiến trình này bằng cách sử dụng consumer group, một per logical microservice. Consumer groups cũng được sử dụng bởi nhiều event brokers khác, mặc dù consumer vẫn có thể chọn tự điều chỉnh offsets của mình (chẳng hạn, để replay một số records) hoặc lưu trữ chúng ở nơi khác, chẳng hạn như trong data store của chính nó.</dd>
+
+  <dt>Failure recovery</dt>
+  <dd>Microservices có trách nhiệm đảm bảo chúng có thể đưa mình trở lại trạng thái lành mạnh sau một failure. Ứng dụng phải tính đến stored state của mình trong mối quan hệ với stream input progress. Trong trường hợp crash, consuming service sẽ resume từ last known good offsets, điều này có thể dẫn đến duplicate processing và duplicate state store updates. Database snapshots, restoration từ event streams, và replaying data đều là các kỹ thuật preservation và restoration state thường được sử dụng, được khám phá thêm trong Chương 8.</dd>
+
+  <dt>The single writer per stream principle</dt>
+  <dd>Mỗi event stream có một và chỉ một producing microservice. Microservice này là owner của mỗi event được produce tới stream đó. Điều này cho phép authoritative source of truth luôn được biết cho bất kỳ event nào, bằng cách cho phép tracing data lineage qua hệ thống. Các cơ chế access control, như được thảo luận trong Chương 19, nên được sử dụng để enforce ownership và write boundaries.</dd>
+
+  <dt>Event keys và partitioning</dt>
+  <dd>Microservice có trách nhiệm chọn primary key của output record và xác định partition nào để gửi record đó đến. Records có cùng key thường đi đến cùng một partition, mặc dù bạn có thể chọn các strategies khác (ví dụ: round-robin, random, hoặc custom). Cuối cùng, chính microservice của bạn có trách nhiệm chọn partition để ghi event vào.</dd>
+
+  <dt>Event schemas và data contracts</dt>
+  <dd>Sử dụng schema để định nghĩa nội dung data của event của bạn, để consumers có các field names, types, và default values được xác định rõ ràng. Chương 4 đề cập đến điều này chi tiết hơn nhiều, nhưng hiện tại, hãy lên kế hoạch sử dụng Avro, Protobuf, hoặc JSON schema được định nghĩa tốt để ghi records. Nó sẽ làm cho event streams dễ sử dụng hơn nhiều, cung cấp sự rõ ràng cho consumers, và cho phép một event-driven ecosystem lành mạnh hơn nhiều.</dd>
+</dl>
+
+<p>Một microservice cũng phải có <em>kích thước hợp lý</em>. Điều đó nghe mơ hồ phải không?</p>
+
+<hr class="divider">
+
+<h2>Microservice Nên Nhỏ Như Thế Nào?</h2>
+
+<p>Trước tiên, mục tiêu của kiến trúc microservice không phải là tạo ra càng nhiều càng tốt. Bạn sẽ không giành được bất kỳ giải thưởng nào vì có service count cao nhất, và bạn cũng sẽ không thấy trải nghiệm thú vị. Thực tế là mỗi service bạn xây dựng, dù micro hay không, đều phát sinh overhead. Tuy nhiên, chúng ta cũng muốn tránh những đau đầu đi kèm với một monolith duy nhất.</p>
+
+<p>Một microservice phải có thể được quản lý bởi một single team, và team đó phải có thể có người khác làm việc trong nó khi cần. <em>Two-pizza team</em> (nhóm đủ nhỏ để có thể được nuôi bằng hai chiếc pizza) là một measurement phổ biến, mặc dù nó có thể là một hướng dẫn hơi không đáng tin cậy, tùy thuộc vào mức độ đói của developers của bạn.</p>
+
+<p>Một developer duy nhất trong team này phải có thể fit vào không gian của các nhiệm vụ mà service có trong đầu họ. Một developer mới đến microservice phải có thể tìm hiểu các nhiệm vụ của service đó và cách nó thực hiện các nhiệm vụ đó, chỉ trong một hoặc hai ngày.</p>
+
+<p>Cuối cùng, mối quan tâm thực sự là service <em>phục vụ một bounded context cụ thể</em> và đáp ứng một nhu cầu kinh doanh. Kích thước, hay <em>micro</em> như thế nào, là mối quan tâm thứ yếu. Một số mẹo nhanh:</p>
+
+<ul>
+  <li>Chỉ build nhiều services khi cần thiết. More is not better.</li>
+  <li>Một người phải có thể hiểu toàn bộ service.</li>
+  <li>Team của bạn sẽ cần chịu trách nhiệm sở hữu và duy trì service và các output event streams.</li>
+  <li>Hãy xem xét thêm functionality vào một service hiện có trước. Nó giảm per-application overhead của bạn.</li>
+  <li>Đối với các microservices bạn xây dựng, hãy tập trung vào việc xây dựng <em>modular components</em>. Bạn có thể thấy rằng khi business phát triển, bạn cần tách một module ra thành microservice riêng của nó.</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Quản Lý Microservices Ở Quy Mô Lớn</h2>
+
+<p>Quản lý microservices có thể ngày càng khó khăn hơn khi số lượng services tăng lên. Mỗi microservice cần các compute resources cụ thể, data stores, configurations, environment variables, và vô số thuộc tính microservice-specific khác. Mỗi microservice cũng phải có thể được quản lý và deploy bởi team sở hữu nó, điều này đòi hỏi phải streamline developer operations (DevOps) để giảm overhead và complexity.</p>
+
+<p>Containerization, container management, và infrastructure as code (IaC) đã biến đổi cách các ứng dụng được deployed, monitored, và scaled. Docker, Kubernetes, và Terraform là các lựa chọn công nghệ phổ biến, và mỗi cái đóng vai trò quan trọng trong các modern DevOps practices.</p>
+
+<h3>Đưa Microservices Vào Containers</h3>
+
+<p>Containerization revolutionized software deployment bằng cách cho phép đóng gói một ứng dụng cùng với các dependencies của nó vào một isolatable logical container. Containers tận dụng host operating system (OS) thông qua một shared kernel model. Điều này cung cấp sự tách biệt cơ bản giữa các containers, trong khi container tự cô lập environment variables, libraries, và các dependencies khác.</p>
+
+<p>Cách tiếp cận shared operating system của containers có một số trade-offs. Containerized applications phải có thể chạy trên host's OS. Nếu một ứng dụng yêu cầu một OS chuyên biệt, thì một independent host sẽ cần được thiết lập. Security cũng là một mối quan tâm lớn, vì các containers share access tới host machine's OS. Tuy nhiên, với friendly workloads, điều này khó có thể là vấn đề.</p>
+
+<h3>Đưa Microservices Vào Virtual Machines</h3>
+
+<p><em>Virtual machines</em> (VMs) giải quyết một số thiếu sót của containers. Traditional VMs cung cấp full isolation với một self-contained OS và virtualized hardware được chỉ định cho mỗi instance. Mặc dù giải pháp thay thế này cung cấp bảo mật cao hơn so với containers, nhưng nó lịch sử đã tốn kém hơn nhiều.</p>
+
+<p><em>MicroVMs</em> gần giống containers hơn trong cách vận hành và xử lý. Chúng có memory và CPU overhead rất thấp và khởi động nhanh hơn nhiều (dưới một giây) so với classic VMs. Chúng cung cấp hardware-level isolation cho multitenant services, tạo ra một ecosystem an toàn và đáng tin cậy hơn. Google's gVisor, Amazon's Firecracker, và Kata Containers là các ví dụ về các frameworks phổ biến để chạy lightweight virtual machines.</p>
+
+<p>Tuy nhiên, kể từ lần xuất bản đầu tiên của cuốn sách này, thực tế là VMs, micro hay không, vẫn còn tương đối hiếm so với containers. Container isolation đã cải thiện và các security risks đã giảm. Trong khi virtual machines vẫn là một option để chạy microservice, bạn có nhiều khả năng sử dụng containers hơn trừ khi bạn có các yêu cầu isolation rất nghiêm ngặt.</p>
+
+<h3>Quản Lý Containers và Virtual Machines</h3>
+
+<p>Containers và VMs được quản lý thông qua nhiều phần mềm purpose-built được gọi là <em>container management systems</em> (CMS). Chúng kiểm soát container deployment, resource allocation, và integration với underlying compute resources. Kubernetes, Docker Engine, Amazon ECS, và Nomad là các CMS phổ biến và thường được sử dụng.</p>
+
+<p>Microservices phải có thể scale up và down tùy thuộc vào các workloads, service-level agreements (SLAs), và performance requirements. Vertical scaling phải được hỗ trợ, trong đó các compute resources như CPU, memory, và disk được tăng hoặc giảm trên mỗi microservice instance. Horizontal scaling cũng phải được hỗ trợ, với các instances mới được thêm hoặc xóa bỏ.</p>
+
+<p>Kubernetes pod concept cho phép nhiều containers được deployed và reverted như một single action. Kubernetes cũng cho phép single-run operations; ví dụ, database migrations có thể được chạy trong quá trình thực thi single deployable.</p>
+
+<hr class="divider">
+
+<h2>Paying the Microservice Tax</h2>
+
+<p><em>Microservice tax</em> là tổng chi phí, bao gồm tài chính, nhân lực, và cơ hội, liên quan đến việc triển khai các công cụ, platforms, và components của kiến trúc microservice.</p>
+
+<p>Tax bao gồm chi phí quản lý, deploying, và vận hành event broker, CMS, deployment pipelines, monitoring solutions, và logging services. Những chi phí này là không thể tránh khỏi và được trả bởi trung tâm hoặc độc lập bởi mỗi team triển khai microservices. Cái trước tạo ra một framework scalable, simplified, và unified để phát triển microservices, trong khi cái sau dẫn đến excessive overhead, duplicate solutions, fragmented tooling, và unsustainable growth.</p>
+
+<p>Các chi phí khác bao gồm giảm productivity khi developers học các kỹ năng mới để build, manage, và maintain microservices. Học cách quản lý asynchrony, phục hồi sau failures, và service modularization đều sẽ mất thời gian, đặc biệt đối với các junior developers có ít kinh nghiệm về event-driven architectures.</p>
+
+<p>Paying the microservice tax không phải là chuyện nhỏ, và đó là một trong những trở ngại lớn nhất để bắt đầu với event-driven microservices. Các tổ chức nhỏ sẽ làm tốt hơn nếu gắn bó với một kiến trúc phù hợp hơn với nhu cầu kinh doanh của họ, chẳng hạn như modular monolith, và chỉ mở rộng sang microservices khi business của họ gặp phải các vấn đề scaling và growth.</p>
+
+<p>Tin tốt là tax không phải là vấn đề tất cả hoặc không có gì. Bạn có thể đầu tư vào microservices platform của mình một cách incremental, thêm các functions và features mới theo thời gian và theo nhu cầu. Các cloud services và fully managed offerings có sẵn để giảm đáng kể microservices tax — bạn có thể dễ dàng tìm thấy managed CMSs, event brokers, monitoring solutions, data catalogs, và integration/deployment pipeline services mà không cần tự chạy chúng.</p>
+
+<hr class="divider">
+
+<h2>Service Contracts</h2>
+
+<p>Service contracts là thành phần quan trọng để thiết lập microservice boundaries rõ ràng và súc tích. Chúng cũng quan trọng cho formal documentation, API management, và xác định chính xác những services nào bạn có quyền truy cập và những services nào bạn không có.</p>
+
+<p>OpenAPI hoặc implementations như Swagger có xu hướng là những lựa chọn phổ biến nhất để triển khai service contracts. Service contracts thiết lập:</p>
+
+<dl>
+  <dt>Service APIs</dt>
+  <dd>Các API calls mà service hỗ trợ, bao gồm tên, các parameters bắt buộc và tùy chọn, return types, và protocols được hỗ trợ.</dd>
+
+  <dt>Code generation</dt>
+  <dd>Tạo các stubbed-out functions dựa trên specification. Sau đó, chỉnh sửa chúng để chứa business logic cần thiết để hoàn thành service contract.</dd>
+
+  <dt>Documentation</dt>
+  <dd>Bạn cũng có thể generate documentation từ specification, điều này cực kỳ hữu ích trong việc tiết kiệm thời gian và công sức cập nhật thủ công. Bằng cách generate code và documentation cùng nhau, bạn có thể đảm bảo rằng docs sẽ match với các function calls thực sự có sẵn.</dd>
+
+  <dt>Namespacing</dt>
+  <dd>Bạn có thể chỉ định namespace của service, cung cấp thông tin organizational và loại bỏ sự mơ hồ cho các services có tên tương tự nhau.</dd>
+
+  <dt>Versioning</dt>
+  <dd>Version của service contract, cùng với lịch sử các thay đổi contract.</dd>
+
+  <dt>Ownership</dt>
+  <dd>Chỉ định team hoặc người sở hữu service.</dd>
+
+  <dt>Service-level objectives (hoặc agreements)</dt>
+  <dd>Owner có trách nhiệm đảm bảo các service levels đầy đủ được duy trì. Trong khi một site reliability engineer (SRE) có thể chịu trách nhiệm giữ cho service instances chạy, owner có trách nhiệm về mọi thứ khác.</dd>
+
+  <dt>Breaking change management</dt>
+  <dd>Service APIs có thể thay đổi theo thời gian. Service contract cho phép bạn đánh dấu APIs là deprecated, cho biết với service users cách migrate khỏi các APIs sắp bị xóa.</dd>
+</dl>
+
+<p>Event-driven microservices có phần khác so với request-response microservices communicating qua direct API calls. Nhiều service contract notions có thể không áp dụng chút nào, vì communication xảy ra qua event streams chứ không phải point-to-point. Chương tiếp theo đề cập đến việc sử dụng <em>data contracts</em> cho event streams, giống với service contracts nhưng khác nhau ở một vài điểm quan trọng.</p>
+
+<p>Tuy nhiên, các microservices cung cấp hỗn hợp request-response–based APIs và event-stream data sẽ yêu cầu cả service contracts và data contracts.</p>
+
+<hr class="divider">
+
+<h2>Tóm Tắt</h2>
+
+<p>Event-driven microservices là các ứng dụng giống như bất kỳ ứng dụng nào khác, dựa vào các incoming events để điều khiển business logic. Chúng có thể được viết bằng nhiều ngôn ngữ khác nhau, mặc dù chức năng bạn có sẵn sẽ thay đổi cho phù hợp. Basic producer/consumer microservices có thể được viết bằng nhiều ngôn ngữ, trong khi các purpose-built streaming frameworks có thể chỉ hỗ trợ một hoặc hai ngôn ngữ. SQL queries và connectors cũng là những tùy chọn còn lại, nhưng việc sử dụng chúng đòi hỏi tích hợp thêm với application source code so với những gì đã đề cập trong chương này.</p>
+
+<p>Microservices có một loạt trách nhiệm, bao gồm quản lý code, state, và runtime properties của riêng chúng. Người tạo service có quyền tự do chọn các công nghệ phù hợp nhất để giải quyết business problem, mặc dù họ tất nhiên cần đảm bảo rằng service có thể được duy trì, cập nhật, và debug bởi người khác. Microservices thường được deployed trong containers hoặc virtual machines, dựa vào container/VM management systems để giúp monitor và quản lý vòng đời của chúng.</p>
+
+<p>Cuối cùng, hãy xem xét microservice tax. Đó là tổng hợp công việc không phải business mà bạn cần làm để sử dụng microservices là một lựa chọn hợp lý. Không có công thức rõ ràng cho những gì là và không phải là microservice tax. Mỗi tổ chức có một technology stack khác nhau, và những gì có thể là lời khuyên tốt cho một tổ chức có thể là lựa chọn tồi cho tổ chức khác. Tuy nhiên, hãy cố gắng sử dụng những gì bạn đã có trước khi mua thứ gì đó mới, và làm việc một cách incremental. Đây không phải là vấn đề tất cả hoặc không có gì. Hãy xây dựng và chạy microservice đầu tiên của bạn, học từ quá trình đó, sau đó lặp lại và cải thiện.</p>
+
+<p>Event-driven microservices phụ thuộc rất nhiều vào data được xác định rõ ràng và đáng tin cậy. Trong chương tiếp theo, chúng ta sẽ xem xét event schemas, và cách chúng cung cấp một framework để tạo ra các events được xác định tốt.</p>
+
+<nav class="chapnav">
+  <a href="ch02-edm.html">← Chương 2: Nền Tảng Sự Kiện và Event Streams</a>
+  <a href="ch04-edm.html">Chương 4: Schemas và Data Contracts →</a>
+</nav>
+</body>
+</html>

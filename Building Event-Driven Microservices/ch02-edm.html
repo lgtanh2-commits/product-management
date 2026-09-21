@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 2: Nền tảng Sự kiện và Luồng Sự kiện — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 2</div>
+<h1>Nền tảng Sự kiện và Luồng Sự kiện</h1>
+<p class="chapter-subtitle">Event, event stream, event broker — ba khối xây dựng cốt lõi của mọi kiến trúc event-driven hiện đại</p>
+
+<p>Event streams được phục vụ bởi một <em>event broker</em> là phương thức chủ đạo cho các kiến trúc event-driven mạnh mẽ, mặc dù queues và ephemeral messaging cũng có vị trí của chúng. Chương này khảo sát từng phương thức, làm rõ sự khác biệt giữa chúng, và giải thích tại sao event streams trở thành nền tảng của một hệ sinh thái event-driven ở tầm doanh nghiệp.</p>
+
+<h2>Sự kiện là gì?</h2>
+
+<p>Một sự kiện (event) có thể là <em>bất cứ điều gì</em> xảy ra trong phạm vi cấu trúc giao tiếp nghiệp vụ. Nhận hóa đơn, đặt phòng họp, yêu cầu một tách cà phê (bạn hoàn toàn có thể kết nối máy pha cà phê vào một event stream), thuê nhân viên mới, và hoàn thành thành công một đoạn code tùy ý — tất cả đều là ví dụ về sự kiện xảy ra trong doanh nghiệp. Điều quan trọng cần nhận ra là sự kiện có thể là bất cứ điều gì quan trọng với nghiệp vụ. Một khi các sự kiện này bắt đầu được ghi lại, các hệ thống event-driven có thể được tạo ra để khai thác và sử dụng chúng trong toàn tổ chức.</p>
+
+<p>Một sự kiện là một <em>bản ghi</em> về những gì đã xảy ra, giống như cách logs thông tin và lỗi của ứng dụng ghi lại những gì diễn ra trong ứng dụng. Tuy nhiên, khác với logs thông thường, events còn là nguồn sự thật duy nhất như đã đề cập trong Chương 1. Do đó, chúng phải chứa tất cả thông tin cần thiết để mô tả chính xác những gì đã xảy ra.</p>
+
+<p><strong>Events là bất biến (immutable).</strong> Bạn không thể sửa đổi một sự kiện sau khi nó được phát lên event stream. Tính bất biến là thuộc tính thiết yếu để đảm bảo rằng consumers có thể truy cập chính xác cùng một dữ liệu. Mutating dữ liệu đã được đọc bởi nhiều consumers là vô ích, vì không có cách nào dễ dàng để thông báo cho họ rằng họ phải thay đổi dữ liệu mà họ đã đọc. Tuy nhiên, bạn có thể tạo và phát một sự kiện mới chứa các bản sửa đổi hoặc cập nhật cần thiết.</p>
+
+<p>Events sử dụng schemas, được đề cập chi tiết hơn trong Chương 4. Hiện tại, hãy coi events có field names, types, và default values được xác định rõ ràng. Thay vì dùng thuật ngữ "message", cuốn sách này dùng <em>event</em> và <em>record</em> — vì "message" là từ overloaded với nghĩa khác nhau trong các bối cảnh khác nhau (instant messaging, message queues, v.v.).</p>
+
+<p>Events trong kiến trúc event-driven giống như một bài đăng trên mạng xã hội hay bảng thông báo hơn là một tin nhắn riêng tư. Nó public cho tất cả ai có quyền truy cập và mọi người tự do đọc và dùng theo cách họ thấy phù hợp. Nhiều hơn một người có thể đọc bài đăng đó, và tất nhiên bài đăng có thể được đọc đi đọc lại nhiều lần. Event streams thực chất là một <em>broadcast</em> để chia sẻ dữ liệu quan trọng.</p>
+
+<hr class="divider">
+
+<h2>Luồng Sự kiện là gì?</h2>
+
+<p>Một event stream là một <strong>log bất biến, append-only và bền vững</strong>. Các records được thêm vào cuối log (tail) khi được producer phát ra. Consumers bắt đầu từ đầu log (head) và tiêu thụ records theo tốc độ xử lý của riêng họ.</p>
+
+<p>Ở dạng cơ bản nhất, một event stream là một chuỗi các sự thật nghiệp vụ được đánh dấu thời gian, liên quan đến một domain. Events là nền tảng để giao tiếp dữ liệu nghiệp vụ quan trọng giữa các domains một cách đáng tin cậy và có thể lặp lại.</p>
+
+<h3>Sáu thuộc tính quan trọng của Event Stream</h3>
+
+<p><strong>1. Immutability (Bất biến):</strong> Events không thể bị sửa đổi sau khi được ghi vào log. Nội dung không thể bị thay đổi, cũng như vị trí offset, timestamp hay bất kỳ metadata liên quan nào. Bạn chỉ có thể thêm events mới.</p>
+
+<p><strong>2. Partitioned (Phân vùng):</strong> Partitions cung cấp phương tiện hỗ trợ các tập dữ liệu khổng lồ. Một consumer có thể subscribe vào một hoặc nhiều partitions từ một event stream duy nhất, cho phép nhiều instances của một microservice tiêu thụ và xử lý stream song song. Đây là cơ chế cơ bản để scale event processing.</p>
+
+<p><strong>3. Indexed (Được đánh chỉ số):</strong> Events được gán một index bất biến khi được ghi vào log. Index này, thường được gọi là <em>offset</em>, xác định duy nhất sự kiện đó. Consumer có thể tua lại (seek) đến bất kỳ offset nào để bắt đầu đọc từ điểm đó.</p>
+
+<p><strong>4. Ordered (Có thứ tự):</strong> Records trong một partition của event stream được phục vụ cho clients theo đúng thứ tự chúng được phát ban đầu. Ordering được đảm bảo trong phạm vi một partition — không phải cross-partition.</p>
+
+<p><strong>5. Durability and replayability (Bền vững và có thể replay):</strong> Events bền vững — chúng có thể được tiêu thụ ngay lập tức hoặc trong tương lai. Events có thể được replay bởi cả consumers mới và cũ, miễn là event broker có đủ storage để lưu trữ dữ liệu lịch sử. Events không bị xóa sau khi được đọc, cũng không bị đơn giản loại bỏ trong trường hợp không có consumers.</p>
+
+<p><strong>6. Indefinite storage support (Hỗ trợ lưu trữ vô thời hạn):</strong> Bạn có thể lưu giữ tất cả events trong stream của mình lâu bao nhiêu tùy ý. Không có forced expiry hay time-limited retention, cho phép bạn tiêu thụ và tái tiêu thụ events bao nhiêu lần tùy thích.</p>
+
+<p>Event streams được hosted trên một <em>event broker</em>, với Apache Kafka là tiêu chuẩn de facto phổ biến nhất. Event broker cung cấp cấu trúc gọi là <em>topic</em> mà chúng ta có thể write events vào. Nó cũng xử lý mọi thứ từ data replication đến rebalancing client connections và access controls. Publishers ghi events vào event stream được host trên broker, còn consumers subscribe vào event streams và nhận events.</p>
+
+<hr class="divider">
+
+<h2>Ephemeral Messaging — Nhắn tin tạm thời</h2>
+
+<p>Một <em>channel</em> là một substrate tạm thời để giao tiếp một <em>message</em> giữa một producer và một hoặc nhiều subscribers. Messages được chuyển hướng đến các consumers cụ thể và không được lưu trữ trong bất kỳ thời gian đáng kể nào, cũng không được ghi vào durable storage bởi broker. Trong trường hợp hệ thống lỗi hoặc thiếu subscribers trên channel, messages đơn giản bị loại bỏ, cung cấp at-most-once delivery. NATS.io Core (không phải JetStream) là một ví dụ về loại implementation này.</p>
+
+<p>Ephemeral communication phù hợp với giao tiếp service-to-service trực tiếp với overhead thấp. Đây là kiến trúc message-passing và không nên nhầm lẫn với durable publish-subscribe architecture như event streams cung cấp.</p>
+
+<p>Message-passing architectures cung cấp point-to-point communication giữa các hệ thống không nhất thiết cần at-least-once delivery và có thể chấp nhận một số data loss. Ví dụ: ứng dụng hẹn hò Tinder dùng NATS để thông báo cho người dùng về các cập nhật. Nếu message không được nhận, đó không phải vấn đề lớn — một push notification bị bỏ lỡ chỉ có tác động nhỏ (dù tiêu cực) đến user experience.</p>
+
+<p>Ephemeral message-passing brokers thiếu indefinite retention, durability, và replayability cần thiết để xây dựng event-driven data products. Chúng hữu ích cho giao tiếp event-driven giữa các hệ thống cho các mục đích operational hiện tại nhưng hoàn toàn không phù hợp để cung cấp phương tiện giao tiếp data products.</p>
+
+<hr class="divider">
+
+<h2>Queuing — Hàng đợi</h2>
+
+<p>Một <em>queue</em> là một chuỗi bền vững của các records được lưu trữ đang chờ xử lý. Khá phổ biến khi có nhiều consumers asynchronously (và cạnh tranh nhau) select, process, và acknowledge records theo cơ chế first-come, first-served. Đây là một trong những sự khác biệt chính khi so sánh với event streams — event streams sử dụng partition-exclusive subscriptions và xử lý theo thứ tự nghiêm ngặt.</p>
+
+<p>Hai queue brokers open-source phổ biến là <strong>RabbitMQ</strong> và <strong>Apache ActiveMQ</strong>. Cả hai đều cung cấp robust queueing semantics và hỗ trợ các queueing protocols phổ biến bao gồm AMQP (Advanced Message Queuing Protocol) và MQTT (Message Queuing Telemetry Transport). Các tiêu chuẩn protocol này cho phép interoperability với các frameworks, clients, và services khác.</p>
+
+<h3>Work Queue (Hàng đợi công việc)</h3>
+<p>Một use case phổ biến của queue là <em>work queue</em>. Producer phát records đại diện cho công việc cần làm. Consumers cooperatively dequeue records, xử lý chúng, và sau đó báo hiệu cho queue broker rằng công việc đã hoàn thành theo từng record. Broker sau đó thường xóa các records đã xử lý — đây là sự khác biệt lớn thứ hai so với event stream, vì event stream giữ records lâu theo cấu hình (kể cả vô thời hạn).</p>
+
+<p>Queues thường cung cấp at-least-once processing guarantees. Records có thể được xử lý nhiều hơn một lần, đặc biệt nếu subscriber không commit progress về broker — ví dụ do crash. Trong trường hợp này, một subscriber khác sẽ pick up record và xử lý lại.</p>
+
+<h3>Priority-based Record Ordering</h3>
+<p>Queue brokers có thể cung cấp <em>priority-based record ordering</em> cho consumers, sao cho records ưu tiên cao được đẩy lên đầu, trước các records ưu tiên thấp hơn. Queues cung cấp cấu trúc dữ liệu lý tưởng cho priority ordering vì chúng không enforce strict first-in, first-out ordering như event stream.</p>
+
+<h3>Queues qua Modern Queue Brokers</h3>
+<p>Modern queue brokers cung cấp cơ chế <em>publish-subscribe</em> cho phép loose coupling giữa producer và các interested consumers. Thay vì phát directly đến từng queue có thể cần record, producer gửi message đến một <em>exchange</em> được host trên broker. Exchange sau đó route một <em>bản sao</em> của record đến mỗi subscribed queue được đăng ký tại thời điểm exchange nhận record.</p>
+
+<h3>Queues qua Apache Kafka (KIP-932)</h3>
+<p>Một trong những thay đổi lớn kể từ ấn bản đầu tiên của cuốn sách này là sự ra đời của <strong>queues for Kafka (KIP-932)</strong> như một early access release cho Kafka 4.0. Lịch sử, Kafka không cung cấp queue functionality, nhưng KIP-932 giải quyết các vấn đề của event stream khi dùng như queue:</p>
+
+<p><strong>One consumer per-partition limitation:</strong> Khi consuming một stream của records như event stream, Kafka chỉ cho phép một consumer instance consume mỗi partition. Không thể thêm instances khác để xử lý partition đó trong cùng consumer group.</p>
+
+<p><strong>Head-of-line blocking:</strong> Vì chỉ có một consumer instance mỗi partition, nếu một record mất rất lâu để xử lý, không có tiến trình nào có thể được thực hiện cho đến khi nó hoàn thành. Nó bị block bởi record ở đầu hàng.</p>
+
+<p><strong>Per-record failures and retries:</strong> Không có per-record retry mechanism, hay cách nào để đánh dấu một record là failed. Với Kafka consumer protocol cho event streams, bạn phải acknowledge toàn bộ batch các records đã consume, hoặc redo toàn bộ batch. Mọi per-record tracking phải được implement trong custom code.</p>
+
+<p>KIP-932 giới thiệu khái niệm <em>share group</em> và class <code>KafkaShareConsumer</code>. Nó tương tự Kafka consumer group nhưng treat append-only log của Kafka topic như một queue thay vì event stream. Các tính năng chính: Multiple instances per partition (throughput cao hơn), Individual record acknowledgment (không còn head-of-line blocking), Retries (theo dõi thất bại với maximum retry count), Processing timeouts (release records bị timeout cho instance khác), và Rewindable progress (replay data từ offset cụ thể — dữ liệu trong Kafka topic không bị xóa sau khi xử lý).</p>
+
+<hr class="divider">
+
+<h2>Cấu trúc của một Sự kiện</h2>
+
+<p>Events, khi được viết vào event stream, thường được biểu diễn bằng một <strong>key</strong>, một <strong>value</strong>, và một <strong>header</strong>. Cùng nhau, ba thành phần này tạo thành record đại diện cho sự kiện.</p>
+
+<p><strong>Header (còn được gọi là record properties):</strong> Chứa metadata về sự kiện — định dạng độc quyền tùy thuộc vào event broker. Record thường được dùng để ghi thông tin như datetimes, tracking IDs, và các user-defined key-value pairs không phù hợp vào value.</p>
+
+<p><strong>Key:</strong> Key là optional nhưng cực kỳ hữu ích. Nó được dùng phổ biến nhất để route sự kiện đến một partition cụ thể của event stream, sao cho tất cả records có cùng key đều được colocated. Nó cũng có thể được dùng để đại diện cho một <em>entity</em> duy nhất.</p>
+
+<p><strong>Value:</strong> Chứa phần lớn dữ liệu liên quan đến sự kiện. Nếu bạn nghĩ event key như primary key của một hàng database, thì value là tất cả các fields khác. Value chứa phần lớn dữ liệu của sự kiện.</p>
+
+<p>Ví dụ một ecommerce order event: Record có datetime (1737392751), Key là OrderID (6232729), và Value chứa CustomerID, Address, Products (danh sách ID), Costs, Subtotal, Taxes, Total.</p>
+
+<h3>Ba loại Sự kiện</h3>
+
+<p><strong>1. Unkeyed Events (Sự kiện không có key):</strong> Unkeyed events không chứa key. Chúng thường được coi là hoàn toàn độc lập với nhau. Không có xử lý đặc biệt nào để routing đến partition cụ thể. Unkeyed events thường là một dạng raw measurement nào đó. Ví dụ: camera giao thông chụp ảnh xe vượt đèn đỏ tạo ra một unkeyed event — datetime, camera_id, photo_uri, local_time, measured_speed. Camera không tạo key vì nó chỉ ghi lại dữ liệu theo định dạng của mình.</p>
+
+<p><strong>2. Keyed Events (Sự kiện có key):</strong> Keyed events chứa một key non-null liên quan đến điều gì đó quan trọng về sự kiện. Event key được chỉ định bởi producer service khi nó tạo record, và vẫn bất biến sau khi được ghi vào event stream. Ví dụ: áp dụng key cho dữ liệu camera giao thông bằng biển số xe. Key cho phép producer partition records deterministically — tất cả records có cùng key đều đến cùng partition. Đây được gọi là <em>data locality</em> — đảm bảo với consumers rằng tất cả dữ liệu của một key sẽ ở trong một partition duy nhất.</p>
+
+<p><strong>3. Entity Events (Sự kiện thực thể):</strong> Một entity event đại diện cho một <em>thing</em> duy nhất và được keyed trên một unique ID đại diện cho thing đó. Nó mô tả các thuộc tính và trạng thái của entity tại một thời điểm cụ thể. Entity events đôi khi còn được gọi là <em>state events</em>, vì chúng đại diện cho trạng thái của một thing tại một thời điểm nhất định. Ví dụ: Car entity với key là Item VIN, value chứa make, model, year, color, classification. Khi xe được sơn lại màu xanh, một entity event mới được publish — chứa tất cả dữ liệu đầy đủ (kể cả những gì không thay đổi). Tính bất biến của các entity events cũ cho phép làm nhiều điều mạnh mẽ.</p>
+
+<hr class="divider">
+
+<h2>Repartitioning và Copartitioning</h2>
+
+<h3>Repartitioning (Phân vùng lại)</h3>
+<p><em>Repartitioning</em> là khi một service đọc events từ một stream và ghi chúng vào một stream mới với key khác, key-to-partition mapping strategy khác, và/hoặc partition count khác. Repartitioning là thành phần quan trọng của event-driven microservices — nó cho phép bạn join, group, và aggregate dữ liệu từ các streams với partition counts, partition strategies, và keys khác nhau. Repartitioning có thể gây ra out-of-order data (khám phá thêm ở phần "Multiple producers to multiple partitions" sau).</p>
+
+<h3>Copartitioning (Phân vùng đồng nhất)</h3>
+<p>Hai event streams là <em>copartitioned</em> khi chúng có cùng key, cùng key-to-partition mapping strategy, và cùng partition count. Copartitioning là yêu cầu bắt buộc cho joins trên primary keys, aggregations, và reduce operations — bằng cách gán cùng các keyed data đến cùng các processing instances cho mục đích data locality. Khi hai streams copartitioned, một microservice instance xử lý partition 0 từ cả hai streams, nhận tất cả events với key A từ cả hai streams.</p>
+
+<h3>Aggregating State from Keyed Events</h3>
+<p>Một <em>aggregation</em> là quá trình consume hai hoặc nhiều events và combine chúng thành một kết quả duy nhất. Aggregations là data processing primitive phổ biến cho event-driven architectures, và là một trong những cách chính để generate state từ một chuỗi events. Xây dựng aggregation đòi hỏi lưu trữ và duy trì durable state để tiến trình aggregation được persisted nếu service fail.</p>
+
+<p>Keyed event đóng vai trò quan trọng trong aggregations — tất cả dữ liệu của cùng key ở trong cùng partition, do đó bạn chỉ cần aggregate một key bằng cách đọc một partition. Ví dụ: aggregating các khoản tiền phạt giao thông của từng xe — instance 0 xử lý partition 0, tính tổng cho FAST 321 ($620.00); instance 1 xử lý partition 1, tính tổng cho DEZS 729 ($125.00).</p>
+
+<hr class="divider">
+
+<h2>Materializing State từ Entity Events</h2>
+
+<p>Một <em>materialization</em> là projection của một stream vào một table. Bạn materialize một table bằng cách apply entity events, theo thứ tự, từ một entity event stream. Mỗi entity event được <em>upserted</em> vào table, sao cho event được đọc gần đây nhất cho một key đã cho được đại diện. Entity stream FAST 321 có hai events (red → blue): sau khi materialize, table-cars chỉ giữ blue (giá trị mới nhất). SJFH 372 chỉ có một event (red) nên giữ red.</p>
+
+<p>Bạn cũng có thể convert một table thành một stream của entity events bằng cách publish mỗi update vào event stream. Ví dụ: Upsert(BB, 1), Upsert(DD, 2), Upsert(BB, 5) → tạo ra stream BB→1, DD→2, BB→5. BB bị upserted hai lần, DD một lần.</p>
+
+<p><strong>Stream-table duality</strong> là nguyên tắc rằng một stream có thể được biểu diễn bởi một table, và một table có thể được biểu diễn bởi một stream. Nó là nền tảng của việc chia sẻ state giữa các event-driven microservices, không có direct coupling nào giữa producer và consumer services.</p>
+
+<hr class="divider">
+
+<h2>Xóa Events và Compaction của Event-Stream</h2>
+
+<p>Bạn không thể xóa một record từ event stream như xóa một hàng trong database table — tính bất biến là phần lớn value proposition. Tuy nhiên, bạn có thể issue một event mới gọi là <em>tombstone</em> — một keyed event với value được set thành null — để xóa records có cùng key. Tombstones được dùng phổ biến nhất với entity event streams.</p>
+
+<p>Tombstone phục vụ hai mục đích: thứ nhất, chúng báo hiệu cho consumer rằng dữ liệu liên quan đến key đó nên được coi là đã xóa; thứ hai, tombstones cho phép <em>compaction</em>.</p>
+
+<p><strong>Compaction</strong> là một event broker process giảm kích thước của event streams bằng cách chỉ giữ lại <em>các events gần đây nhất cho một key đã cho</em>. Events cũ hơn tombstone sẽ bị xóa, và các events còn lại được compact xuống thành một tập file nhỏ hơn, nhanh và dễ đọc hơn. Event stream offsets được duy trì sao cho không cần thay đổi gì ở phía consumers.</p>
+
+<p>Compaction cung cấp một số cấu hình và đảm bảo hữu ích: <strong>Minimum compaction lag</strong> — bạn có thể chỉ định thời gian tối thiểu một record phải sống trong event stream trước khi eligible cho compaction; <strong>Offset guarantees</strong> — Offsets không thay đổi trước, trong, và sau compaction (compaction sẽ tạo ra gaps giữa các sequential offsets nhưng không ảnh hưởng đến consumers đọc tuần tự); <strong>Consistency guarantees</strong> — một consumer đọc từ đầu của một compacted topic có thể materialize chính xác cùng table như một consumer đã chạy từ đầu.</p>
+
+<hr class="divider">
+
+<h2>Kappa Architecture</h2>
+
+<p>Kappa architecture được <em>Jay Kreps</em> — co-creator của Apache Kafka và co-founder của Confluent — trình bày lần đầu năm 2014. Kappa architecture dựa vào event streams như là bản ghi duy nhất cho cả dữ liệu hiện tại và lịch sử. Consumers bắt đầu consuming từ đầu stream để có được bức tranh đầy đủ về mọi thứ đã xảy ra kể từ khi bắt đầu, cuối cùng đạt đến head của stream và các events mới nhất.</p>
+
+<p>Kappa architectures không sử dụng secondary store cho historical data. Kappa dựa hoàn toàn vào event stream cho storage và serving. Điều này chỉ trở nên khả thi với modern event brokers và cheap storage từ cloud computing revolution.</p>
+
+<p>Event-driven microservices đơn giản materialize state của riêng chúng từ các streams khi cần. Không cần truy cập dữ liệu từ secondary store ở nơi khác, không có complexity overhead trong quản lý extra permissions. Clean, simple, và dễ code.</p>
+
+<p><strong>Trade-off của Kappa:</strong> Mỗi service phải tự build state của mình, và với các tập dữ liệu cực lớn, việc materialize từ event stream có thể mất thời gian. Partition count thấp và parallelization không đủ có thể khiến service mất nhiều giờ hoặc ngày để materialize — được gọi là <em>hydration time</em>. Bạn có thể giảm thiểu vấn đề hydration time bằng cách duy trì snapshots hoặc backups của materialized và computed state. Apache Kafka Streams, Apache Flink, và Apache Spark Structured Streaming đều cung cấp cơ chế này.</p>
+
+<p>Kappa architecture là chìa khóa để xây dựng decoupled event-driven microservices — nó cung cấp cho services một đảm bảo mạnh mẽ duy nhất rằng event stream có thể là single source of truth cho một tập dữ liệu. Không cần đi đến secondary hay tertiary store.</p>
+
+<p><strong>Ví dụ với Kafka Streams:</strong> <code>KTable products = builder.table("products");</code> và <code>KTable productReviews = builder.table("product_reviews");</code> sau đó <code>products.join(productReviews, businessLogic(..), ...)</code>. <strong>Ví dụ với Flink SQL:</strong> CREATE TABLE PRODUCTS ... WITH connector='kafka', topic='products'; CREATE TABLE PRODUCT_REVIEWS ...; rồi <code>SELECT * FROM PRODUCTS INNER JOIN PRODUCT_REVIEWS ON PRODUCTS.product_id = PRODUCT_REVIEWS.product_id;</code></p>
+
+<hr class="divider">
+
+<h2>Lambda Architecture — Và Tại sao Nên Tránh</h2>
+
+<p>Lambda architecture dựa vào cả event stream (cho real-time data) và một secondary repository (cho historical data). Lambda architecture được xây dựng trên quan điểm lỗi thời rằng bạn không thể lưu trữ events trong event stream vô thời hạn — một quan niệm nhất quán với các công nghệ cũ áp đặt mandatory TTLs.</p>
+
+<p>Consumers trong lambda architecture phải lấy historical data từ historical repository trước, load nó vào respective state stores, rồi swap over sang event stream để tiếp tục cập nhật.</p>
+
+<p><strong>Các vấn đề lớn của Lambda Architecture:</strong></p>
+
+<p><em>Producer phải maintain extra code</em> — code ghi vào stream, và code ghi vào historical store.</p>
+
+<p><em>Consumer phải maintain hai code paths</em> — một path đọc từ historical store, và một path đọc từ stream. Consumer phải viết code chuyển đổi seamlessly giữa hai path mà không bỏ sót hoặc duplicate dữ liệu.</p>
+
+<p><em>Streamed data có thể không converge với historical data</em> — Consumer có thể không nhận được exactly the same results khi đọc từ stream so với đọc từ table. Producer phải đảm bảo dữ liệu giữa hai nguồn không diverge.</p>
+
+<p><em>Stream và historical data models phải evolve đồng bộ</em> — nếu phải update data format, cần thay đổi code ở hai nơi.</p>
+
+<p><em>Merging multiple lambda-powered data sets gần như bất khả thi</em> — với hai streams có one crossover từ historical store sang event stream, có bốn reconciliations (so với một stream-stream reconciliation trong kappa mode).</p>
+
+<p>Kết luận: lambda architecture quá khó quản lý ở bất kỳ scale hợp lý nào và tăng complexity đáng kể khi vượt ra ngoài một single source of data. Kappa architecture với single stream source dễ hơn nhiều cả về mặt cognitive và coding.</p>
+
+<hr class="divider">
+
+<h2>Schemas và Định nghĩa Dữ liệu Sự kiện</h2>
+
+<p>Event data phục vụ như phương tiện lưu trữ dữ liệu dài hạn, implementation-agnostic, cũng như cơ chế giao tiếp giữa các services. Do đó, quan trọng là cả producers lẫn consumers của events phải có common understanding về ý nghĩa của dữ liệu. Lý tưởng nhất, consumer có thể interpret nội dung và ý nghĩa của một event mà không cần tham khảo owner của producing service. Điều này đòi hỏi common data specification giữa producers và consumers — tương tự API definition giữa synchronous request-response services.</p>
+
+<p><strong>Apache Avro</strong> và <strong>Google's Protobuf</strong> là hai lựa chọn schema hóa phổ biến, cung cấp hai tính năng được leveraged nhiều trong event-driven microservices: thứ nhất, chúng cung cấp evolution framework — một số loại thay đổi nhất định có thể được thực hiện với schemas mà không yêu cầu downstream consumers phải thay đổi code; thứ hai, chúng cung cấp phương tiện để generate typed classes (khi applicable) để convert schematized data thành plain old objects trong ngôn ngữ bạn chọn. Điều này làm cho việc tạo business logic đơn giản và transparent hơn nhiều. Chương 4 đề cập các chủ đề này chi tiết hơn.</p>
+
+<hr class="divider">
+
+<h2>Powering Microservices với Event Broker</h2>
+
+<p>Event broker systems phù hợp cho large-scale enterprises đều tuân theo cùng một model. Nhiều, phân tán event brokers làm việc cùng nhau trong một cluster để cung cấp platform cho việc production và consumption của event streams và queues. Model này cung cấp một số essential features cho việc chạy event-driven ecosystem ở tầm lớn:</p>
+
+<p><strong>Scalability:</strong> Có thể thêm các event broker instances để tăng production, consumption, và data storage capacity của cluster.</p>
+
+<p><strong>Durability:</strong> Event data được replicated giữa các nodes. Điều này cho phép cluster vừa preserve vừa tiếp tục serving data khi một broker fail.</p>
+
+<p><strong>High-availability:</strong> Một cluster các event broker nodes cho phép clients kết nối đến các nodes khác trong trường hợp broker failure. Điều này cho phép clients maintain full uptime.</p>
+
+<p><strong>High-performance:</strong> Nhiều broker nodes chia sẻ production và consumption load. Ngoài ra, mỗi broker node phải highly performant để có thể xử lý hàng trăm nghìn writes hoặc reads mỗi giây.</p>
+
+<h3>Tiêu chí Lựa chọn Event Broker</h3>
+
+<p>Mặc dù cuốn sách này thường xuyên tham chiếu Apache Kafka như một ví dụ, các event brokers khác cũng có thể là lựa chọn phù hợp. Hãy xem xét kỹ các yếu tố sau khi lựa chọn:</p>
+
+<p><strong>Support Tooling:</strong> Các công cụ hỗ trợ là thiết yếu cho việc phát triển event-driven microservices hiệu quả. Bao gồm: browsing event-stream records và schemas; Quotas, access control, và topic management; Monitoring, throughput, và lag measurements.</p>
+
+<p><strong>Hosted Services:</strong> Hosted services cho phép outsource việc tạo và quản lý event broker. Cân nhắc: Liệu có hosted solutions không? Có purchased hay host internally? Hosting agent có cung cấp monitoring, scaling, disaster recovery, replication, và multizone deployments không? Có bị tied vào một specific service provider? Có professional support services không?</p>
+
+<p><strong>Client Libraries and Processing Frameworks:</strong> Bạn có nhiều event broker implementations để chọn, mỗi cái có mức độ client support khác nhau. Cần kiểm tra: Có client libraries và frameworks tồn tại trong các ngôn ngữ cần thiết không? Bạn có thể build libraries nếu chúng không tồn tại? Bạn đang sử dụng commonly used frameworks hay tự roll own?</p>
+
+<p><strong>Community Support:</strong> Community support cực kỳ quan trọng. Xem xét: Có online community support không? Technology có mature và production-ready không? Có được dùng rộng rãi trên nhiều tổ chức không? Có attract prospective employees không?</p>
+
+<p><strong>Indefinite and Tiered Storage:</strong> Indefinite storage cho phép lưu trữ events mãi mãi nếu có đủ storage space. Tiered storage cung cấp nhiều tiers cho việc lưu trữ events — tier nhanh nhất và đắt nhất được phục vụ trực tiếp từ broker nodes (từ memory hoặc SSDs); tier thấp hơn thường bao gồm dedicated large-scale storage như Amazon S3, Google Cloud Storage, hay Azure Storage. Dữ liệu trong high-performance tier được chuyển asynchronously sang lower tier khi già đi, nhưng vẫn fully addressable và replayable qua consumer API của event broker.</p>
+
+<hr class="divider">
+
+<h2>Tổng kết</h2>
+
+<p>Event streams cung cấp durable, replayable, và scalable data access. Chúng có thể cung cấp toàn bộ history của events, cho phép consumers đọc bất kỳ dữ liệu nào họ cần qua một API duy nhất. Mỗi consumer được đảm bảo một bản sao giống nhau của dữ liệu, miễn là họ đọc stream khi nó được viết.</p>
+
+<p>Event broker của bạn tạo thành core của event-driven architectures. Nó chịu trách nhiệm hosting event streams và cung cấp consistent, high-performance access đến underlying data. Nó chịu trách nhiệm về durability, fault-tolerance, và scaling, để bạn có thể tập trung vào việc xây dựng services, không phải đấu tranh với data access.</p>
+
+<p>Producer service phát ra một tập các business facts quan trọng, broadcasting dữ liệu qua event stream đến các subscribed consumer services. Producer không còn chịu trách nhiệm đáp ứng các varied query needs của tất cả services khác trên toàn tổ chức. Consumers không query producer service để lấy dữ liệu — loại bỏ các unnecessary point-to-point connections. Adoption của event-driven microservices cho phép tạo ra các services chỉ dùng event broker để store và access dữ liệu, với event broker là single source of truth.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/why-event-driven-microservices">← Chương 1</a>
+  <a href="/building-event-driven-microservices/fundamentals-event-driven-microservices">Chương 3 →</a>
+</nav>
+
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 18: Xử Lý Dữ Liệu Xấu Trong Event Stream — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 18</div>
+<h1>Xử Lý Dữ Liệu Xấu Trong Event Stream</h1>
+<p class="chapter-subtitle">8 loại bad data, 3 chiến lược đối phó — prevention, event design, và rewind/rebuild/retry</p>
+
+<p>Dữ liệu xấu (bad data) là một thực tế không thể tránh khỏi trong bất kỳ hệ thống nào đủ phức tạp. Trong kiến trúc event-driven, bad data đặt ra những thách thức đặc biệt vì event stream thường được thiết kế để immutable — một khi event đã ghi vào topic, nó không thể bị xóa hay sửa đổi. Chương này xem xét toàn diện các loại bad data khác nhau và ba chiến lược xử lý: <strong>phòng ngừa</strong>, <strong>thiết kế event</strong>, và <strong>rewind/rebuild/retry</strong> khi mọi phương án khác thất bại.</p>
+
+<hr class="divider">
+
+<h2>Ba Chiến Lược Đối Phó Với Dữ Liệu Xấu</h2>
+
+<p>Trước khi đi vào từng loại bad data, hãy nắm rõ ba chiến lược tổng thể:</p>
+
+<p><strong>Chiến lược 1 — Prevention (Phòng ngừa):</strong> Ngăn bad data vào hệ thống ngay từ đầu. Đây là chiến lược hiệu quả nhất và ít tốn kém nhất. Sử dụng schema registry, data quality rules, và kiểm thử kỹ lưỡng.</p>
+
+<p><strong>Chiến lược 2 — Event Design (Thiết kế event):</strong> Thiết kế event theo cách cho phép dễ dàng sửa chữa khi phát hiện lỗi. State event (so với delta event) đặc biệt mạnh mẽ vì cho phép "fix once at source and propagate" — sửa ở nguồn và truyền tải đúng data đến toàn bộ downstream.</p>
+
+<p><strong>Chiến lược 3 — Rewind/Rebuild/Retry (Cuộn lại/Tái tạo/Thử lại):</strong> Phương án cuối cùng khi mọi cách khác thất bại. Tốn kém, phức tạp, và có thể không khả thi trong nhiều tình huống.</p>
+
+<hr class="divider">
+
+<h2>8 Loại Dữ Liệu Xấu</h2>
+
+<h3>Loại 1: Dữ Liệu Bị Hỏng (Corrupted Data)</h3>
+
+<p>Xảy ra khi serializer bị lỗi, tạo ra những byte không thể đọc được. Consumer nhận byte stream nhưng không thể deserialize thành object có ý nghĩa. Ví dụ: một bug trong Avro serializer ghi ra byte sequence sai, hoặc dữ liệu bị truncate khi truyền tải.</p>
+
+<p>Corrupted data là loại dễ phát hiện nhất vì thường gây exception ngay lập tức khi consumer cố gắng đọc. Thách thức là xử lý exception này đúng cách — không để consumer bị block mãi mãi tại một event không thể đọc được.</p>
+
+<h3>Loại 2: Event Không Có Schema</h3>
+
+<p>Producer ghi plain text hoặc raw JSON không có schema đính kèm. Consumer không có cách nào xác định kiểu dữ liệu, tên field, hay yêu cầu validation. Thiếu schema đồng nghĩa thiếu contract — khi producer thay đổi cấu trúc, consumer không được thông báo và có thể xử lý sai hoàn toàn.</p>
+
+<p>Giải pháp: Luôn enforce schema (Avro, Protobuf, hoặc JSON Schema) thông qua schema registry. Đây là tường phòng thủ đầu tiên.</p>
+
+<h3>Loại 3: Event Có Schema Không Hợp Lệ</h3>
+
+<p>Event được ghi với schemaId trỏ đến một schema không tồn tại hoặc không đúng trong registry mà consumer đang dùng. Ví dụ điển hình: producer dùng staging schema registry (schemaId=45) nhưng consumer dùng production schema registry (không có schemaId=45, hoặc schemaId=45 là schema hoàn toàn khác).</p>
+
+<p>Lỗi này thường xảy ra khi switch environment không đồng bộ — một team deploy lên production trong khi vẫn trỏ schema registry sai. Phát hiện bằng cách monitor consumer errors theo schemaId.</p>
+
+<h3>Loại 4: Schema Evolution Không Tương Thích</h3>
+
+<p>Producer đã evolve schema theo cách không backward-compatible. Consumer đang dùng schema version cũ nhưng nhận event ghi với schema version mới không tương thích. Ví dụ: consumer muốn đọc event ở schema version 4 nhưng event được ghi với schema version 23 — framework không thể tự động chuyển đổi từ version 23 về version 4.</p>
+
+<p>Schema registry với compatibility enforcement ngăn chặn loại lỗi này nếu được cấu hình đúng. Luôn enforce backward/forward compatibility rules trong registry.</p>
+
+<h3>Loại 5: Giá Trị Không Hợp Lệ Về Mặt Logic</h3>
+
+<p>Event có schema hợp lệ, field đúng kiểu dữ liệu, nhưng giá trị vi phạm business constraint. Ví dụ phổ biến nhất: <code>null</code> trong field non-nullable, gây NullPointerException tại consumer. Một ví dụ khác: <code>age = -5</code> — đúng kiểu Integer, nhưng không có tuổi âm trong thực tế.</p>
+
+<p>Loại này khó phát hiện hơn vì schema validation không bắt được — chỉ business logic mới biết giá trị đó sai. Data quality rules (xem phần Prevention) là cách đối phó chính.</p>
+
+<h3>Loại 6: Giá Trị Hợp Lệ Về Logic Nhưng Sai Về Ngữ Nghĩa</h3>
+
+<p>Event vượt qua mọi validation nhưng vẫn sai về nghĩa thực tế. Ví dụ: chi phí âm (<code>cost = -50.0</code>) — số âm hợp lệ về mặt kỹ thuật nhưng không có chi phí âm; hoặc SQL injection trong trường <code>first_name = "'; DROP TABLE users; --"</code> — là string hợp lệ nhưng nguy hiểm nếu được xử lý như SQL.</p>
+
+<p>Đây là loại tinh vi nhất và khó phòng ngừa nhất. Yêu cầu validation phức tạp hơn ở tầng business logic, không chỉ ở tầng schema.</p>
+
+<h3>Loại 7: Event Bị Thiếu</h3>
+
+<p>Không có dữ liệu nào được produce khi lẽ ra phải có. Ví dụ: hệ thống cần nhận heartbeat mỗi giờ nhưng không nhận được; hoặc pipeline xử lý 1000 đơn hàng nhưng chỉ phát ra 800 event xác nhận. Loại này đặc biệt nguy hiểm vì không gây exception — consumer không biết mình đang thiếu data.</p>
+
+<p>Phát hiện bằng cách monitor số lượng event theo kỳ vọng, dùng dead man's switch pattern, hoặc cross-reference với source systems.</p>
+
+<h3>Loại 8: Event Không Nên Được Produce</h3>
+
+<p>Producer tạo ra event thừa hoặc trùng lặp do bug. Ví dụ: một producer bug khiến mỗi order được ghi hai lần vào topic với hai order_id duy nhất khác nhau (không phải duplicate key — là hai "đơn hàng" khác nhau nhưng thực chất là cùng một đơn). Hoặc một retry logic không có idempotency guard tạo ra duplicate events.</p>
+
+<p>Loại này đặc biệt khó xử lý vì event đã được ghi vào immutable log — xóa không phải là option. Cần business logic để phát hiện và xử lý duplicate ở consumer side, hoặc dùng idempotent producer để ngăn từ đầu.</p>
+
+<hr class="divider">
+
+<h2>Chiến Lược 1: Prevention — Phòng Ngừa Bad Data</h2>
+
+<h3>Sử Dụng Schema</h3>
+
+<p>Đây là lớp phòng thủ quan trọng nhất. <strong>Không bao giờ dùng plain JSON không có schema</strong> — JSON không enforce types, không có required fields, không có backward compatibility checks. Thay vào đó, dùng Avro, Protobuf, hoặc JSON Schema với schema registry.</p>
+
+<p>Schema registry cung cấp:</p>
+<ul>
+<li>Centralized schema storage và versioning</li>
+<li>Compatibility enforcement (BACKWARD, FORWARD, FULL) — từ chối schema evolution vi phạm compatibility rules</li>
+<li>Schema discovery — consumer tự động tìm schema cần thiết</li>
+<li>Data evolution managed safely</li>
+</ul>
+
+<h3>Data Quality Rules</h3>
+
+<p>Ngoài schema validation, cần thêm tầng business rule validation. Confluent Schema Registry hỗ trợ <strong>CEL (Common Expression Language)</strong> để định nghĩa data quality rules ngay trong schema definition:</p>
+
+<blockquote>
+<pre>
+{
+  "schema": "...",
+  "ruleSet": {
+    "domainRules": [
+      {
+        "name": "checkSsnLen",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "size(message.ssn) == 9"
+      }
+    ]
+  }
+}
+</pre>
+</blockquote>
+
+<p>Rule này kiểm tra <code>ssn</code> field phải đúng 9 ký tự khi event được ghi (<code>mode: WRITE</code>). Nếu vi phạm, event bị reject ngay tại producer — không vào được topic. Có thể định nghĩa rules tương tự cho: range validation (age >= 0), format validation (email regex), cross-field validation, và nhiều hơn nữa.</p>
+
+<h3>Kiểm Thử Cho Missing và Extra Events</h3>
+
+<p>Viết test cases kiểm tra pipeline có produce đúng số lượng event theo kỳ vọng. Ví dụ: nếu input là 100 records thì output phải là đúng 100 records — không hơn, không kém. Kiểm thử cả happy path lẫn edge cases (empty input, duplicate input, malformed input).</p>
+
+<h3>Dead Letter Queue (DLQ)</h3>
+
+<p>DLQ là biện pháp phòng thủ cuối cùng trong prevention layer. Khi consumer gặp event không thể xử lý (corrupted, schema invalid, v.v.), thay vì block indefinitely hoặc skip silently, event được ghi vào DLQ topic để:</p>
+
+<ul>
+<li>Không mất event — vẫn có thể retry sau</li>
+<li>Processing tiếp tục với event tiếp theo</li>
+<li>Alert được trigger để team điều tra</li>
+<li>Audit trail của bad events được duy trì</li>
+</ul>
+
+<p>DLQ có chi phí: team phải xử lý events trong DLQ — không thể để chúng chất đống vô thời hạn. DLQ chỉ là biện pháp tạm thời, không phải giải pháp vĩnh cửu.</p>
+
+<hr class="divider">
+
+<h2>Chiến Lược 2: Event Design — Thiết Kế Để Dễ Sửa Chữa</h2>
+
+<h3>State Event vs Delta Event</h3>
+
+<p>Đây là lựa chọn thiết kế có tác động lớn nhất đến khả năng sửa chữa bad data. Xét ví dụ cập nhật inventory:</p>
+
+<p><strong>Delta event:</strong> <code>{"change": -5, "reason": "sold"}</code> — chỉ ghi thay đổi. Nếu delta event sai (ví dụ: lẽ ra là -5 nhưng được ghi là -50), rất khó sửa vì toàn bộ downstream đã accumulate wrong deltas.</p>
+
+<p><strong>State event:</strong> <code>{"inventory_id": "123", "quantity": 95, "last_updated": "..."}</code> — ghi toàn bộ state hiện tại. Nếu state event sai, chỉ cần sửa lại state đúng và produce lại — downstream sẽ nhận state mới và overwrite state cũ.</p>
+
+<p>State event cho phép chiến lược "fix once at source and propagate" — sửa một lần ở nguồn, truyền đi toàn bộ system (Hình 18-8). Delta event không có luxury này.</p>
+
+<h3>Materialization: Từ State Events Đến Compacted Topic</h3>
+
+<p>Một compacted topic với state events tạo nên một materialized view có thể được rebuild hoàn toàn từ đầu (Hình 18-9, 18-10). Khi phát hiện bad data trong state events:</p>
+
+<ol>
+<li>Sửa data tại source system</li>
+<li>Source tự động produce corrected state event (hoặc fix thủ công)</li>
+<li>Compacted topic được update — key cũ bị overwrite bởi state đúng</li>
+<li>Consumer đọc state mới và cập nhật local state của mình</li>
+</ol>
+
+<h3>Sửa Chữa Tại Nguồn — Ba Nguồn Phổ Biến</h3>
+
+<p><strong>Hình 18-11 — RDBMS với CDC Connector:</strong> RDBMS → CDC connector → compacted topic. Khi phát hiện bad data trong RDBMS, UPDATE record trong database. CDC connector tự động phát hiện thay đổi và produce event mới lên compacted topic với correct state.</p>
+
+<p><strong>Hình 18-12 — Kafka Streams từ Compacted Topic:</strong> Compacted topic nguồn → Kafka Streams → compacted topic đích. Khi phát hiện lỗi trong Kafka Streams transformation logic: sửa code, restart Kafka Streams, nó tự reprocess từ đầu compacted topic nguồn và produce correct output. State trong output topic được overwrite bởi correct values.</p>
+
+<p><strong>Hình 18-13 — FTP Directory với Batch Parser:</strong> FTP directory → batch parser → compacted topic. Khi phát hiện file sai: xóa file cũ, upload file đúng, rerun batch parser. Correct state events ghi đè lên incorrect state trong compacted topic.</p>
+
+<h3>Build Forward Với Delta Events</h3>
+
+<p>Khi không thể dùng state events (vì delta là bản chất của data — ví dụ: financial transactions, audit logs), chiến lược là <em>build forward</em>: phát thêm "undo event" để bù trừ cho delta sai, sau đó phát delta đúng.</p>
+
+<p>Ví dụ: Đã produce sai <code>{"change": -50}</code> (lẽ ra là -5). Giải pháp: produce <code>{"change": +45, "reason": "correction"}</code> để undo effect của sai số, sau đó produce <code>{"change": -5, "reason": "sold"}</code>.</p>
+
+<p>Tuy nhiên, build forward cho delta events <strong>cực kỳ phức tạp</strong> và chỉ khả thi khi:</p>
+
+<ul>
+<li>Producer và consumer cùng nằm trong một team — không có consumer nào bên ngoài đã xử lý delta sai theo cách không thể reverse</li>
+<li>Semantics của undo có thể được định nghĩa rõ ràng</li>
+<li>Downstream không có side effects không thể hoàn tác (ví dụ: đã charge thẻ tín dụng của khách hàng)</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Chiến Lược 3: Rewind/Rebuild/Retry — Phương Án Cuối Cùng</h2>
+
+<p>Khi prevention thất bại và event design không hỗ trợ fix-forward, bước cuối cùng là rewind consumer offset, rebuild state, và retry processing. Đây là tốn kém và phức tạp nhất.</p>
+
+<h3>Rewind Từ Nguồn Ngoài (External Source)</h3>
+
+<p>Áp dụng khi source là external system (log files, database dumps, FTP) — không phải topic Kafka:</p>
+
+<ol>
+<li>Xác định root cause của bad data (ví dụ: bug trong log parser)</li>
+<li>Fix parser/transformer</li>
+<li>Reprocess raw source files từ đầu — produce lại toàn bộ events vào topic mới hoặc reset offset và overwrite</li>
+<li>Consumer reset offset về đầu và reprocess toàn bộ corrected events</li>
+</ol>
+
+<p>Nếu có DLQ trong pipeline: bad events nằm trong DLQ thay vì bị process sai. Sau khi fix parser, có thể reprocess từ DLQ — delayed nhưng ít tốn kém hơn là reprocess toàn bộ topic. Tuy nhiên DLQ chỉ chứa events bị reject — nếu bad data bị xử lý sai (không bị reject), DLQ không giúp được.</p>
+
+<h3>Rewind Với Topic Là Nguồn</h3>
+
+<p>Khi source data nằm trong Kafka topic (không phải external source), rewind phức tạp hơn vì topic là immutable — không thể sửa events đã ghi:</p>
+
+<ol>
+<li>Xác định khoảng thời gian (hoặc offset range) chứa bad events</li>
+<li>Tạo streaming SQL job (Flink, Spark, ksqlDB) để đọc từ bad topic, lọc/sửa data, và ghi vào <em>new good topic</em></li>
+<li>Migrate consumers: chuyển sang đọc từ good topic thay vì bad topic</li>
+<li>Sau khi tất cả consumer đã chuyển, fix root cause để ngăn bad data trong tương lai</li>
+</ol>
+
+<p>Phương án này tốn kém vì phải duy trì hai topics song song trong thời gian chuyển đổi, cần phối hợp tất cả consumer teams, và có thể mất nhiều giờ hoặc nhiều ngày để migrate hoàn toàn.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Thứ tự ưu tiên khi đối phó với bad data:</p>
+
+<p><strong>Prevention trước tiên:</strong> Schema enforcement và schema registry là tường phòng thủ không thể thiếu. Data quality rules (CEL trong Confluent) bổ sung tầng validation business logic. Testing đảm bảo không có missing/extra events. DLQ là lưới an toàn cuối.</p>
+
+<p><strong>Event design là khoản đầu tư lâu dài:</strong> State events, khi applicable, làm cho việc sửa chữa bad data gần như tầm thường — sửa ở nguồn, tất cả downstream tự động đúng. Delta events làm cho mọi thứ phức tạp hơn nhiều. Khi thiết kế event schema, hãy hỏi: "Nếu data này sai, tôi có thể sửa không?"</p>
+
+<p><strong>Rewind/rebuild/retry là phương án cuối cùng:</strong> Tốn kém, phức tạp, và đôi khi không khả thi (ví dụ: side effects bên ngoài hệ thống không thể undo). Cần được lên kế hoạch kỹ lưỡng và thực hiện trong maintenance window.</p>
+
+<p>Thực tế, không một hệ thống nào hoàn toàn tránh khỏi bad data. Mục tiêu là minimize tần suất, minimize impact khi xảy ra, và maximize khả năng sửa chữa nhanh chóng.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch17-edm">← Chương 17</a>
+  <a href="/building-event-driven-microservices/ch19-edm">Chương 19 →</a>
+</nav>
+</body>
+</html>

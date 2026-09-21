@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 15: Microservices Sử Dụng Functions as a Service — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 15</div>
+<h1>Microservices Sử Dụng Functions as a Service</h1>
+<p class="chapter-subtitle">FaaS — serverless functions với triggering linh hoạt, DFO cho orchestration phức tạp</p>
+
+<p><strong>Functions as a Service (FaaS)</strong> là một hình thức điện toán đám mây ngày càng phổ biến. FaaS framework cung cấp các công cụ toàn diện cho việc phát triển, quản lý, triển khai, triggering, kiểm thử, và scaling các function-based microservice. Không giống BPC hay Kafka Streams, một FaaS function chạy cho đến khi hoàn thành rồi dừng lại (lifespan khoảng 5-10 phút), sau đó lưu state vào external data store và tiếp tục từ nơi dừng lại vào lần gọi tiếp theo.</p>
+
+<p>Mô hình FaaS giống với BPC ở chỗ không có dedicated processing cluster, nhưng khác ở chu kỳ sống ngắn của mỗi invocation. Các provider FaaS phổ biến bao gồm AWS Lambda, Google Cloud Functions, và Azure Functions — tất cả đều hiện đang hỗ trợ Apache Kafka trực tiếp (trước đây chỉ hỗ trợ broker độc quyền của từng cloud: AWS Kinesis giới hạn 365 ngày, Azure Event Hubs 7-90 ngày, Google Cloud PubSub 31 ngày).</p>
+
+<h2>Khi Nào Nên Dùng FaaS?</h2>
+
+<p>FaaS phù hợp nhất với các use case: phản ứng đơn giản với event (gửi email khi đơn hàng được đặt), các bước tuần tự trong workflow (validate → enrich → store), xử lý dữ liệu lớn song song, biến đổi/validate dữ liệu đơn giản, và routing dữ liệu giữa các stream.</p>
+
+<p>FaaS hiệu quả khi xử lý là <em>stateless</em> hoặc stateful đơn giản không yêu cầu thứ tự event, topology xử lý đơn giản, và khi load biến động lớn (FaaS scale down về zero khi không có traffic). Ngược lại, FaaS không phù hợp cho stateful processing phức tạp, windowing, join nhiều stream, hoặc khi yêu cầu event scheduling nghiêm ngặt.</p>
+
+<hr class="divider">
+
+<h2>Bốn Thành Phần Của FaaS Microservice</h2>
+
+<p>Mỗi FaaS microservice được định nghĩa bởi bốn thành phần chính:</p>
+
+<p><strong>1. Function code</strong> — logic xử lý thực tế, viết bằng ngôn ngữ bất kỳ mà provider hỗ trợ (Python, Node.js, Java, Go...). Function nhận event batch làm input, xử lý, và trả về kết quả.</p>
+
+<p><strong>2. Input event stream</strong> — source data cho function. Đây là Kafka topic, SQS queue, hoặc trigger source khác mà function sẽ consume.</p>
+
+<p><strong>3. Triggering logic</strong> — cơ chế kích hoạt function: event stream listener, consumer group lag threshold, schedule, webhook, hoặc resource event.</p>
+
+<p><strong>4. Error handling và scaling policies với metadata</strong> — retry policy, dead-letter queue, max concurrency, timeout, batch size, batch window. Thường được khai báo qua configuration file hoặc IaC (Infrastructure as Code).</p>
+
+<p>Bảng function-trigger map điển hình:</p>
+
+<blockquote>
+<pre>
+Function          | Event Stream(s)      | Trigger          | Policies
+------------------|----------------------|------------------|---------------------------
+OrderProcessor    | orders-topic         | Event listener   | batch_size=100, retry=3
+InventoryAlert    | inventory-topic      | Lag threshold    | lag_threshold=10000
+DailyReport       | (none)               | Schedule         | cron="0 0 * * *"
+WebhookHandler    | (none)               | Webhook          | timeout=30s
+FileProcessor     | (none)               | Resource event   | S3 bucket trigger
+</pre>
+</blockquote>
+
+<hr class="divider">
+
+<h2>Cold Start Và Warm Start</h2>
+
+<p>Hai trạng thái khởi động của FaaS function:</p>
+
+<p><strong>Cold start</strong>: khi không có instance nào đang chạy. FaaS framework phải: tải code của function, khởi tạo runtime (JVM nếu là Java), thiết lập kết nối đến event broker và external services, sau đó bắt đầu xử lý. Cold start tốn thêm thời gian — từ vài trăm millisecond đến vài giây với runtime nặng như JVM.</p>
+
+<p><strong>Warm start</strong>: khi có instance đang ở trạng thái hibernation (đã chạy trước đó, đang "ngủ"). Framework resume lại instance này nhanh hơn nhiều so với cold start, vì code đã được tải và kết nối đã được thiết lập.</p>
+
+<p><strong>Termination và eviction</strong>: sau khi hoàn thành batch xử lý, function instance không bị hủy ngay — nó chuyển sang hibernation khoảng 5-10 phút, sẵn sàng cho warm start. Sau khoảng thời gian này mà không có request mới, instance bị evict (xóa khỏi bộ nhớ). Nếu load tăng đột biến và vượt quá số warm instance, cold start sẽ xảy ra.</p>
+
+<hr class="divider">
+
+<h2>Năm Loại Trigger</h2>
+
+<h3>1. Event-Stream Listener</h3>
+
+<p>Phổ biến nhất. FaaS framework thiết lập một integrated consumer lắng nghe trực tiếp trên event broker (Hình 15-1). Khi đủ số lượng event (batch size) hoặc hết batch window, framework kích hoạt function với batch event đó.</p>
+
+<p>Có thể dùng external event listener thay thế — ví dụ Kafka Connect (Hình 15-2) — để kết nối event broker với FaaS khi broker không được hỗ trợ natively.</p>
+
+<p>Triggering có thể là <em>synchronous</em> (function phải hoàn thành trước khi consumer commit offset) hoặc <em>asynchronous</em> (consumer commit offset ngay, function chạy bất đồng bộ). Hai tham số quan trọng:</p>
+<ul>
+<li><strong>batch_size</strong>: số lượng event tối đa mỗi lần trigger</li>
+<li><strong>batch_window</strong>: thời gian tối đa chờ đủ batch trước khi trigger dù chưa đủ số lượng</li>
+</ul>
+
+<p>Ví dụ function code với event-stream listener:</p>
+
+<blockquote>
+<pre>
+public int myEventFunction(Event[] events, Context context) {
+    for(Event event: events) {
+        try {
+            println(event.key + ", " + event.value);
+        } catch(Exception e) {
+            // handle individual event error
+            context.reportError(e);
+        }
+    }
+    context.success();
+    return 0;
+}
+</pre>
+</blockquote>
+
+<h3>2. Consumer Group Lag</h3>
+
+<p>Trigger dựa trên lag metric của consumer group thay vì integrated consumer. Function tự thiết lập kết nối đến broker và consume batch event của mình:</p>
+
+<blockquote>
+<pre>
+public int myLagConsumerFunction(Context context) {
+    String consumerGroup = context.consumerGroup;
+    EventBrokerClient client = new EventBrokerClient(consumerGroup, ...);
+    Event[] events = client.consumeBatch(streamName, ...);
+    for(Event event: events) {
+        doWork(event);
+    }
+    client.commitOffsets();
+    context.success();
+    return 0;
+}
+</pre>
+</blockquote>
+
+<p>Khi lag vượt threshold đã cấu hình, framework scale up số lượng function instance để xử lý. Cách này linh hoạt hơn — function tự quản lý offset — nhưng phức tạp hơn vì phải handle broker connection thủ công.</p>
+
+<h3>3. Schedule</h3>
+
+<p>Trigger theo thời gian, tương tự cron job. Dùng cho batch processing định kỳ: aggregation hàng giờ, report hàng ngày, cleanup định kỳ. Không yêu cầu event stream — function tự query data store.</p>
+
+<h3>4. Webhooks</h3>
+
+<p>Invocation trực tiếp qua HTTP endpoint. Client gọi URL của function, framework kích hoạt function với request payload. Đây là cách phổ biến để tích hợp với third-party service (GitHub, Stripe, Twilio...) gửi notification về event.</p>
+
+<h3>5. Resource Events</h3>
+
+<p>Trigger khi có thay đổi trên resource: file được upload lên S3/GCS, record được ghi vào DynamoDB/Firestore, message vào SQS/Pub/Sub. Cho phép xây dựng pipeline xử lý file tự động (ảnh upload → resize → store), hoặc phản ứng với database change.</p>
+
+<hr class="divider">
+
+<h2>Scaling Policies</h2>
+
+<p>FaaS framework scale function instances theo workload, nhưng có giới hạn quan trọng: <strong>số instance tối đa bị giới hạn bởi số partition</strong> của event stream đang consume (vì một partition chỉ được xử lý bởi một consumer tại một thời điểm). Nếu stream có 10 partition, tối đa 10 instance có thể chạy song song.</p>
+
+<p>Hai kiểu scaling policy:</p>
+
+<p><strong>Step-based</strong>: tăng/giảm theo bậc cố định. Ví dụ: lag > 1000 → thêm 2 instance; lag > 10000 → thêm 5 instance. Đơn giản nhưng có thể over/under-provision.</p>
+
+<p><strong>Hysteresis loop</strong>: dùng cả ngưỡng scale-up và scale-down riêng biệt để tránh dao động liên tục. Scale up khi lag > 10000, scale down khi lag < 1000. Hysteresis gap ngăn chặn tình trạng "flapping" (liên tục thêm/bỏ instance).</p>
+
+<p>Rủi ro: rebalancing deadlock — khi scale up, consumer group phải rebalance, trong thời gian rebalance không consumer nào xử lý event, lag tăng → kích hoạt thêm instance → rebalance lại → vòng lặp. Cần thiết lập cooldown period giữa các scale event.</p>
+
+<hr class="divider">
+
+<h2>Maintaining State: No-Local-State Policy</h2>
+
+<p>Do FaaS function có lifespan ngắn và có thể bị evict bất cứ lúc nào, <strong>không được lưu state trong local memory</strong>. Mọi state phải được ghi vào external data store (Redis, DynamoDB, PostgreSQL...) trước khi function kết thúc.</p>
+
+<p>Workflow đúng cho stateful FaaS:</p>
+<ol>
+<li>Function nhận batch event</li>
+<li>Load state từ external store</li>
+<li>Xử lý event, cập nhật state</li>
+<li>Ghi state mới vào external store</li>
+<li>Commit offset</li>
+<li>context.success()</li>
+</ol>
+
+<p>Nếu function bị fail sau bước 3 nhưng trước bước 4, state bị mất và phải reprocess. Nếu fail sau bước 4 nhưng trước bước 5, event sẽ được reprocess với state đã cập nhật — cần idempotency.</p>
+
+<p><strong>Ngoại lệ: Azure Durable Functions</strong> — framework này tự động persist state ra external store sau mỗi activity step, giải phóng developer khỏi việc quản lý state thủ công. Nhưng đây là tính năng đặc thù của Azure, không có ở AWS Lambda hay Google Cloud Functions.</p>
+
+<hr class="divider">
+
+<h2>Functions Calling Functions</h2>
+
+<p>Khi cần xây dựng pipeline với nhiều function, có ba pattern chính:</p>
+
+<h3>Pattern 1: Async Event-Driven Communication (Hình 15-3)</h3>
+
+<p>Function A consume từ Input Stream 1, xử lý, publish ra Internal Event Stream 2. Function B consume từ Internal Stream 2, xử lý, publish ra Internal Stream 3. Function C consume từ Internal Stream 3 và produce Output.</p>
+
+<p>Đây là <em>choreography</em> thuần túy: mỗi function quản lý offset của mình, không cần điều phối bên ngoài. Ưu điểm: fully decoupled, dễ scale từng function độc lập, fault tolerant. Nhược điểm: khó trace end-to-end, khó test toàn bộ pipeline.</p>
+
+<h3>Pattern 2: Direct-Call Choreography Async (Hình 15-4)</h3>
+
+<p>Function A trực tiếp invoke Function B (bất đồng bộ), B produce ra Output. Vấn đề: out-of-order processing và offset management không được đảm bảo — nếu A invoke B nhưng B fail, A không biết và vẫn commit offset. Dữ liệu có thể bị mất hoặc xử lý không đúng thứ tự. <em>Không khuyến nghị dùng pattern này</em>.</p>
+
+<h3>Pattern 3: Direct-Call Orchestration Sync (Hình 15-5)</h3>
+
+<p>Orchestrator function điều phối cả pipeline: invoke Function A đồng bộ, chờ kết quả, rồi invoke Function B với kết quả từ A. Sau khi cả hai hoàn thành, compose output và produce ra output stream:</p>
+
+<blockquote>
+<pre>
+public int orchestrationFunction(Event[] events, Context context) {
+    for(Event event: events) {
+        Result resultFromA = invokeFunctionA(event);
+        Result resultFromB = invokeFunctionB(event, resultFromA);
+        Output output = composeOutputEvent(resultFromA, resultFromB);
+        producer.produce("Output Stream", output);
+    }
+    context.success();
+    return 0;
+}
+</pre>
+</blockquote>
+
+<p>Ưu điểm: dễ trace, guaranteed ordering, error handling tập trung. Nhược điểm: orchestrator là single point of failure; timeout của tổng pipeline = sum timeout của mỗi function; khó scale từng function độc lập.</p>
+
+<hr class="divider">
+
+<h2>Failure Modes Trong FaaS</h2>
+
+<p>Bốn loại failure phổ biến:</p>
+
+<p><strong>Intermittent failures</strong> (kết nối tạm thời mất): connectivity issues, DNS timeout, rate limiting. Thường tự giải quyết sau khi retry. Cấu hình retry với exponential backoff và jitter. Nếu sau N retry vẫn fail, ghi event vào dead-letter queue (DLQ) để xử lý sau.</p>
+
+<p><strong>Resource failures</strong> (OOM — Out of Memory): function hết bộ nhớ khi xử lý batch quá lớn. Phải được tính toán ở design time: ước lượng memory footprint của một event, nhân với batch_size, thêm overhead của framework. Nếu một event quá lớn, chia nhỏ thành nhiều function call.</p>
+
+<p><strong>Batch size too big</strong>: function timeout vì batch có quá nhiều event. Giải pháp: giảm batch_size hoặc tăng execution timeout. Một số provider (AWS Lambda) tự động giảm batch size về một nửa sau khi timeout, rồi tăng dần trở lại — cơ chế adaptive batching.</p>
+
+<p><strong>Orchestration function failure</strong>: khi orchestrator fail giữa chừng, toàn bộ batch phải được reprocess. Vấn đề: các event đã xử lý thành công trong batch đó cũng bị reprocess, có thể gây side effects (email trùng lặp, thanh toán hai lần). Phải đảm bảo idempotency hoặc dùng compensation workflow để rollback các action đã thực hiện.</p>
+
+<hr class="divider">
+
+<h2>Durable Function Orchestrators (DFO)</h2>
+
+<p>DFO là danh mục serverless computing chuyên về <em>stateful orchestration</em> với các đảm bảo mạnh hơn về retry, state restoration, và failure recovery. DFO là tập con của Durable Execution Engine (đã đề cập ở Chương 10). Ba cloud provider lớn đều có DFO riêng:</p>
+
+<ul>
+<li><strong>AWS Step Functions</strong> với Redrive</li>
+<li><strong>Google Cloud Workflows</strong></li>
+<li><strong>Azure Durable Functions</strong></li>
+</ul>
+
+<p>Tất cả đều là cloud-specific, không có open-source hay cloud-agnostic alternative tốt. Khi chọn DFO, bạn đang bị lock-in vào CSP đó.</p>
+
+<h3>Encoding Workflow qua Tài Liệu Proprietary</h3>
+
+<p>AWS Step Functions và Google Cloud Workflows encode orchestration logic trong file YAML/JSON/JSONata. Ví dụ 15-1: AWS Step Functions workflow dùng JSONata:</p>
+
+<blockquote>
+<pre>
+{
+  "Comment": "A simple state machine example",
+  "StartAt": "FirstState",
+  "States": {
+    "FirstState": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789:function:FirstFunction",
+      "Next": "ChoiceState"
+    },
+    "ChoiceState": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.result",
+          "StringEquals": "first",
+          "Next": "FirstMatchState"
+        },
+        {
+          "Variable": "$.result",
+          "StringEquals": "second",
+          "Next": "SecondMatchState"
+        }
+      ],
+      "Default": "DefaultState"
+    },
+    "FirstMatchState": { "Type": "Task", "Resource": "...", "Next": "NextState" },
+    "SecondMatchState": { "Type": "Task", "Resource": "...", "Next": "NextState" },
+    "DefaultState": { "Type": "Fail", "Error": "NoMatch", "Cause": "No match found" },
+    "NextState": { "Type": "Task", "Resource": "...", "End": true }
+  }
+}
+</pre>
+</blockquote>
+
+<p>Workflow này tạo ra DAG (Directed Acyclic Graph): FirstState → ChoiceState → (FirstMatchState hoặc SecondMatchState hoặc DefaultState) → NextState. Hình 15-6 minh họa DAG của workflow này.</p>
+
+<h3>Stock Price Workflow (Hình 15-7)</h3>
+
+<p>Ví dụ thực tế: Check Stock Price → SQS Request Human Approval → Choice: Buy or Sell? → Lambda Buy Stock / Lambda Sell Stock → SNS Report Result. AWS Step Functions chịu trách nhiệm thực thi các function, duy trì state giữa các bước, và retry khi fail.</p>
+
+<h3>Execution Qua Nhiều Invocation (Hình 15-8)</h3>
+
+<p>Hình 15-8 minh họa AWS Step Functions thực thi qua 3 lần với 2 failure:</p>
+
+<ul>
+<li><strong>Execution #1</strong>: Check Stock Price ✓ (Log results) → Human Approval ✗ (Error-timeout) → dừng</li>
+<li><strong>Execution #2</strong>: Check Stock Price ✓ (Use log results) → Human Approval ✓ (Log results buy) → Buy ✓ / Sell ✓ → Publish Report ✗ (Error-API unavailable) → dừng</li>
+<li><strong>Execution #3 (success)</strong>: Check Stock Price ✓ → Human Approval ✓ → Buy ✓ → Publish Report ✓</li>
+</ul>
+
+<p>Key insight: step function <strong>restore state từ durable log</strong>. Điều này đảm bảo:</p>
+<ul>
+<li>Không phải request human approval lần thứ hai</li>
+<li>Không rebuy hoặc resell cổ phiếu (dù cần idempotency cho race condition)</li>
+<li>Không republish report trùng lặp</li>
+</ul>
+
+<p>AWS cung cấp tính năng <em>Redrive</em> để restore function state về đúng nơi đã crash, bắt đầu lại từ bước đó thay vì đầu workflow.</p>
+
+<h3>Encoding Orchestrator Trong Source Code</h3>
+
+<p>Thay vì dùng YAML/JSON/JSONata, Azure Durable Functions cho phép viết orchestration logic trực tiếp trong source code. Ví dụ 15-2 — Azure Durable Functions Python:</p>
+
+<blockquote>
+<pre>
+import azure.functions as func
+import azure.durable_functions as df
+
+myApp = df.DFApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
+# HTTP-triggered function với Durable Functions client binding
+@myApp.route(route="orchestrators/hello_orchestrator")
+@myApp.durable_client_input(client_name="client")
+async def http_start(req: func.HttpRequest, client):
+    function_name = req.params.get('functionName')
+    instance_id = await client.start_new(function_name)
+    response = client.create_check_status_response(req, instance_id)
+    return response
+
+# Orchestrator
+@myApp.orchestration_trigger(context_name="context")
+def hello_orchestrator(context):
+    result1 = yield context.call_activity("hello", "Seattle")
+    result2 = yield context.call_activity("hello", "Tokyo")
+    result3 = yield context.call_activity("hello", "London")
+    return [result1, result2, result3]
+
+# Activity
+@myApp.activity_trigger(input_name="city")
+def hello(city: str):
+    return f"Hello {city}"
+</pre>
+</blockquote>
+
+<p>Ba thành phần:</p>
+<ul>
+<li><strong>http_start</strong>: HTTP-triggered, khởi động orchestration và trả về check-status response</li>
+<li><strong>hello_orchestrator</strong>: orchestrator function — invoke hello("Seattle"), hello("Tokyo"), hello("London") theo thứ tự, collect results</li>
+<li><strong>hello</strong>: activity function đơn giản, trả về "Hello {city}"</li>
+</ul>
+
+<p>Sự khác biệt lớn nhất giữa document-first (AWS/GCP) và code-first (Azure) là nơi lưu định nghĩa workflow. Code-first dùng cùng IDE, tool, và language quen thuộc — nhưng framework-specific API (context.call_activity, yield) có thể trở nên cồng kềnh. Document-first tách biệt rõ ràng orchestration logic khỏi function code — nhưng verbose và yêu cầu học cú pháp riêng.</p>
+
+<p>DFO cung cấp sức mạnh lớn cho durable function execution, nhưng có hạn chế thực tế: bạn hiếm khi thấy một tổ chức (đặc biệt là lớn) chuyển từ cloud provider này sang provider khác chỉ vì DFO. Khả năng cao là bạn sẽ dùng DFO của CSP mà tổ chức đang sử dụng.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Functions as a Service là lĩnh vực điện toán đám mây đang tăng trưởng nhanh. Nhiều FaaS framework cung cấp công cụ phong phú cho phát triển, quản lý, triển khai, triggering, kiểm thử, và scaling các function-based microservice. Bạn có thể trigger function bằng event stream, queue, consumer group lag, wall-clock time, API, webhook, hoặc custom logic.</p>
+
+<p>FaaS đặc biệt hữu ích cho xử lý stateless và stateful đơn giản không yêu cầu event scheduling. Orchestration pattern cho phép gọi nhiều function theo đúng thứ tự, tôn trọng thứ tự event từ event stream. Durable Function Orchestrators hữu ích cho workflow phức tạp nhiều bước — chúng giúp tránh rerun những computation và function call đã hoàn thành.</p>
+
+<p>Chương tiếp theo sẽ xem xét <strong>Eventual Consistency</strong> — bản chất của nó, cách hoạt động, và những gì cần chú ý.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch14-edm">← Chương 14</a>
+  <a href="/building-event-driven-microservices/ch16-edm">Chương 16 →</a>
+</nav>
+</body>
+</html>

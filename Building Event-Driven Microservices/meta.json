@@ -1,0 +1,163 @@
+{
+  "slug": "building-event-driven-microservices",
+  "title": "Building Event-Driven Microservices",
+  "author": "Adam Bellemare",
+  "tag": "Event-Driven Architecture · Microservices · Stream Processing",
+  "category": "Data/Tech",
+  "chapters": [
+    {
+      "n": 1,
+      "title": "Tại Sao Event-Driven Microservices?",
+      "sub": "Event-Driven Microservices là gì và tại sao kiến trúc này quan trọng trong thời đại dữ liệu quy mô lớn.",
+      "file": "ch01-edm.html",
+      "slug": "tai-sao-event-driven-microservices"
+    },
+    {
+      "n": 2,
+      "title": "Nền Tảng Sự Kiện và Event Streams",
+      "sub": "Sự kiện, event streams, schemas, và data contracts — nền tảng của mọi hệ thống hướng sự kiện.",
+      "file": "ch02-edm.html",
+      "slug": "nen-tang-su-kien-va-event-streams"
+    },
+    {
+      "n": 3,
+      "title": "Nền Tảng Microservice Hướng Sự Kiện",
+      "sub": "Consumer groups, stream-processing frameworks, topologies, và trách nhiệm của microservice hướng sự kiện.",
+      "file": "ch03-edm.html",
+      "slug": "nen-tang-microservice-huong-su-kien"
+    },
+    {
+      "n": 4,
+      "title": "Schemas và Data Contracts",
+      "sub": "Protobuf, Avro, JSON Schema, schema evolution, field-level encryption, và cách thương lượng breaking changes.",
+      "file": "ch04-edm.html",
+      "slug": "schemas-va-data-contracts"
+    },
+    {
+      "n": 5,
+      "title": "Thiết Kế Sự Kiện",
+      "sub": "Ba loại sự kiện cơ bản, entity events, keyed events, và nguyên tắc thiết kế payload tối ưu.",
+      "file": "ch05-edm.html",
+      "slug": "thiet-ke-su-kien"
+    },
+    {
+      "n": 6,
+      "title": "Tích Hợp Kiến Trúc Hướng Sự Kiện Với Hệ Thống Hiện Có",
+      "sub": "Data liberation, Change Data Capture, bulk import, và các pattern giải phóng dữ liệu từ hệ thống cũ.",
+      "file": "ch06-edm.html",
+      "slug": "tich-hop-kien-truc-huong-su-kien"
+    },
+    {
+      "n": 7,
+      "title": "Phi Chuẩn Hóa và Sự Kiện Hóa Dữ Liệu",
+      "sub": "Vì sao cần phi chuẩn hóa, cách denormalize entities thành event streams, và trade-offs cần cân nhắc.",
+      "file": "ch07-edm.html",
+      "slug": "phi-chuan-hoa-va-su-kien-hoa-du-lieu"
+    },
+    {
+      "n": 8,
+      "title": "Microservices Hướng Sự Kiện Có Trạng Thái",
+      "sub": "Mô hình ba bước (consume, transform, produce), state stores, changelog streams, và materialized views.",
+      "file": "ch08-edm.html",
+      "slug": "microservices-co-trang-thai"
+    },
+    {
+      "n": 9,
+      "title": "Xử Lý Stream Có Tính Tất Định",
+      "sub": "Determinism trong stream processing, event time vs processing time, watermarks, và windowing.",
+      "file": "ch09-edm.html",
+      "slug": "xu-ly-stream-co-tinh-tat-dinh"
+    },
+    {
+      "n": 10,
+      "title": "Xây Dựng Workflow Với Microservices",
+      "sub": "Choreography, orchestration, saga pattern, và cách xây dựng long-running workflows phân tán.",
+      "file": "ch10-edm.html",
+      "slug": "xay-dung-workflow-voi-microservices"
+    },
+    {
+      "n": 11,
+      "title": "Microservices Producer Và Consumer Cơ Bản",
+      "sub": "Basic Producer-Consumer pattern, khi nào nên dùng, trade-offs so với framework hạng nặng.",
+      "file": "ch11-edm.html",
+      "slug": "producer-consumer-co-ban"
+    },
+    {
+      "n": 12,
+      "title": "Microservices Framework Hạng Nặng",
+      "sub": "Apache Kafka Streams và Apache Flink — kiến trúc, APIs, state management, và khi nào nên dùng.",
+      "file": "ch12-edm.html",
+      "slug": "framework-hang-nang"
+    },
+    {
+      "n": 13,
+      "title": "Microservices Framework Nhẹ",
+      "sub": "Lightweight stream-processing với Apache Beam, custom frameworks, và các lựa chọn khi không cần heavyweight.",
+      "file": "ch13-edm.html",
+      "slug": "framework-nhe"
+    },
+    {
+      "n": 14,
+      "title": "Streaming SQL",
+      "sub": "Continuous queries, streaming SQL engines (Flink SQL, ksqlDB), materializations, và trade-offs.",
+      "file": "ch14-edm.html",
+      "slug": "streaming-sql"
+    },
+    {
+      "n": 15,
+      "title": "Microservices Sử Dụng Functions as a Service",
+      "sub": "FaaS (AWS Lambda, Google Cloud Functions), khi nào phù hợp, cold start, stateless vs stateful.",
+      "file": "ch15-edm.html",
+      "slug": "functions-as-a-service"
+    },
+    {
+      "n": 16,
+      "title": "Eventual Consistency",
+      "sub": "Nguyên nhân không hội tụ, read-your-writes, cách xử lý eventual consistency trong thực tế.",
+      "file": "ch16-edm.html",
+      "slug": "eventual-consistency"
+    },
+    {
+      "n": 17,
+      "title": "Tích Hợp Microservices Event-Driven và Request-Response",
+      "sub": "Biến requests thành events, event-driven APIs, và cách kết hợp hai paradigm trong một hệ thống.",
+      "file": "ch17-edm.html",
+      "slug": "tich-hop-request-response"
+    },
+    {
+      "n": 18,
+      "title": "Xử Lý Dữ Liệu Xấu Trong Event Stream",
+      "sub": "Ba chiến lược đối phó với bad data: discard, quarantine, và dead-letter queues.",
+      "file": "ch18-edm.html",
+      "slug": "xu-ly-du-lieu-xau"
+    },
+    {
+      "n": 19,
+      "title": "Công Cụ Hỗ Trợ",
+      "sub": "Build vs buy, schema registries, event brokers, monitoring, alerting, và tooling ecosystem.",
+      "file": "ch19-edm.html",
+      "slug": "cong-cu-ho-tro"
+    },
+    {
+      "n": 20,
+      "title": "Kiểm Thử Event-Driven Microservices",
+      "sub": "Unit tests, integration tests, end-to-end tests, và các nguyên tắc kiểm thử hệ thống hướng sự kiện.",
+      "file": "ch20-edm.html",
+      "slug": "kiem-thu-event-driven"
+    },
+    {
+      "n": 21,
+      "title": "Triển Khai Event-Driven Microservices",
+      "sub": "Nguyên tắc triển khai, blue-green deployment, canary releases, và rolling updates cho microservices.",
+      "file": "ch21-edm.html",
+      "slug": "trien-khai-event-driven"
+    },
+    {
+      "n": 22,
+      "title": "Kết Luận",
+      "sub": "Nhìn lại hành trình, Conway's Law, organizational data communication, và tương lai của event-driven.",
+      "file": "ch22-edm.html",
+      "slug": "ket-luan"
+    }
+  ]
+}

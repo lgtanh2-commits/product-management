@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 7: Phi Chuẩn Hóa và Sự Kiện Hóa — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 7</div>
+<h1>Phi Chuẩn Hóa và Sự Kiện Hóa Dữ Liệu</h1>
+<p class="chapter-subtitle">Chuyển đổi mô hình quan hệ thành luồng sự kiện phù hợp cho consumer — denormalization qua transactional outbox và dedicated service, quản lý Slowly Changing Dimensions.</p>
+
+<h2>Vấn Đề Với Mô Hình Quan Hệ Chuẩn Hóa</h2>
+<p>Trong hệ thống thương mại điện tử điển hình, dữ liệu sản phẩm được lưu trữ theo mô hình quan hệ đã chuẩn hóa với ba bảng phụ thuộc lẫn nhau:</p>
+
+<ul>
+  <li><strong>Item</strong>: <code>item_id</code>, <code>name</code>, <code>price</code>, <code>merchant_id</code>, <code>updated_at</code></li>
+  <li><strong>Merchant</strong>: <code>merchant_id</code>, <code>name</code>, <code>premium_partner</code>, <code>updated_at</code></li>
+  <li><strong>Inventory</strong>: <code>item_id</code>, <code>quantity_in_stock</code>, <code>updated_at</code></li>
+</ul>
+
+<p>Khi mô hình này được giải phóng thành các event stream riêng biệt — một stream Item, một stream Merchant, một stream Inventory — mỗi consumer muốn làm việc với sản phẩm đầy đủ thông tin buộc phải tự thực hiện phép join. Điều này dẫn đến hai vấn đề nghiêm trọng:</p>
+
+<p><strong>Xử lý lặp đi lặp lại.</strong> Mỗi microservice cần thông tin đầy đủ về Item đều phải triển khai cùng một logic join. Nếu có mười service cần dữ liệu này, mười codebase sẽ chứa mười bản sao của cùng một đoạn code join. Đây là vi phạm DRY nghiêm trọng ở cấp độ kiến trúc — và khi logic join thay đổi (ví dụ Merchant được mở rộng thêm trường mới), tất cả mười service phải cập nhật đồng thời.</p>
+
+<p><strong>Ràng buộc vào framework JVM.</strong> Thực hiện join trên luồng sự kiện theo thời gian thực đòi hỏi các framework xử lý stream như Kafka Streams, Apache Flink, hoặc Apache Spark — tất cả đều là JVM-based. Các ngôn ngữ phổ biến như Go, JavaScript/TypeScript, Ruby, hay Rust không có hỗ trợ first-class cho stream join phức tạp. Điều này tạo ra rào cản công nghệ lớn: các đội dùng Go hay JavaScript không thể tiêu thụ stream đã chuẩn hóa một cách hiệu quả.</p>
+
+<hr class="divider">
+
+<h2>Sự Kiện Hóa (Eventification)</h2>
+<p>Eventification là một implementation pattern nhằm phi chuẩn hóa (denormalize) các stream dữ liệu quan hệ cao thành dạng phù hợp hơn cho event-driven consumer. Thay vì để từng consumer tự join, ta tạo ra một stream đã được enrich đầy đủ — ví dụ <em>Enriched_Item</em> chứa cả thông tin Item lẫn Merchant — và publish stream đó cho mọi consumer cùng dùng.</p>
+
+<p>Khi thiết kế eventification, cần cân nhắc bốn yếu tố:</p>
+
+<ol>
+  <li><strong>Consumption patterns (mẫu tiêu thụ).</strong> Consumer sẽ dùng dữ liệu này như thế nào? Dễ dùng đến đâu? Một event phẳng (flat) với tất cả trường cần thiết sẽ đơn giản hơn nhiều so với việc consumer phải tự join nhiều stream.</li>
+  <li><strong>Degree of denormalization (mức độ phi chuẩn hóa).</strong> Join bao nhiêu bảng/stream vào một event? Phi chuẩn hóa hoàn toàn mang lại tiện lợi tối đa nhưng tăng kích thước event và tần suất cập nhật.</li>
+  <li><strong>Keys for joining on related streams (khóa để join các stream liên quan).</strong> Cần xác định trường khóa chung để join đúng các bản ghi với nhau — ví dụ <code>merchant_id</code> để kết nối Item với Merchant.</li>
+  <li><strong>Structuring the external data model (cấu trúc mô hình dữ liệu bên ngoài).</strong> Event được publish ra ngoài cần phản ánh nhu cầu của consumer, không nhất thiết giống hệt cấu trúc nội bộ của nguồn dữ liệu.</li>
+</ol>
+
+<hr class="divider">
+
+<h2>Hai Cách Triển Khai Eventification</h2>
+
+<h3>1. Eventification tại Transactional Outbox</h3>
+<p>Cách đơn giản nhất là thực hiện join ngay trong cơ sở dữ liệu nguồn, tại thời điểm ghi vào outbox table. Thay vì ghi một bản ghi Item thô vào outbox, ứng dụng thực hiện query join để lấy thông tin Merchant liên quan, rồi ghi bản ghi đã enrich vào <em>Enriched_Item_Outbox</em>.</p>
+
+<p><strong>Ví dụ 7-1 — Python: eventification tại transactional outbox</strong></p>
+<pre><code>internal_model_query = """
+  select i.name, i.price, m.name as merchant_name, m.premium_partner
+  from Item as i, Merchant as m
+  join on i.merchant_id = Merchant.id
+  where i.id = 4291"""
+
+outbox_insert = """
+  INSERT INTO Enriched_Item_Outbox
+    (id, name, price, merchant_name, premium_partner)
+  VALUES (4291, %s, %s, %s, %s)"""
+</code></pre>
+
+<p>Cả hai thao tác này (query join + insert vào outbox) được thực hiện trong cùng một transaction với thao tác cập nhật Item gốc, đảm bảo tính nhất quán nguyên tử. Event stream reader sau đó publish nội dung outbox lên Kafka như thông thường.</p>
+
+<p><strong>Thách thức:</strong> Khi <code>Merchant.premium_partner</code> thay đổi, tất cả các Enriched_Item event của merchant đó phải được cập nhật lại. Điều này đòi hỏi logic xử lý bổ sung — khi cập nhật Merchant, ứng dụng phải query tất cả Item thuộc merchant đó và ghi lại vào outbox. Với merchant có hàng nghìn sản phẩm, đây có thể là thao tác tốn kém.</p>
+
+<h3>2. Eventification trong Dedicated Service</h3>
+<p>Cách tiếp cận mạnh mẽ hơn là xây dựng một microservice độc lập chuyên trách nhiệm vụ join và enrich. Service này consume các stream Item và Merchant đã được publish, thực hiện join theo thời gian thực, rồi publish kết quả vào stream Enriched_Item.</p>
+
+<p><strong>Ví dụ 7-2 — Flink SQL: eventification trong dedicated service</strong></p>
+<pre><code>SELECT *
+FROM Item
+INNER JOIN Merchant ON Item.merchant_id = Merchant.id
+</code></pre>
+
+<p>Query này được thực thi liên tục trên hai stream đầu vào. Mỗi khi có thay đổi ở Item hoặc Merchant, Flink tự động tính lại kết quả join và emit event mới vào stream đầu ra.</p>
+
+<p><strong>Ưu điểm của dedicated service:</strong></p>
+<ul>
+  <li>Giảm tải tài nguyên cho cơ sở dữ liệu nguồn — không cần thực hiện join phức tạp trong database transaction</li>
+  <li>Có thể scale độc lập theo nhu cầu xử lý</li>
+  <li>Đơn giản hóa application logic của source domain — domain không cần biết về nhu cầu enrich của consumer</li>
+  <li>Dễ dàng thêm join với nguồn dữ liệu khác (Brand, ItemDetails, v.v.) mà không ảnh hưởng đến source domain</li>
+</ul>
+
+<p><strong>Thách thức của dedicated service:</strong></p>
+<ul>
+  <li><strong>Đồng bộ hóa thay đổi:</strong> khi schema database thay đổi, cần cập nhật cả connector lẫn eventification service đồng thời — quản lý phức tạp hơn</li>
+  <li><strong>Phụ thuộc vào JVM-based framework:</strong> Kafka Streams, Flink, Spark đều yêu cầu môi trường JVM; không có stream joiner framework first-class nào cho Go hay JavaScript</li>
+  <li><strong>Tranh chấp về ownership:</strong> đội nào sẽ sở hữu service này? Câu trả lời tốt nhất là đội sở hữu dữ liệu nguồn, nhưng họ có thể không có expertise về stream processing</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Cái Gì Nên và Không Nên Đưa Vào Event?</h2>
+<p>Không phải mọi bảng đều phù hợp để join vào Enriched_Item. Hai yếu tố quyết định là <strong>tần suất thay đổi</strong> và <strong>kích thước dữ liệu</strong>.</p>
+
+<h3>Tần Suất (Frequency)</h3>
+<p>Hãy xem xét bảng <strong>Inventory</strong>: số lượng tồn kho thay đổi sau mỗi lần mua hàng, mỗi lần trả hàng, mỗi lần nhập kho. Với một merchant lớn có hàng nghìn đơn hàng mỗi ngày, mỗi thay đổi Inventory sẽ kích hoạt việc re-emit toàn bộ Enriched_Item của sản phẩm đó — tạo ra một <em>event storm</em> không cần thiết. Consumer quan tâm đến thông tin sản phẩm không cần biết tồn kho cập nhật từng giây.</p>
+
+<p>Nguyên tắc: <strong>tránh join dữ liệu thay đổi thường xuyên</strong> vào enriched event.</p>
+
+<h3>Kích Thước (Size)</h3>
+<p>Hãy xem xét bảng <strong>Reviews</strong>: mỗi sản phẩm có thể có hàng trăm, hàng nghìn review. Nếu event Enriched_Item chứa top 100 review (một lựa chọn phổ biến cho display), payload có thể lên đến vài chục KB. Mỗi khi có review mới — dù review đó không ảnh hưởng đến thông tin sản phẩm — toàn bộ event khổng lồ này phải được re-emit. Consumer không quan tâm đến review sẽ phải xử lý một lượng dữ liệu không cần thiết rất lớn.</p>
+
+<p>Nguyên tắc: <strong>tránh join dữ liệu có payload rất lớn</strong> vào enriched event.</p>
+
+<h3>Kết Luận Thiết Kế Cho Enriched_Item</h3>
+<p>Sau khi áp dụng hai nguyên tắc trên, stream <strong>Enriched_Item</strong> nên bao gồm:</p>
+<ul>
+  <li>✅ <strong>Items</strong> — dữ liệu lõi, thay đổi ít thường xuyên</li>
+  <li>✅ <strong>Merchants</strong> — thông tin merchant thay đổi ít, payload nhỏ</li>
+  <li>✅ <strong>Brand</strong> — thông tin thương hiệu ổn định, payload nhỏ</li>
+  <li>✅ <strong>ItemDetails</strong> — mô tả sản phẩm ổn định, kích thước chấp nhận được</li>
+  <li>❌ <strong>Reviews</strong> — payload rất lớn, thay đổi liên tục</li>
+  <li>❌ <strong>Inventory</strong> — thay đổi rất thường xuyên, gây event storm</li>
+</ul>
+
+<p>Reviews và Inventory nên có stream riêng của chúng để consumer nào cần có thể subscribe riêng.</p>
+
+<hr class="divider">
+
+<h2>Slowly Changing Dimensions (SCD)</h2>
+<p>Slowly Changing Dimensions (SCD) là khái niệm từ lĩnh vực data analytics, chỉ những dữ liệu thường ổn định nhưng thỉnh thoảng thay đổi theo cách không thể đoán trước — ví dụ <code>Merchant.name</code> hay <code>Merchant.premium_partner</code>. Khi những giá trị này được nhúng vào event, hành vi của hệ thống khi chúng thay đổi cần được xác định rõ ràng.</p>
+
+<p>Có hai chiến lược chính để xử lý SCD trong event stream:</p>
+
+<h3>Type 1 SCD — Ghi Đè (Overwrite)</h3>
+<p>Chỉ giữ giá trị mới nhất. Khi dimension thay đổi, event cũ trong log bị compact/overwrite bởi event mới. Không có lịch sử nào được lưu lại.</p>
+
+<p><strong>Ví dụ 7-3 — Event Merchant ban đầu:</strong></p>
+<pre><code>{
+  "merchant_id": "m-7291",
+  "name": "Devin's Trading Cards",
+  "premium_partner": false,
+  "updated_at": "2011-08-10"
+}
+</code></pre>
+
+<p>Sau khi Merchant được nâng cấp lên premium partner:</p>
+
+<p><strong>Ví dụ 7-4 — Event Merchant sau khi cập nhật (Type 1):</strong></p>
+<pre><code>{
+  "merchant_id": "m-7291",
+  "name": "Devin's Trading Cards",
+  "premium_partner": true,
+  "updated_at": "2019-08-12"
+}
+</code></pre>
+
+<p>Event cũ (với <code>premium_partner: false</code>) đã bị compact khỏi log. Consumer chỉ thấy trạng thái hiện tại. Type 1 SCD là hành vi mặc định của <strong>state event</strong> với log compaction.</p>
+
+<p><strong>Ưu điểm:</strong> đơn giản, payload nhỏ, consumer không cần xử lý lịch sử.</p>
+<p><strong>Nhược điểm:</strong> mất toàn bộ lịch sử thay đổi. Không thể biết Merchant đã thay đổi trạng thái premium bao nhiêu lần, hay vào thời điểm nào.</p>
+
+<h3>Type 2 SCD — Thêm Mới (Append)</h3>
+<p>Giữ lại tất cả giá trị theo lịch sử. Mỗi lần dimension thay đổi, một event mới được append với version ID riêng. Consumer có thể truy cập cả giá trị hiện tại lẫn tất cả giá trị trong quá khứ.</p>
+
+<p><strong>Ví dụ 7-5 — Stream Merchant với Type 2 SCD (dạng mảng lịch sử):</strong></p>
+<pre><code>[
+  {
+    "merchant_id": "m-7291",
+    "name": "Devin's Trading Cards",
+    "premium_partner": false,
+    "version": "0",
+    "effective_from": "2011-08-10"
+  },
+  {
+    "merchant_id": "m-7291",
+    "name": "Devin's Trading Cards",
+    "premium_partner": true,
+    "version": "1",
+    "effective_from": "2019-08-12"
+  }
+]
+</code></pre>
+
+<p>Consumer nhận được toàn bộ lịch sử và có thể tự quyết định cách xử lý — dùng giá trị mới nhất (version "1"), hay xem xét toàn bộ lịch sử để phân tích.</p>
+
+<p><strong>Ưu điểm:</strong> lịch sử đầy đủ, consumer có thể phân tích sự thay đổi theo thời gian, buộc consumer phải cân nhắc tác động của thay đổi dimension (thay vì chỉ nhận giá trị mới mà không hay biết đã có thay đổi).</p>
+
+<p><strong>Nhược điểm:</strong> payload lớn hơn, overhead xử lý cao hơn ở cả producer lẫn consumer. Consumer phải triển khai logic để iterate qua lịch sử.</p>
+
+<h3>Khi Nào Dùng Type 1 vs Type 2?</h3>
+<p>Không có câu trả lời tuyệt đối — lựa chọn phụ thuộc vào nhu cầu của consumer và tầm quan trọng của lịch sử:</p>
+<ul>
+  <li>Nếu consumer chỉ cần trạng thái hiện tại → <strong>Type 1</strong> (đơn giản, hiệu quả)</li>
+  <li>Nếu consumer cần phân tích xu hướng, audit trail, hay tái xử lý lịch sử → <strong>Type 2</strong></li>
+  <li>Nếu dimension thay đổi rất ít và tác động của thay đổi cần được theo dõi kỹ → <strong>Type 2</strong></li>
+  <li>Nếu lịch sử không có giá trị business → <strong>Type 1</strong></li>
+</ul>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+<p>Việc chuyển đổi dữ liệu quan hệ thành luồng sự kiện phù hợp cho consumer là một trong những thách thức thực tế quan trọng nhất trong kiến trúc EDM. Mô hình quan hệ đã chuẩn hóa dẫn đến hai vấn đề không thể bỏ qua: xử lý lặp lại ở mọi consumer và ràng buộc bắt buộc vào JVM-based framework.</p>
+
+<p>Eventification — phi chuẩn hóa dữ liệu thành enriched event stream — giải quyết cả hai vấn đề. Có thể triển khai tại transactional outbox (đơn giản, trong database transaction) hoặc qua dedicated service (linh hoạt, scalable, nhưng phức tạp hơn về mặt operational). Hai tiêu chí cốt lõi khi quyết định join dữ liệu nào vào enriched event là tần suất thay đổi và kích thước payload — dữ liệu thay đổi thường xuyên hoặc rất lớn nên có stream riêng.</p>
+
+<p>Slowly Changing Dimensions nhắc nhở rằng ngay cả dữ liệu "ổn định" cũng có thể thay đổi theo cách không đoán trước, và hệ thống phải quyết định rõ ràng chiến lược xử lý lịch sử: Type 1 (ghi đè, chỉ giữ hiện tại) hay Type 2 (append, giữ toàn bộ lịch sử). Mỗi chiến lược có đánh đổi rõ ràng và phải được chọn dựa trên nhu cầu thực tế của consumer.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch06-edm">← Chương 6</a>
+  <a href="/building-event-driven-microservices/ch08-edm">Chương 8 →</a>
+</nav>
+</body>
+</html>

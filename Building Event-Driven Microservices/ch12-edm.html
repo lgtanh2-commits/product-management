@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 12: Microservices Framework Hạng Nặng — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 12</div>
+<h1>Microservices Framework Hạng Nặng</h1>
+<p class="chapter-subtitle">Spark, Flink, Beam — kiến trúc cluster chuyên dụng, checkpointing, và chiến lược scaling cho xử lý stream quy mô lớn</p>
+
+<p>Chương 12 bàn về các <strong>heavyweight framework</strong> — nhóm framework xử lý stream đòi hỏi một cluster chuyên dụng riêng biệt với hạ tầng event broker. Đây là các framework trưởng thành, được sử dụng rộng rãi trong phân tích dữ liệu quy mô lớn: Apache Spark Structured Streaming, Apache Flink, và Apache Beam. Dù mang lại sức mạnh vượt trội về khả năng xử lý phức tạp, chúng đến kèm với những đánh đổi quan trọng về mặt vận hành mà bất kỳ kiến trúc sư nào cũng phải cân nhắc kỹ.</p>
+
+<hr class="divider">
+
+<h2>Lịch Sử Phát Triển: Từ Hadoop Đến Spark/Flink/Beam</h2>
+
+<p>Để hiểu vì sao heavyweight framework tồn tại, cần nhìn lại lịch sử. Năm 2006, Apache Hadoop ra đời và mở ra kỷ nguyên xử lý dữ liệu lớn phân tán theo mô hình <strong>MapReduce</strong>. Hadoop cho phép xử lý petabyte dữ liệu bằng cách phân phối tính toán qua cluster máy chủ thông thường (commodity hardware). Nhưng MapReduce vốn là batch-processing — mỗi job phải đọc input từ đĩa, xử lý, ghi output ra đĩa, rồi job tiếp theo mới đọc — cực kỳ chậm cho các tác vụ lặp và interactive.</p>
+
+<p>Apache Spark xuất hiện như một giải pháp thay thế nhanh hơn, với <strong>Resilient Distributed Dataset (RDD)</strong> giữ dữ liệu trong memory xuyên suốt nhiều bước xử lý. Spark sau đó phát triển thêm Spark Structured Streaming cho stream processing. Apache Flink, Apache Storm, Apache Heron — mỗi framework mang triết lý riêng, nhưng Flink đã nổi lên như lựa chọn stream-first mạnh mẽ nhất. Apache Beam ra đời như một API thống nhất có thể chạy trên nhiều execution engine (Flink, Spark, Google Dataflow).</p>
+
+<p>Ấn bản đầu tiên của cuốn sách này còn nhắc đến Storm và Heron — nhưng tới nay cả hai đều đã bị thay thế. Trong số các heavyweight framework còn lại, <strong>Flink có tốc độ tăng trưởng nhanh nhất</strong>, Spark Structured Streaming vẫn rất phổ biến (đặc biệt trong hệ sinh thái Databricks), và Beam chủ yếu gắn với Google Cloud Dataflow.</p>
+
+<hr class="divider">
+
+<h2>Ba Đặc Điểm Định Nghĩa Heavyweight Framework</h2>
+
+<p>Điều phân biệt heavyweight framework với lightweight framework không phải là kích thước code hay số tính năng, mà là ba đặc điểm kiến trúc cốt lõi:</p>
+
+<p><strong>1. Dedicated cluster chuyên dụng.</strong> Heavyweight framework yêu cầu một cluster riêng biệt — hoàn toàn tách biệt với event broker cluster (Kafka, Pulsar). Cluster này có resource manager riêng, worker node riêng, và hạ tầng điều phối riêng. Đây là nguồn gốc của "overhead vận hành" mà heavyweight framework nổi tiếng.</p>
+
+<p><strong>2. Cơ chế nội bộ riêng.</strong> Heavyweight framework không phụ thuộc vào cơ chế của event broker cho state management, fault tolerance, hay scheduling. Chúng tự implement toàn bộ: internal state store, checkpointing, event scheduling, watermark. Framework kiểm soát hoàn toàn vòng đời của mỗi task.</p>
+
+<p><strong>3. Data shuffling tự động.</strong> Khi cần repartition dữ liệu (ví dụ group by một key khác), heavyweight framework tự động di chuyển dữ liệu qua mạng giữa các worker node mà không cần lập trình viên viết thêm code. Đây là tính năng then chốt cho các thao tác phức tạp như join nhiều stream, windowed aggregation.</p>
+
+<hr class="divider">
+
+<h2>Ví Dụ Thực Tế: Session Windowing Với Flink</h2>
+
+<p>Để hiểu heavyweight framework hoạt động như thế nào, hãy xem qua một use case thực tế: phân tích <strong>ad engagement</strong> — xác định xem người dùng có nhìn thấy quảng cáo rồi click vào sản phẩm đó trong một session 30 phút không.</p>
+
+<p>Có hai input stream: <em>Clicks</em> (mỗi click của user vào product) và <em>AdViews</em> (mỗi lần user nhìn thấy quảng cáo). Output là <em>AdEngagements</em> — danh sách các session trong đó user vừa xem quảng cáo vừa click vào sản phẩm tương ứng trong cùng một session 30 phút.</p>
+
+<h3>Schema Của Hai Input Stream</h3>
+
+<p>Schema của Click event (Protobuf — Ví dụ 12-1):</p>
+
+<blockquote>
+<pre>
+message Click {
+  string userId = 1;
+  string productId = 2;
+  string createdEventTime = 3;
+}
+</pre>
+</blockquote>
+
+<p>Schema của AdView event (Protobuf — Ví dụ 12-2):</p>
+
+<blockquote>
+<pre>
+message AdView {
+  string userId = 1;
+  string adId = 2;
+  string productId = 3;
+  string createdEventTime = 4;
+}
+</pre>
+</blockquote>
+
+<h3>Flink Job Code</h3>
+
+<p>Toàn bộ join + windowing logic viết trong một đoạn Flink code ngắn gọn (Ví dụ 12-3):</p>
+
+<blockquote>
+<pre>
+eitherClicks
+  .union(eitherViews)
+  .keyBy(t -&gt; productId)
+  .window(EventTimeSessionWindows.withGap(Duration.ofMinutes(30)))
+  .process(new ProcessClickViewWindowFunction())
+  .addSink(new KafkaTopicSink(...))
+</pre>
+</blockquote>
+
+<p>Đây là sức mạnh của heavyweight framework: một pipeline stream processing phức tạp chỉ cần vài dòng khai báo. <code>union()</code> kết hợp hai stream, <code>keyBy()</code> nhóm theo productId, <code>window()</code> áp dụng session window 30 phút với event time, <code>process()</code> gọi hàm xử lý custom, <code>addSink()</code> ghi kết quả ra Kafka topic.</p>
+
+<h3>Hàm Xử Lý Window</h3>
+
+<p>Hàm <code>ProcessClickViewWindowFunction</code> (Ví dụ 12-4) nhận toàn bộ các event trong một window sau khi window đóng lại, rồi tìm cặp AdView + Click có cùng adId để xác định engagement:</p>
+
+<blockquote>
+<pre>
+class ProcessClickViewWindowFunction
+    extends ProcessWindowFunction&lt;Either, String, String, SessionWindow&gt; {
+
+  @Override
+  public void process(String key,
+                      Context context,
+                      Iterable&lt;Either&gt; elements,
+                      Collector&lt;String&gt; out) {
+
+    List&lt;AdView&gt; adViews = new ArrayList&lt;&gt;();
+    List&lt;Click&gt; clicks = new ArrayList&lt;&gt;();
+
+    for (Either element : elements) {
+      if (element.isLeft())  adViews.add((AdView) element.left());
+      if (element.isRight()) clicks.add((Click) element.right());
+    }
+
+    List&lt;String&gt; adEngagements = new ArrayList&lt;&gt;();
+
+    for (AdView adView : adViews) {
+      for (Click click : clicks) {
+        if (adView.adId.equals(click.productId)) {
+          adEngagements.add(adView.adId);
+        }
+      }
+    }
+
+    if (!adEngagements.isEmpty()) {
+      out.collect(String.join(",", adEngagements));
+    }
+  }
+}
+</pre>
+</blockquote>
+
+<p>Output stream (Bảng 12-1): key là <code>String userId</code>, value là <code>List&lt;String&gt; adEngagements</code> — danh sách ad đã tạo ra engagement cho user đó trong session tương ứng.</p>
+
+<h3>Kiến Trúc Xử Lý Bên Dưới</h3>
+
+<p>Khi Flink chạy job trên, nó tạo ra một DAG (directed acyclic graph) gồm 3 stage (Hình 12-1):</p>
+
+<p><strong>Stage 1:</strong> Source — đọc từ Click và AdView Kafka topic, union thành một stream duy nhất.<br>
+<strong>Stage 2:</strong> Shuffle — keyBy(productId) trigger network shuffle: mỗi event được route đến đúng executor instance phụ trách productId đó. Đây là data shuffling tự động mà chỉ heavyweight framework mới làm được natively.<br>
+<strong>Stage 3:</strong> Window + Process + Sink — mỗi executor nhận các event cho subset productId của nó, tích lũy trong session window, sau khi window đóng thì chạy ProcessClickViewWindowFunction và ghi kết quả ra Kafka.</p>
+
+<p>Mỗi executor instance lưu trạng thái window trong internal state store. Checkpoint state được chụp định kỳ để phục hồi khi failure (Hình 12-2 — khi scale down còn 1 instance, toàn bộ state được load lại từ checkpoint).</p>
+
+<hr class="divider">
+
+<h2>Kiến Trúc Nội Bộ: Resource Manager, Worker, ZooKeeper</h2>
+
+<p>Heavyweight cluster gồm ba thành phần chính (Hình 12-3):</p>
+
+<p><strong>Resource Manager (Master Node):</strong> Là bộ não của cluster. Resource manager nhận job submission, phân tích DAG, chia nhỏ thành các task, và assign các task đó đến worker node. Nó quản lý tài nguyên (CPU, memory) của toàn cluster, ưu tiên job theo policy, và theo dõi trạng thái của từng worker. Khi worker node gặp sự cố, resource manager phát hiện và reschedule các task bị ảnh hưởng sang worker khác. <em>Resource manager luôn có một backup (standby) để tránh single point of failure.</em></p>
+
+<p><strong>Worker Node / Executor:</strong> Là nơi logic xử lý thực sự chạy. Mỗi worker node có thể chạy nhiều executor, mỗi executor là một JVM process thực hiện một phần của DAG. Executor lưu trữ internal state (keyed state) và operator state, tham gia vào quá trình checkpointing.</p>
+
+<p><strong>ZooKeeper:</strong> Cung cấp distributed consensus — dùng để bầu chọn resource manager leader (khi có primary và standby), lưu trữ cluster metadata, và đảm bảo các quyết định phân tán được thực hiện nhất quán. ZooKeeper là thành phần hạ tầng nền tảng cho nhiều hệ thống distributed khác nhau (Kafka cũng dùng ZooKeeper trong các phiên bản cũ).</p>
+
+<p>Luồng xử lý (Hình 12-4): Lập trình viên submit job → resource manager nhận, phân tích, assign tasks → executors bắt đầu consume từ event stream → xử lý và ghi output ra event stream output.</p>
+
+<hr class="divider">
+
+<h2>Lợi Ích Của Heavyweight Framework</h2>
+
+<p>Heavyweight framework phù hợp hoàn hảo với một số use case quan trọng:</p>
+
+<p><strong>ETL và data transformation quy mô lớn:</strong> Chuyển đổi, làm sạch, enrich dữ liệu ở scale mà không framework nào khác làm được thuận tiện hơn.</p>
+
+<p><strong>Session windowing và window analysis phức tạp:</strong> Như ví dụ ad engagement trên — join nhiều stream theo thời gian, với window logic phức tạp. Đây là use case heavyweight framework trội nhất.</p>
+
+<p><strong>Anomaly detection và machine learning online:</strong> Detect bất thường trong stream real-time, hoặc áp dụng ML model trực tiếp vào pipeline stream.</p>
+
+<p><strong>Aggregation quy mô lớn:</strong> Group by nhiều key, aggregate theo nhiều dimension, join cross-stream — tất cả đều được hỗ trợ natively.</p>
+
+<p><strong>Stateless transformation đơn giản:</strong> Dù không cần cluster riêng cho stateless ops, heavyweight framework vẫn làm tốt và dễ scale.</p>
+
+<p>Ngoài ra, các framework này đều <strong>trưởng thành, có documentation đầy đủ, cộng đồng lớn</strong>, và được battle-tested trong production tại hàng ngàn công ty trên thế giới.</p>
+
+<hr class="divider">
+
+<h2>Hạn Chế Của Heavyweight Framework</h2>
+
+<p>Ba hạn chế cốt lõi cần nắm rõ trước khi chọn heavyweight framework:</p>
+
+<h3>1. Không Phải Microservice-Style Deployment Theo Mặc Định</h3>
+
+<p>Khi deploy một job lên Flink hay Spark cluster, job đó không được coi là một microservice độc lập theo nghĩa truyền thống — nó là một application chạy trong cluster dùng chung với các job khác. Ranh giới ownership và deployment cycle trở nên phức tạp hơn khi nhiều team cùng dùng một cluster.</p>
+
+<h3>2. Hạn Chế Ngôn Ngữ</h3>
+
+<p>Lịch sử, Spark và Flink được viết cho JVM: Java và Scala là first-class citizen. Python support (PySpark, PyFlink) đã cải thiện đáng kể nhưng vẫn không hoàn toàn tương đương. Go, Ruby, Rust — gần như không có support native. Điều này là rào cản lớn cho các team không dùng JVM stack.</p>
+
+<h3>3. Không Hỗ Trợ Indefinite Table Materialization Natively</h3>
+
+<p>Heavyweight framework tối ưu cho windowed processing — tức là dữ liệu được xử lý trong các cửa sổ thời gian rồi giải phóng. Nếu muốn <em>materialize một bảng vô thời hạn</em> (giữ trạng thái mãi mãi không có window), framework không hỗ trợ trực tiếp. Workaround phổ biến: dùng global window với custom trigger — nhưng phức tạp và không phải native use case.</p>
+
+<p>Hệ quả: <strong>joins là acid test</strong> cho khả năng của một framework. Join hai stream trong heavyweight framework đòi hỏi window, state management, và data shuffling đồng thời. Nếu join không có window (join vô hạn), cần workaround. Khả năng join của framework thường là thước đo tốt nhất để đánh giá độ trưởng thành.</p>
+
+<hr class="divider">
+
+<h2>Thiết Lập Cluster</h2>
+
+<h3>Hosted Service — Lựa Chọn Đơn Giản Nhất</h3>
+
+<p>Cách ít đau đầu nhất: dùng <strong>managed service</strong> do cloud provider hoặc vendor cung cấp:</p>
+
+<ul>
+<li><strong>Confluent Platform:</strong> Managed Flink trên cloud (tích hợp chặt với Kafka)</li>
+<li><strong>AWS Managed Service for Apache Flink</strong> (trước đây là Kinesis Data Analytics)</li>
+<li><strong>Google Cloud Dataflow</strong> (chạy Apache Beam)</li>
+<li><strong>Databricks</strong> (managed Spark, rất phổ biến trong data engineering)</li>
+<li><strong>Microsoft Azure HDInsight / Synapse Analytics</strong> (managed Spark)</li>
+</ul>
+
+<p>Với managed service, team không cần lo về provisioning cluster, upgrading framework, hay xử lý node failure — tất cả do vendor lo. Đánh đổi là vendor lock-in và chi phí cao hơn tự host.</p>
+
+<h3>Tự Host: Mode 1 — CMS-Provisioned Cluster</h3>
+
+<p>Trong Mode 1, Cluster Management System (CMS — Kubernetes, Mesos, hoặc custom provisioner) tạo và quản lý cluster cho tất cả heavyweight framework jobs. Resource manager (JobManager trong Flink, Master trong Spark) chạy trong container do CMS quản lý. Worker node cũng chạy trong container. Tất cả job share cùng cluster.</p>
+
+<p>Ưu điểm: tập trung, dễ monitor tổng thể. Nhược điểm: một team có thể ảnh hưởng performance của team khác (noisy neighbor problem), upgrade cluster ảnh hưởng toàn bộ job.</p>
+
+<h3>Tự Host: Mode 2 — Kubernetes Làm Resource Manager (Hình 12-5)</h3>
+
+<p>Mode 2 hiện đại hơn: mỗi job có <strong>cluster riêng</strong>, với Kubernetes đóng vai trò resource manager cấp cao nhất. Flink native Kubernetes integration và Spark on Kubernetes đều hỗ trợ mode này. Mỗi job submit tạo ra một namespace/deployment Kubernetes riêng với resource manager container và worker container của riêng nó.</p>
+
+<p>Ưu điểm: isolation hoàn toàn giữa các job, mỗi team tự quản lý cluster của mình, upgrade một job không ảnh hưởng job khác. Nhược điểm: tăng resource overhead (mỗi job có resource manager riêng), cần Kubernetes expertise cao.</p>
+
+<hr class="divider">
+
+<h2>Application Submission: Driver Mode Vs Cluster Mode</h2>
+
+<h3>Driver Mode</h3>
+
+<p>Trong Driver Mode, một <strong>local coordinator process (driver)</strong> chạy trên máy submit job. Driver phân tích DAG, chia task, và điều phối execution. Executors vẫn chạy trong cluster, nhưng driver nằm ngoài.</p>
+
+<p>Flink và Spark đều hỗ trợ Driver Mode. Một điểm quan trọng: driver process có thể được <em>deploy như một microservice</em> — chạy trong container, quản lý bởi CMS như bất kỳ microservice nào khác. Đây là cách heavyweight framework job tích hợp gọn vào kiến trúc microservice.</p>
+
+<p>Nhược điểm: nếu driver process crash, toàn bộ application bị ảnh hưởng. Cần HA strategy cho driver (restart policy trong Kubernetes).</p>
+
+<h3>Cluster Mode</h3>
+
+<p>Trong Cluster Mode, <em>toàn bộ application được submit lên cluster</em> — bao gồm cả coordinator logic. Cluster cấp một unique ID cho application và quản lý toàn bộ lifecycle. Lập trình viên tương tác với application qua cluster API (submit job, monitor, cancel).</p>
+
+<p>Cluster Mode phù hợp khi job cần chạy rất lâu dài, không gắn với lifecycle của máy submit. Kubernetes operator cho Flink và Spark hỗ trợ Cluster Mode với tích hợp native.</p>
+
+<hr class="divider">
+
+<h2>State Và Checkpointing</h2>
+
+<p>State management là một trong những điểm mạnh nhất của heavyweight framework. Hiểu rõ cơ chế checkpoint là chìa khóa để vận hành hiệu quả.</p>
+
+<h3>Hai Loại State</h3>
+
+<p>Heavyweight framework quản lý hai loại state (Hình 12-6):</p>
+
+<p><strong>Operator State:</strong> Trạng thái gắn với một operator instance cụ thể, không phụ thuộc key. Ví dụ quan trọng nhất: <em>partitionId → offset mapping</em> — operator source lưu biết nó đã đọc đến đâu trong mỗi Kafka partition. Đây là dữ liệu cần thiết để sau khi failure, operator biết tiếp tục từ đúng vị trí.</p>
+
+<p><strong>Keyed State:</strong> Trạng thái gắn với một key cụ thể — ví dụ window state cho mỗi productId, hay aggregation state cho mỗi userId. Keyed state được phân phối theo key: executor A phụ trách key set A, executor B phụ trách key set B. Sau khi shuffle (keyBy), mỗi executor chỉ thấy keys của mình.</p>
+
+<h3>Checkpoint Là Gì Và Hoạt Động Như Thế Nào</h3>
+
+<p>Checkpoint là một <em>snapshot đồng bộ</em> của toàn bộ state tại một thời điểm nhất định. Framework trigger checkpoint định kỳ (configurable interval). Quá trình:</p>
+
+<ol>
+<li>Framework inject barrier marker vào input stream.</li>
+<li>Khi executor nhận được barrier, nó snapshot toàn bộ state hiện tại (operator state + keyed state).</li>
+<li>Snapshot được ghi ra cloud storage (S3, GCS, Azure Blob Storage) hoặc HDFS.</li>
+<li>Sau khi tất cả executor confirm đã checkpoint, toàn bộ checkpoint được đánh dấu complete.</li>
+</ol>
+
+<p>Khi failure xảy ra: framework load checkpoint gần nhất từ cloud storage, restart các executor, và tiếp tục xử lý từ offset được lưu trong operator state. <em>Mọi event từ offset đó đến thời điểm failure có thể được xử lý lại — đây là cơ sở của at-least-once và exactly-once semantic trong heavyweight framework.</em></p>
+
+<p><strong>Quan trọng:</strong> Framework phải load toàn bộ state vào memory/disk trước khi bắt đầu xử lý event mới. Với state store lớn (hàng chục GB), thời gian khởi động sau failure có thể lên đến nhiều phút.</p>
+
+<p>Thực tiễn tốt: ưu tiên dùng <strong>internal state</strong> của framework (không phải external database) để tận dụng tối đa cơ chế checkpoint tự động và recovery đảm bảo.</p>
+
+<hr class="divider">
+
+<h2>Chiến Lược Scaling</h2>
+
+<h3>Scaling Stateless: Đơn Giản</h3>
+
+<p>Với stateless operation (map, filter, simple transform), scaling chỉ là thêm executor instance. Không có state để phân phối lại, không có shuffle issue. Consumer group rebalancing trong Kafka lo phần còn lại. Đơn giản và nhanh.</p>
+
+<h3>Scaling Stateful: Hai Chiến Lược</h3>
+
+<p><strong>Chiến lược 1 — Scale by Restart (Hình 12-8):</strong></p>
+
+<ol>
+<li>Pause input stream (hoặc cho job catch up hết backlog)</li>
+<li>Trigger checkpoint để lưu toàn bộ state hiện tại</li>
+<li>Stop job</li>
+<li>Restart với parallelism mới (nhiều hoặc ít executor hơn)</li>
+<li>Framework load state từ checkpoint, redistribute keyed state sang số lượng executor mới</li>
+<li>Job tiếp tục xử lý</li>
+</ol>
+
+<p>Quá trình này an toàn và đảm bảo correctness, nhưng có <strong>downtime</strong>. Một thách thức quan trọng là <em>state redistribution + shuffle reconfiguration</em>: khi parallelism thay đổi, keyed state phải được redistribute (key set nào về executor nào). Và sau khi thêm executor, consumer group rebalancing trigger data shuffle mới qua network — có thể tạo ra spike tải ngắn hạn.</p>
+
+<p><strong>Chiến lược 2 — Scale While Running:</strong></p>
+
+<p>Apache Spark có <strong>External Shuffle Service (ESS)</strong> — một process riêng chạy trên mỗi worker node, phụ trách shuffle data thay vì executor. Khi executor thêm hoặc bỏ, ESS tiếp tục phục vụ shuffle data mà không cần restart. Spark có thể tận dụng ESS để scale số executor trong khi job đang chạy (Hình 12-9/12-10: Dynamic Resource Allocation). Spark lắng nghe backlog metrics, nếu backlog tăng thì yêu cầu thêm executor từ resource manager, nếu giảm thì trả bớt executor.</p>
+
+<p>Apache Flink có <strong>Adaptive Scheduler</strong> và <strong>Declarative Resource Management</strong> — thay vì yêu cầu đúng số executor cụ thể, job khai báo "cần ít nhất X, tối đa Y executor" và Flink tự điều chỉnh trong range đó dựa trên availability. Flink cũng đang phát triển reactive scaling để tự động điều chỉnh parallelism dựa trên metrics.</p>
+
+<hr class="divider">
+
+<h2>Autoscaling</h2>
+
+<p>Autoscaling là mục tiêu lý tưởng: framework tự động scale lên/xuống dựa trên load thực tế mà không cần operator can thiệp. Các metrics phổ biến dùng để trigger autoscaling:</p>
+
+<ul>
+<li><strong>Consumer lag:</strong> Nếu lag tăng, cần thêm processing capacity</li>
+<li><strong>End-to-end latency:</strong> Nếu latency vượt SLA, scale up</li>
+<li><strong>CPU và memory utilization:</strong> Metrics truyền thống của infrastructure</li>
+</ul>
+
+<p>Một số framework đã tích hợp sẵn autoscaling: Google Cloud Dataflow có horizontal autoscaling built-in khá trưởng thành. Spark với Dynamic Resource Allocation gần với autoscaling. Flink Reactive Mode cũng hướng đến đây. Tuy nhiên, autoscaling cho stateful streaming vẫn còn ở giai đoạn phát triển với nhiều thách thức chưa giải quyết hoàn toàn (như state redistribution trong khi scale).</p>
+
+<p>Với các framework chưa có built-in autoscaling, cần <strong>external wiring</strong>: một controller bên ngoài (ví dụ KEDA trên Kubernetes, hoặc custom controller) lắng nghe metrics và gọi cluster API để điều chỉnh parallelism.</p>
+
+<hr class="divider">
+
+<h2>Phục Hồi Sau Sự Cố</h2>
+
+<p>Heavyweight framework được thiết kế để tự phục hồi từ các loại failure phổ biến:</p>
+
+<p><strong>Worker node failure:</strong> Resource manager phát hiện worker bị mất (qua heartbeat timeout). Các task đang chạy trên worker đó được reschedule sang các worker còn lại. State của các task bị ảnh hưởng được load lại từ checkpoint gần nhất. Processing tiếp tục từ checkpoint — có reprocessing một phần event (at-least-once), nhưng với barrier snapshotting đúng cách có thể đạt exactly-once.</p>
+
+<p><strong>Resource manager failure:</strong> Đây là trường hợp nghiêm trọng hơn. Để xử lý, resource manager luôn có một <em>standby instance</em>. ZooKeeper được dùng để bầu chọn leader: khi primary resource manager crash, standby được bầu làm primary ngay lập tức. Cluster tiếp tục hoạt động với interruption ngắn.</p>
+
+<p><strong>Monitoring là cực kỳ quan trọng</strong> trong heavyweight cluster. Cần thiết lập alert cho: executor failure rate, checkpoint failure/lag, consumer lag, memory pressure. Việc phát hiện sớm sự cố ngăn chặn cascade failure ảnh hưởng toàn cluster.</p>
+
+<hr class="divider">
+
+<h2>Multitenancy</h2>
+
+<p>Khi nhiều team cùng dùng một heavyweight cluster, multitenancy trở thành vấn đề cần thiết kế cẩn thận.</p>
+
+<p><strong>Phương án 1 — Nhiều cluster nhỏ hơn:</strong> Mỗi team hoặc business unit có cluster riêng. Isolation hoàn toàn — team A không thể ảnh hưởng team B. Nhưng tổng resource overhead tăng (mỗi cluster cần resource manager, ZooKeeper). Phù hợp khi team có SLA nghiêm ngặt và cần đảm bảo không bị ảnh hưởng bởi team khác.</p>
+
+<p><strong>Phương án 2 — Namespacing trên cluster chung:</strong> Một cluster lớn với <em>namespace</em> riêng cho mỗi team. Resource quotas được set per namespace (ví dụ team A tối đa 100 CPU core, team B tối đa 200). Priority classes quyết định job nào được ưu tiên khi resource khan hiếm. Phức tạp hơn để quản lý nhưng hiệu quả resource cao hơn.</p>
+
+<p><strong>Resource acquisition priority:</strong> Trong cluster chung, cần có policy rõ ràng: job production critical có priority cao nhất, job batch ETL priority thấp hơn, job development/testing chỉ dùng idle resource. Framework như Flink hỗ trợ priority scheduling, Yarn và Kubernetes cũng có priority class mechanism.</p>
+
+<hr class="divider">
+
+<h2>Ngôn Ngữ Lập Trình Được Hỗ Trợ</h2>
+
+<p>Như đã đề cập, hạn chế ngôn ngữ là rào cản thực tế của heavyweight framework. Nhìn theo thực tế hiện tại:</p>
+
+<p><strong>Java và Scala:</strong> First-class citizen trong tất cả heavyweight framework. API đầy đủ nhất, performance tốt nhất, documentation phong phú nhất.</p>
+
+<p><strong>Python:</strong> PySpark và PyFlink đã trưởng thành đáng kể và được dùng rộng rãi trong data science/ML pipeline. Tuy nhiên, Python API vẫn có một số tính năng advanced chưa được expose đầy đủ, và performance overhead của Python UDF (nếu dùng) đáng kể hơn Java/Scala.</p>
+
+<p><strong>Go, Rust, JavaScript, Ruby, C#:</strong> Không có official support native. Beam có một số language SDK thử nghiệm (Go SDK), nhưng không widespread.</p>
+
+<p>Kết quả thực tế: nếu team chủ yếu dùng Java/Scala hoặc Python, heavyweight framework là lựa chọn khả thi. Nếu team dùng Go, Rust, hay đa ngôn ngữ — lightweight framework hoặc BPC pattern phù hợp hơn.</p>
+
+<hr class="divider">
+
+<h2>Chọn Framework Nào?</h2>
+
+<p>Trong số các heavyweight framework còn tích cực phát triển:</p>
+
+<p><strong>Apache Flink:</strong> Lựa chọn hàng đầu cho stream processing thuần túy. Flink được thiết kế từ đầu cho streaming (không phải batch-first như Spark), hỗ trợ event time và watermark native, stateful processing mạnh mẽ, và có tốc độ adoption nhanh nhất trong cộng đồng. Nếu không có ràng buộc đặc biệt, Flink là default choice cho heavyweight stream processing.</p>
+
+<p><strong>Apache Spark Structured Streaming:</strong> Rất phổ biến, đặc biệt trong hệ sinh thái Databricks và các tổ chức đã dùng Spark cho batch processing. Thêm Structured Streaming vào Spark cluster sẵn có là con đường tự nhiên. Spark có ecosystem cực kỳ phong phú (MLlib, GraphX, SQL).</p>
+
+<p><strong>Apache Beam:</strong> Phù hợp khi cần <em>portability</em> — viết một lần, chạy trên nhiều execution engine. Beam pipeline có thể chạy trên Flink, Spark, hoặc Google Cloud Dataflow. Trong thực tế, Beam chủ yếu gắn với Dataflow. Nếu team muốn vendor-neutral API với option chuyển sang Dataflow sau, Beam là lựa chọn.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p>Heavyweight framework là công cụ mạnh mẽ cho các use case phân tích stream quy mô lớn: session windowing, cross-stream join, anomaly detection, ETL phức tạp. Với cluster architecture trưởng thành, checkpointing, data shuffling tự động — chúng làm được những thứ mà lightweight framework và BPC pattern không thể xử lý hiệu quả.</p>
+
+<p>Nhưng "heavyweight" không chỉ là tên gọi — chúng thực sự mang lại operational overhead đáng kể: cluster riêng cần quản lý, hạn chế ngôn ngữ, deployment model không hoàn toàn microservice-native (dù đang cải thiện với Kubernetes integration), và không phải mọi pattern microservice đều cần tới sức mạnh này.</p>
+
+<p>Quyết định dùng heavyweight framework nên dựa trên câu hỏi: use case có thực sự cần khả năng mà chỉ heavyweight mới cung cấp không — cross-stream join với windowing, data shuffling tự động, stateful aggregation phức tạp ở scale lớn? Nếu có, heavyweight framework là lựa chọn tốt. Nếu không, lightweight framework (Kafka Streams) hoặc BPC pattern sẽ mang lại cùng kết quả với ít overhead hơn nhiều. Chương tiếp theo sẽ khám phá thế giới lightweight framework.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch11-edm">← Chương 11</a>
+  <a href="/building-event-driven-microservices/ch13-edm">Chương 13 →</a>
+</nav>
+</body>
+</html>

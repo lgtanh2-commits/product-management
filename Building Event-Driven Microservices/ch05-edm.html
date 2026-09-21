@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 5: Thiết Kế Sự Kiện — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 5</div>
+<h1>Thiết Kế Sự Kiện</h1>
+<p class="chapter-subtitle">Ba loại sự kiện, event sourcing, data privacy và quyền được lãng quên</p>
+
+<p>Thiết kế sự kiện tốt là nền tảng của mọi kiến trúc hướng sự kiện thành công. Một sự kiện được thiết kế kém có thể gây ra sự phụ thuộc chặt chẽ giữa các dịch vụ, khó mở rộng, và là nguồn gốc của vô số lỗi tinh vi. Chương này phân tích ba loại sự kiện chính — state, delta và hybrid — cùng với measurement event và notification event, đồng thời hướng dẫn cách thiết kế sự kiện để tuân thủ luật bảo vệ dữ liệu như GDPR.</p>
+
+<hr class="divider">
+
+<h2>Ba Loại Sự Kiện Cơ Bản</h2>
+
+<p>Sự kiện có thể được phân loại theo <em>mức độ thông tin</em> mà chúng truyền tải: chúng mô tả <strong>trạng thái hiện tại</strong> của một thực thể, <strong>sự thay đổi</strong> đã xảy ra với thực thể đó, hay kết hợp cả hai.</p>
+
+<h3>Sự Kiện Trạng Thái (State Events)</h3>
+
+<p>Sự kiện trạng thái — còn gọi là <em>level event</em> hay <em>fact event</em> — ghi lại toàn bộ trạng thái hiện tại của một thực thể tại thời điểm xảy ra sự kiện. Chúng là danh từ: "Người dùng <em>này</em> trông như thế này ngay bây giờ."</p>
+
+<p>Hãy xét một thực thể <code>User</code>:</p>
+
+<blockquote>
+<pre>Key: "USERID-92837165"
+Value: {
+  name: "Priya Chandra",
+  email: "priya@example.com",
+  address: "123 Maple St, Toronto, ON M5V 2K7",
+  account_status: "ACTIVE",
+  updated_at: "2022-06-15T09:22:00Z"
+}</pre>
+</blockquote>
+
+<p>Mỗi lần người dùng thay đổi địa chỉ, email hay trạng thái tài khoản, một sự kiện trạng thái mới — hoàn chỉnh — được ghi vào stream. Consumer không cần biết <em>điều gì đã thay đổi</em>; họ chỉ cần biết <em>trạng thái hiện tại là gì</em>.</p>
+
+<h4>Event-Carried State Transfer (ECST)</h4>
+
+<p>Khi consumer sử dụng sự kiện trạng thái để xây dựng bản sao dữ liệu cục bộ của mình, đây được gọi là <strong>Event-Carried State Transfer</strong>. Consumer không cần gọi API đến producer để lấy dữ liệu — toàn bộ dữ liệu đã có trong sự kiện. Điều này:</p>
+
+<ul>
+  <li>Loại bỏ phụ thuộc thời gian thực vào producer</li>
+  <li>Cho phép consumer hoạt động độc lập ngay cả khi producer tạm thời không khả dụng</li>
+  <li>Tạo ra sự tách rời mạnh mẽ (strong decoupling) giữa producer và consumer</li>
+  <li>Cho phép consumer suy ra các thay đổi bằng cách so sánh sự kiện hiện tại với sự kiện trước</li>
+</ul>
+
+<p>Bởi vì sự kiện trạng thái chứa đầy đủ thông tin, event broker có thể <em>compaction</em> (nén) stream: chỉ giữ lại sự kiện cuối cùng cho mỗi key, loại bỏ lịch sử cũ. Điều này giữ cho stream gọn nhẹ trong khi vẫn đảm bảo consumer mới có thể đọc toàn bộ trạng thái hiện tại.</p>
+
+<h4>Thiết Kế Current State vs Before/After State</h4>
+
+<p>Có hai cách thiết kế sự kiện trạng thái:</p>
+
+<p><strong>Current State (Trạng thái hiện tại)</strong> — chỉ chứa trạng thái mới nhất của thực thể. Gọn nhẹ, dễ compaction. Consumer phải tự suy ra sự thay đổi bằng cách so sánh với sự kiện trước. Phù hợp cho phần lớn trường hợp sử dụng.</p>
+
+<p><strong>Before/After State (Trạng thái trước/sau)</strong> — chứa cả trạng thái trước khi thay đổi lẫn sau khi thay đổi trong cùng một sự kiện. Giúp consumer thấy ngay sự chuyển đổi mà không cần lưu trữ thêm. Tuy nhiên, compaction trở nên phức tạp hơn — cần tombstone sự kiện phụ để xóa trạng thái "before" cũ. Không gian lưu trữ tăng gấp đôi. Thường chỉ nên dùng khi việc nhìn thấy transition trực tiếp là yêu cầu nghiệp vụ rõ ràng.</p>
+
+<hr class="divider">
+
+<h3>Sự Kiện Delta (Delta Events)</h3>
+
+<p>Sự kiện delta — còn gọi là <em>edge event</em> hay <em>action event</em> — ghi lại <em>sự thay đổi</em> đã xảy ra, không phải trạng thái sau thay đổi. Chúng là động từ: "Người dùng vừa <em>làm gì đó</em>." Ví dụ: <code>itemAddedToCart</code>, <code>orderPaid</code>, <code>orderShipped</code>, <code>userMoved</code>, <code>userDeleted</code>.</p>
+
+<h4>Delta Events và Event Sourcing</h4>
+
+<p>Event sourcing là pattern lưu trữ toàn bộ lịch sử thay đổi của một thực thể dưới dạng chuỗi sự kiện delta, thay vì chỉ lưu trạng thái hiện tại như CRUD truyền thống.</p>
+
+<p>So sánh hai cách mô hình hóa tủ lạnh:</p>
+
+<p><strong>CRUD truyền thống</strong> — chỉ lưu trạng thái cuối cùng:</p>
+<blockquote>
+<pre>Tủ lạnh: { cà chua: 3, dưa chuột: 4, kem: 1L }</pre>
+</blockquote>
+
+<p><strong>Event Sourcing</strong> — lưu toàn bộ lịch sử hành động:</p>
+<blockquote>
+<pre>RemoveIceCream(0.5L)
+AddApplePie(half)
+RemoveApplePie(all)
+AddTomatoes(3)
+AddCucumbers(4)</pre>
+</blockquote>
+
+<p>Bạn có thể tái tạo trạng thái hiện tại bất kỳ lúc nào bằng cách replay các sự kiện. Thậm chí, bạn có thể tái tạo trạng thái của tủ lạnh vào bất kỳ thời điểm nào trong quá khứ — điều CRUD không thể làm được.</p>
+
+<h4>5 Vấn Đề Của Delta Events Trong Giao Tiếp Liên Domain</h4>
+
+<p>Mặc dù delta events rất hữu ích trong nội bộ một bounded context, chúng gây ra nhiều vấn đề nghiêm trọng khi được dùng để giao tiếp giữa các domain:</p>
+
+<p><strong>1. Số lượng loại sự kiện bùng nổ không kiểm soát được.</strong> Một giỏ hàng đơn giản ban đầu chỉ cần <code>ItemAdded</code>. Nhưng theo thời gian, nhu cầu nghiệp vụ sẽ đòi hỏi thêm <code>ItemRemoved</code>, <code>ItemQuantityUpdated</code>, <code>CouponAdded</code>, <code>CouponRemoved</code>, <code>ItemReserved</code>, <code>ShippingAddressChanged</code>... Mỗi event type mới là một contract mới mà tất cả consumer phải học và xử lý.</p>
+
+<p><strong>2. Logic giải nghĩa phải được nhân bản sang mỗi consumer.</strong> Mỗi consumer phải tự hiểu ý nghĩa của từng delta type và xây dựng logic để tái tạo trạng thái từ chuỗi deltas. Logic này phải được viết lại cho mỗi ngôn ngữ, mỗi team. Khi nghĩa của một delta thay đổi, tất cả consumer đều phải cập nhật.</p>
+
+<p><strong>3. Delta events ánh xạ kém lên event streams.</strong> Stream được thiết kế cho một schema duy nhất, nhưng delta events đòi hỏi nhiều schema trên cùng một stream. Khi producer thêm delta type mới, consumer phải cập nhật code để xử lý — tạo ra phụ thuộc chặt chẽ. Điều này vi phạm nguyên tắc "một schema cho một stream."</p>
+
+<p><strong>4. Đảo ngược quyền sở hữu nghiệp vụ (Inversion of Ownership).</strong> Xét ví dụ về việc giao hàng: Consumer logistics muốn biết khi nào cần xử lý đơn hàng. Thay vì producer đơn giản hóa thành "đơn hàng đã thanh toán", consumer lại yêu cầu producer tạo ra <code>PackageShipped</code> hay <code>PackageDelayed</code>. Logic nghiệp vụ của consumer đã "xâm nhập" vào producer, buộc producer phải hiểu và phục vụ nhu cầu của từng consumer cụ thể.</p>
+
+<p><strong>5. Mất khả năng duy trì dữ liệu lịch sử.</strong> Nếu bạn cần replay lại 10 năm dữ liệu để phục vụ một consumer mới (ví dụ: một mô hình machine learning), bạn phải duy trì toàn bộ chuỗi delta events đó — thường là terabytes. Lambda architecture (kết hợp batch processing cho dữ liệu cũ + stream processing cho dữ liệu mới) tái xuất hiện như một "giải pháp" nhưng lại mang theo toàn bộ sự phức tạp của nó.</p>
+
+<h4>Khi Nào Nên Dùng Delta Events?</h4>
+
+<p>Delta events phù hợp cho:</p>
+<ul>
+  <li>Giao tiếp <strong>nội bộ</strong> trong một bounded context</li>
+  <li>Event sourcing cho state management nội bộ</li>
+  <li>Các ứng dụng được ghép nối chặt chẽ một cách có chủ ý</li>
+  <li>Workflow steps mà chuỗi hành động là quan trọng hơn trạng thái</li>
+</ul>
+
+<p><strong>Không</strong> dùng delta events cho giao tiếp cross-domain hay các public contracts.</p>
+
+<hr class="divider">
+
+<h3>Sự Kiện Hybrid (Hybrid Events)</h3>
+
+<p>Hybrid events là sự kiện trạng thái kèm theo một chút thông tin delta — chúng mô tả <em>trạng thái là gì</em> <strong>và</strong> <em>tại sao</em> hoặc <em>như thế nào</em> nó thay đổi.</p>
+
+<p>Ví dụ điển hình: một công ty cần biết người dùng đăng ký qua kênh nào (trang chủ, email quảng cáo, tài khoản bên thứ ba, hay do admin tạo thủ công). Thay vì tạo 4 delta events riêng biệt, họ dùng một <code>User</code> state event với một enum:</p>
+
+<blockquote>
+<pre>Key: "USERID-92837165969"
+Value: {
+  name: "Randolph L. Bandito",
+  signup_time: "2022-02-22T22:22:22Z",
+  birthday: "2000-01-01T00:00:00Z",
+  // An enum of (MAIN, VIA_AD_EMAIL, THIRD_PARTY, or ADMIN)
+  method_of_signup: "VIA_AD_EMAIL"
+}</pre>
+</blockquote>
+
+<p>Thay vì <code>signed_up_via_email</code>, <code>signed_up_via_homepage</code>, <code>signed_up_via_third_party</code>, <code>signed_up_via_admin</code>, chúng ta "làm phẳng" chúng vào một field enum trong thực thể User. Điều này gọn hơn nhiều.</p>
+
+<h4>Rủi Ro Của Hybrid Events</h4>
+
+<p>Vấn đề cốt lõi: cơ chế <em>cách thức</em> điều gì đó xảy ra trong một domain thường là chi tiết nội bộ riêng tư. Khi bạn công khai thông tin này qua event stream, bạn đang phơi bày logic nghiệp vụ nội bộ của producer cho các consumer bên ngoài — tạo ra sự ghép nối chặt chẽ và các dịch vụ dễ bị vỡ.</p>
+
+<p>Rủi ro chính: giá trị của <code>method_of_signup</code> có thể thay đổi theo thời gian (ý nghĩa ngữ nghĩa thay đổi, hoặc enum được mở rộng/thu hẹp). Khi producer thêm <code>VIA_MOBILE_APP</code> vào enum, tất cả consumer phải được thông báo và phải xác nhận họ có thể xử lý giá trị mới trước khi schema được cập nhật.</p>
+
+<p>Tuy nhiên, trong ví dụ này, rủi ro tương đối thấp vì:</p>
+<ul>
+  <li>Cách đăng ký là bất biến — người dùng chỉ đăng ký một lần</li>
+  <li>Logic phổ biến của <code>method_of_signup</code> đơn giản, ít có khả năng thay đổi nghĩa</li>
+</ul>
+
+<p><strong>Nguyên tắc:</strong> Rủi ro của hybrid event tỷ lệ thuận với độ phức tạp của delta bạn đang theo dõi và khả năng nó thay đổi theo thời gian. Nếu bạn chọn dùng hybrid event, hãy đặc biệt cẩn thận về sự ghép nối mà nó tạo ra, và xem nó là một phần của data contract.</p>
+
+<hr class="divider">
+
+<h2>Sự Kiện Đo Lường (Measurement Events)</h2>
+
+<p>Measurement events ghi lại một <em>sự xuất hiện</em> (occurrence) tại một thời điểm cụ thể. Ví dụ quen thuộc nhất là Google Analytics — mỗi lần người dùng nhấp nút, xem quảng cáo, hay ở lại trang quá lâu, một measurement event được tạo ra. IoT sensors, mobile analytics, server metrics đều là nguồn measurement events.</p>
+
+<p>Ví dụ về sự kiện người dùng xem quảng cáo trên trang web:</p>
+
+<blockquote>
+<pre>Key: "USERID-82719494727"
+Value: {
+  utc_timestamp: "2022-01-22T15:39:19Z",
+  ad_id: 17394875123,
+  page_id: 3641987697,
+  url: https://www.somewebsite.com/welcome.html
+}</pre>
+</blockquote>
+
+<p>Measurement events là snapshot của trạng thái tại một thời điểm, nhưng chúng có một số đặc điểm phân biệt với state events:</p>
+
+<h3>Measurement Events Hỗ Trợ Aggregation</h3>
+
+<p>Measurements thường được dùng để tạo tổng hợp theo key. Sự kiện <code>userViewedAd</code> có thể được dùng để tính toán nhiều dataset: "Trang quảng cáo nào phổ biến nhất?", "Khi nào người dùng xem nhiều quảng cáo nhất?", "Trung bình một người dùng xem bao nhiêu quảng cáo trong một phiên?" Đây là thế mạnh cốt lõi của measurement events.</p>
+
+<h3>Measurement Events Có Thể Bị Mất Dữ Liệu</h3>
+
+<p>Không hiếm khi mất measurements trong quá trình thu thập và đưa vào event stream. Ad blockers rất giỏi chặn web analytics events. Reports và dashboards dựa trên measurement events có thể không hoàn toàn chính xác — nhưng thường là <em>đủ tốt</em> cho mục đích phân tích. Đây là trade-off được chấp nhận và phải được phản ánh trong SLOs của data contract.</p>
+
+<h3>Measurement Events Có Thể Phục Vụ Ứng Dụng Nhạy Cảm Về Thời Gian</h3>
+
+<p>Xét một nhà máy đo nhiệt độ, độ ẩm, và các chỉ số chất lượng không khí trên dây chuyền sản xuất. Một use case <em>analytical</em> là theo dõi xu hướng dài hạn. Nhưng một use case <em>operational</em> là phản ứng nhanh khi cảm biến cho thấy giá trị bất thường — có thể phải điều chỉnh tốc độ dây chuyền hay tắt hoàn toàn nếu điều kiện môi trường không đáp ứng yêu cầu.</p>
+
+<p>Nếu có vấn đề kết nối mạng, sensors có thể đang chờ để publish data đã trễ 30-60 giây, trong khi data mới tiếp tục tích lũy phía sau. Tùy thuộc vào <em>mục đích</em> của measurement stream và SLOs đã thỏa thuận, stream có thể chọn loại bỏ các events cũ và chỉ publish mới nhất. Điều này phụ thuộc hoàn toàn vào việc data được dùng cho mục đích real-time hay cho việc xây dựng bức tranh lịch sử toàn diện.</p>
+
+<blockquote>
+<strong>Thực tiễn từ thực tế:</strong> Tác giả từng làm tại RIM (BlackBerry), thu thập measurement data từ thiết bị developer BlackBerry. Mỗi khi có "bad thing" xảy ra trên thiết bị (cuộc gọi bị mất, tin nhắn không gửi được, cellular modem reset), họ tạo dump đo lường, đóng gói và gửi lên server backend. Hai bài học lớn: (1) Schema rõ ràng, được kiểm soát chặt là cực kỳ quan trọng — nó giúp tự động hóa post-processing và giảm thời gian xử lý dữ liệu lỗi; (2) Tính đầy đủ của measurement quan trọng hơn real-time performance — họ có thể nhận measurement events trễ hàng giờ, thậm chí hàng tuần do thiết bị bị ngắt kết nối.
+</blockquote>
+
+<hr class="divider">
+
+<h2>Sự Kiện Thông Báo (Notification Events)</h2>
+
+<p>Notification event chứa một tập thông tin tối thiểu để báo hiệu <em>điều gì đó đã xảy ra</em> kèm theo link hoặc URI đến resource chứa thông tin đầy đủ. Điện thoại di động là nguồn notification events quen thuộc nhất — "Bạn có tin nhắn mới", "Ai đó thích bài viết của bạn."</p>
+
+<p>Ví dụ về notification từ ứng dụng nhắn tin:</p>
+
+<blockquote>
+<pre>Value: {
+  status: "NEW_MESSAGE",
+  source: "messaging_app",
+  application_uri: "/user/chat/192873163812392"
+}</pre>
+</blockquote>
+
+<h3>Antipattern: Dùng Notification Để Truyền State</h3>
+
+<p>Notification events thường bị lạm dụng như một cách truyền state mà không gửi state thực sự. Ví dụ:</p>
+
+<blockquote>
+<pre>Key: 12309131238218
+Value: {
+  status: "PARTIAL_RETURN",
+  utc_timestamp: "2021-21-13T13:11:42Z",
+  access_uri: "serverURI:8080/orders/values/12309131238218"
+}</pre>
+</blockquote>
+
+<p>Có vẻ gọn gàng: consumer chỉ cần truy vấn <code>access_uri</code> để lấy trạng thái đầy đủ. Nhưng đây là antipattern nghiêm trọng:</p>
+
+<p><strong>Race condition:</strong> Sự kiện không ghi lại trạng thái <em>tại thời điểm đó</em> — trừ khi data tại <code>access_uri</code> hoàn toàn bất biến (thường là không). Nếu đơn hàng trải qua chuỗi trạng thái <code>SOLD → PARTIAL_RETURN → FULL_RETURN</code>, một consumer đang lag có thể nhận <code>PARTIAL_RETURN</code> notification nhưng khi truy vấn <code>access_uri</code>, trạng thái đã chuyển sang <code>FULL_RETURN</code> — họ sẽ <em>bỏ lỡ hoàn toàn</em> trạng thái <code>PARTIAL_RETURN</code>. Một consumer mới xử lý backlog sẽ chỉ thấy trạng thái hiện tại — không có lịch sử nào cả.</p>
+
+<p><strong>Phức tạp không cần thiết:</strong> Domain owner vừa phải publish events, vừa phải phục vụ synchronous requests cho trạng thái đó — bao gồm quản lý access control, authorization, và performance scaling cho cả event stream producer lẫn synchronous query API.</p>
+
+<p><strong>Giải pháp đúng:</strong> Đơn giản hãy sản xuất trạng thái cần thiết như một bản ghi bất biến tại thời điểm đó. Điều này tốn rất ít effort và đơn giản hóa rất nhiều việc truyền dữ liệu giữa các domain.</p>
+
+<hr class="divider">
+
+<h2>Thiết Kế Sự Kiện Cho Data Privacy và Quyền Được Lãng Quên</h2>
+
+<p>Dữ liệu riêng tư — PII (Personally Identifiable Information) và thông tin tài chính — thường phải tuân thủ các yêu cầu bảo mật cao được quy định bởi pháp luật. <strong>GDPR</strong> (General Data Protection Regulation) của EU yêu cầu xử lý, lưu trữ và xóa dữ liệu khách hàng an toàn, và trao quyền cho cá nhân được xóa dữ liệu của họ (Article 17) mà không bị trễ.</p>
+
+<p>Tuy nhiên, event streams là bất biến — bạn không thể đơn giản xóa một record đã được ghi. Chương 18 sẽ đề cập các kỹ thuật xử lý bad data, nhưng hướng tiếp cận tốt nhất là <strong>mã hóa dữ liệu nhạy cảm ngay từ đầu</strong>.</p>
+
+<h3>Crypto-Shredding: Kỹ Thuật Quên Không Cần Xóa</h3>
+
+<p>Có hai lựa chọn mã hóa:</p>
+<ul>
+  <li><strong>Field-Level Encryption (FLE)</strong> — mã hóa chỉ các field nhạy cảm (đã thảo luận trong Chương 4)</li>
+  <li><strong>Mã hóa toàn bộ sự kiện</strong> — mã hóa cả payload sự kiện</li>
+</ul>
+
+<p>Trong cả hai trường hợp, bạn sử dụng <strong>Key Management Service (KMS)</strong> để lưu trữ keys và cung cấp API an toàn để yêu cầu truy cập. Thực tiễn phổ biến là dùng một key duy nhất <em>per user</em>, <em>per account</em>, hay <em>per important entity</em>.</p>
+
+<p>Khi cần "xóa" dữ liệu của một user cụ thể, bạn chỉ cần xóa key của họ trong KMS. Toàn bộ dữ liệu đã mã hóa bằng key đó trở nên không thể đọc được — đây gọi là <strong>crypto-shredding</strong>.</p>
+
+<p>Crypto-shredding chỉ làm cho data không thể truy cập về mặt mật mã — nó thường đủ để tuân thủ yêu cầu data privacy, nhưng bạn nên kiểm tra với luật sư của công ty để đảm bảo đúng phía pháp lý.</p>
+
+<h3>Tại Sao Crypto-Shredding Quan Trọng</h3>
+
+<p>Có bốn lý do chính:</p>
+
+<p><strong>Lượng dữ liệu lớn:</strong> Dữ liệu lớn có thể nằm ở backup, tape drive, cold cloud storage và các phương tiện truy cập chậm, đắt tiền. Tốn kém và mất thời gian cực kỳ để đọc lại historical data, chọn lọc xóa records, rồi ghi lại. Crypto-shredding giúp bạn tránh phải làm vậy.</p>
+
+<p><strong>Dữ liệu mã hóa một phần vẫn hữu ích:</strong> Xóa PII của một user thường là đủ để tuân thủ GDPR Article 17, trong khi dữ liệu còn lại vẫn có thể hữu ích cho consumer. FLE cho phép bạn chọn lọc field nào cần mã hóa thay vì mã hóa toàn bộ sự kiện.</p>
+
+<p><strong>Dữ liệu trải rộng nhiều hệ thống:</strong> Xóa decryption key đồng thời chặn truy cập data trên tất cả consumer services. Bạn không cần lo lắng về việc mỗi service xóa data lúc nào — khi key bị xóa, tất cả dữ liệu đều vô hiệu cùng lúc.</p>
+
+<p><strong>Defense in depth:</strong> Crypto-shredding cung cấp thêm một lớp bảo mật. Dữ liệu đã mã hóa bị rò rỉ gây hại ít hơn nhiều so với dữ liệu plaintext, giúp giảm cả rủi ro và impact của data breach.</p>
+
+<h3>Lưu Ý Quan Trọng</h3>
+
+<p>Crypto-shredding không bảo vệ bạn khỏi consumer lưu trữ dữ liệu đã giải mã. Đảm bảo consumer có chính sách bảo mật thông tin rõ ràng, giới hạn thời gian lưu decryption key, và <strong>không bao giờ</strong> ghi decryption key ra disk.</p>
+
+<p>Mã hóa dữ liệu là thành phần quan trọng của thiết kế sự kiện, đặc biệt vì việc thêm mã hóa sau này rất khó và rất có thể gây breaking changes cho consumer — họ sẽ phải implement decrypt operations, KMS connectivity, và validate data retention policies.</p>
+
+<hr class="divider">
+
+<h2>Tóm Tắt</h2>
+
+<p>Chương này đã đề cập toàn diện về cách thiết kế sự kiện trong kiến trúc hướng sự kiện.</p>
+
+<p>Sự kiện có thể được định nghĩa chủ yếu là <strong>state</strong> hoặc <strong>delta</strong>. State events là lựa chọn tốt nhất cho giao tiếp giữa các domain: chúng cho phép Event-Carried State Transfer, tận dụng được tính năng indefinite retention và compaction của event broker, và né được tất cả vấn đề của lambda architecture. Delta events thuộc về nội bộ bounded context — event sourcing và các ứng dụng ghép nối chặt chẽ có chủ ý. Khi cho phép external parties coupling vào delta events, bạn phơi bày logic nghiệp vụ nội bộ, gây ra misuse nghiêm trọng.</p>
+
+<p>Measurement events ghi lại sự xuất hiện từ người dùng, hệ thống phân tán, và thiết bị IoT. Chúng thường được dùng để tạo aggregations chi tiết và phản ứng với thay đổi nhanh trong real-time. Cả hybrid event và notification event đều nên được sử dụng hết sức thận trọng — hybrid events chủ yếu là state event nhưng phơi bày thông tin về <em>tại sao</em> điều gì đó xảy ra, tạo ra tight coupling khi <em>why</em> thay đổi theo thời gian.</p>
+
+<p>Chương tiếp theo sẽ cho thấy cách <em>tạo ra</em> sự kiện từ các nguồn dữ liệu hiện có. Phần lớn kiến trúc microservice hướng sự kiện nổi lên từ việc mở rộng các hệ thống và dịch vụ hiện có, và việc đưa dữ liệu nghiệp vụ vào event streams là vô cùng quan trọng.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch04-edm">← Chương 4</a>
+  <a href="/building-event-driven-microservices/ch06-edm">Chương 6 →</a>
+</nav>
+</body>
+</html>

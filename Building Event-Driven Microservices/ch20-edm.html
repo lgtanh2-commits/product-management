@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 20: Kiểm Thử Event-Driven Microservices — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 20</div>
+<h1>Kiểm Thử Event-Driven Microservices</h1>
+<p class="chapter-subtitle">Unit testing, topology testing, schema evolution testing, integration testing với Testcontainers — từ hàm đơn lẻ đến toàn bộ hệ thống phân tán</p>
+
+<nav class="chapnav">
+  <a href="ch19-edm.html">← Chương 19: Công Cụ Hỗ Trợ</a>
+  <a href="ch21-edm.html">Chương 21: Triển Khai →</a>
+</nav>
+
+<p>Kiểm thử microservices hướng sự kiện vừa dễ hơn, vừa khó hơn so với kiểm thử hệ thống monolithic. Dễ hơn vì ranh giới của mỗi service được định nghĩa rõ ràng qua event stream, các test case có thể được tạo bằng cách inject event cụ thể và kiểm tra output. Khó hơn vì có nhiều lớp cần kiểm thử: từ hàm xử lý đơn lẻ, toàn bộ topology, schema evolution, cho đến integration với broker và các service khác. Chương này đi qua toàn bộ các lớp đó theo thứ tự từ đơn giản đến phức tạp.</p>
+
+<hr class="divider">
+
+<h2>Nguyên Tắc Kiểm Thử Chung</h2>
+
+<p>Có hai loại kiểm thử lớn: <strong>functional testing</strong> (kiểm tra tính đúng đắn của logic nghiệp vụ) và <strong>nonfunctional testing</strong> (kiểm tra các tính chất phi chức năng như hiệu suất và khả năng phục hồi).</p>
+
+<p>Các loại functional testing:</p>
+
+<ul>
+<li><strong>Unit testing</strong> — kiểm thử từng hàm, component riêng lẻ với input/output xác định. Nhanh, không phụ thuộc external services.</li>
+<li><strong>Integration testing</strong> — kiểm thử nhiều component phối hợp với nhau, thường cần broker, database, hoặc schema registry thực.</li>
+<li><strong>System testing</strong> — kiểm thử toàn bộ hệ thống end-to-end trong môi trường giống production nhất có thể.</li>
+<li><strong>Regression testing</strong> — kiểm thử rằng các thay đổi mới không phá vỡ behavior đã có.</li>
+</ul>
+
+<p>Các loại nonfunctional testing:</p>
+
+<ul>
+<li><strong>Performance testing</strong> — đo throughput, latency của service dưới tải bình thường.</li>
+<li><strong>Load testing</strong> — kiểm tra hành vi dưới tải cao (peak load).</li>
+<li><strong>Stress testing</strong> — đẩy hệ thống vượt giới hạn để tìm điểm gãy.</li>
+<li><strong>Recovery testing</strong> — kiểm tra khả năng phục hồi sau khi failures.</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Unit Testing Hàm Stateless</h2>
+
+<p>Hàm stateless là hàm không phụ thuộc trạng thái bên ngoài — output chỉ phụ thuộc vào input. Đây là loại dễ test nhất.</p>
+
+<p>Ví dụ: hàm <code>myFilterFunction</code> lọc các event theo điều kiện:</p>
+
+<pre><code>// Hàm cần test
+boolean myFilterFunction(String key, MyEvent event) {
+    return event.getValue() &gt; 0 &amp;&amp; event.getStatus().equals("ACTIVE");
+}
+
+// Unit test
+@Test
+void shouldReturnTrueForPositiveActiveEvent() {
+    MyEvent event = new MyEvent("ACTIVE", 42);
+    assertTrue(myFilterFunction("key1", event));
+}
+
+@Test
+void shouldReturnFalseForNegativeValue() {
+    MyEvent event = new MyEvent("ACTIVE", -1);
+    assertFalse(myFilterFunction("key1", event));
+}
+
+@Test
+void shouldReturnFalseForInactiveStatus() {
+    MyEvent event = new MyEvent("INACTIVE", 42);
+    assertFalse(myFilterFunction("key1", event));
+}
+
+@Test
+void shouldReturnFalseForZeroValue() {
+    MyEvent event = new MyEvent("ACTIVE", 0);
+    assertFalse(myFilterFunction("key1", event));  // boundary case: 0 không > 0
+}</code></pre>
+
+<p>Các boundary case đặc biệt quan trọng: giá trị 0 (zero boundary), null, string rỗng, giá trị tối đa/tối thiểu của type. Test phải cover cả các trường hợp biên này để tránh lỗi production khó debug.</p>
+
+<hr class="divider">
+
+<h2>Unit Testing Hàm Stateful</h2>
+
+<p>Hàm stateful đọc/ghi vào một datastore bên ngoài (state store, database). Để test đơn vị, cần <strong>mock</strong> datastore để tránh phụ thuộc vào infrastructure thực.</p>
+
+<pre><code>// Hàm cần test
+void addValueToAggregation(String key, Long value, KeyValueStore&lt;String, Long&gt; store) {
+    Long currentValue = store.get(key);
+    if (currentValue == null) currentValue = 0L;
+    store.put(key, currentValue + value);
+}
+
+// Unit test với mock store
+@Test
+void shouldInitializeAndAccumulateValues() {
+    KeyValueStore&lt;String, Long&gt; mockStore = mock(KeyValueStore.class);
+
+    // Lần đầu: store trống, currentValue = null
+    when(mockStore.get("user-1")).thenReturn(null);
+    addValueToAggregation("user-1", 10L, mockStore);
+    verify(mockStore).put("user-1", 10L);
+
+    // Lần thứ hai: store có giá trị cũ = 10
+    when(mockStore.get("user-1")).thenReturn(10L);
+    addValueToAggregation("user-1", 5L, mockStore);
+    verify(mockStore).put("user-1", 15L);
+}</code></pre>
+
+<p>Mock-based unit tests nhanh và không cần broker hay database thực, nhưng không đảm bảo behavior đúng khi tích hợp với state store thực. Cần bổ sung integration test cho các hàm stateful phức tạp.</p>
+
+<hr class="divider">
+
+<h2>Kiểm Thử Toàn Bộ Topology</h2>
+
+<p>Mỗi framework stream processing cung cấp công cụ để test toàn bộ topology xử lý event mà không cần broker thực:</p>
+
+<ul>
+<li><strong>Kafka Streams:</strong> <code>TopologyTestDriver</code> — chạy toàn bộ topology trong JVM, không cần Kafka broker. Hỗ trợ <code>TestInputTopic</code> để inject events và <code>TestOutputTopic</code> để đọc output.</li>
+<li><strong>Apache Flink:</strong> <code>MiniClusterWithClientResource</code> — mini Flink cluster chạy trong JVM test.</li>
+<li><strong>Apache Spark Streaming:</strong> <code>StreamingSuiteBase</code> — base class để test Spark streaming jobs.</li>
+</ul>
+
+<h3>Example 20-1: Kiểm Thử Với TopologyTestDriver</h3>
+
+<pre><code>public class SumTopologyTest {
+
+    private TopologyTestDriver testDriver;
+    private TestInputTopic&lt;String, Long&gt; input;
+    private TestOutputTopic&lt;String, Long&gt; output;
+
+    // buildMyTopology: đọc từ "input-topic",
+    // map, groupByKey, reduce (sum), ghi ra "output-topic"
+    private Topology buildMyTopology() {
+        StreamsBuilder builder = new StreamsBuilder();
+        builder.stream("input-topic", Consumed.with(Serdes.String(), Serdes.Long()))
+               .groupByKey()
+               .reduce(Long::sum)
+               .toStream()
+               .to("output-topic", Produced.with(Serdes.String(), Serdes.Long()));
+        return builder.build();
+    }
+
+    @Before
+    public void setup() {
+        Properties props = new Properties();
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-app");
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:9092");
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG,
+                  Serdes.String().getClass());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG,
+                  Serdes.Long().getClass());
+
+        testDriver = new TopologyTestDriver(buildMyTopology(), props);
+        input = testDriver.createInputTopic("input-topic",
+                          new StringSerializer(), new LongSerializer());
+        output = testDriver.createOutputTopic("output-topic",
+                           new StringDeserializer(), new LongDeserializer());
+    }
+
+    @Test
+    public void shouldSumToThree() {
+        input.pipeInput("a", 1L);
+        input.pipeInput("a", 2L);
+
+        assertThat(output.readKeyValue(),
+                   equalTo(KeyValue.pair("a", 3L)));
+        assertTrue(output.isEmpty());
+    }
+
+    @After
+    public void teardown() {
+        testDriver.close();
+    }
+}</code></pre>
+
+<p><code>TopologyTestDriver</code> không cần Kafka broker thực — nó chạy topology hoàn toàn in-memory, kể cả state store. Điều này làm cho test cực kỳ nhanh và có thể chạy trong CI pipeline mà không cần Docker hay external services. Tuy nhiên, có những hành vi chỉ xuất hiện khi có broker thực (partition rebalancing, network latency) mà TopologyTestDriver không thể mô phỏng.</p>
+
+<hr class="divider">
+
+<h2>Kiểm Thử Schema Evolution</h2>
+
+<p>Schema evolution testing đảm bảo rằng khi producer thay đổi schema, các consumer với schema cũ vẫn có thể đọc được event mới (và ngược lại). Điều này được test trực tiếp với schema registry.</p>
+
+<h3>Quy Trình Test Bằng curl</h3>
+
+<p>Ví dụ kiểm tra tính tương thích của schema mới trước khi deploy:</p>
+
+<pre><code># Example 20-2: Lấy schema hiện tại của topic
+curl -X GET http://schema-registry:8081/subjects/my-topic-value/versions/latest
+
+# Example 20-3: Đăng ký schema mới (version 2)
+curl -X POST http://schema-registry:8081/subjects/my-topic-value/versions \
+  -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  -d '{"schema": "{\"type\":\"record\",\"name\":\"MyEvent\",
+        \"fields\":[{\"name\":\"id\",\"type\":\"string\"},
+                    {\"name\":\"value\",\"type\":\"long\"},
+                    {\"name\":\"newField\",\"type\":[\"null\",\"string\"],
+                     \"default\":null}]}"}'
+
+# Example 20-4: Kiểm tra tính tương thích của schema mới
+curl -X POST \
+  http://schema-registry:8081/compatibility/subjects/my-topic-value/versions/latest \
+  -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  -d '{"schema": "..."}'
+# Kết quả: {"is_compatible":true}
+
+# Example 20-5: Xác nhận schema evolution rule hiện tại
+curl -X GET http://schema-registry:8081/config/my-topic-value
+# Kết quả: {"compatibilityLevel":"BACKWARD"}</code></pre>
+
+<p>Các bước này nên được tích hợp vào CI pipeline: trước khi merge code thay đổi schema, CI tự động test tính tương thích với schema registry. Nếu không tương thích, build fails ngay ở pipeline thay vì lỗi production.</p>
+
+<hr class="divider">
+
+<h2>Integration Testing</h2>
+
+<p>Integration testing kiểm thử service trong môi trường gần với production hơn: có broker thực, schema registry thực, và các dependent services.</p>
+
+<h3>Local Integration Testing</h3>
+
+<p>Có thể tạo môi trường integration test hoàn chỉnh trong JVM test bằng cách nhúng broker và schema registry:</p>
+
+<pre><code>// Example 20-6: Test với in-JVM broker và schema registry
+public class IntegrationTest {
+
+    // In-JVM Kafka broker (ví dụ: EmbeddedKafkaCluster)
+    @ClassRule
+    public static final EmbeddedKafkaCluster cluster =
+        new EmbeddedKafkaCluster(1);  // 1 broker
+
+    // Mock schema registry hoặc embedded schema registry
+    private SchemaRegistryClient schemaRegistryClient;
+
+    @Before
+    public void setup() throws Exception {
+        cluster.createTopic("input-topic");
+        cluster.createTopic("output-topic");
+        schemaRegistryClient = new MockSchemaRegistryClient();
+
+        // Khởi tạo và start 2 instances của topology
+        Properties props1 = buildStreamsProps(cluster.bootstrapServers(), "app-1");
+        Properties props2 = buildStreamsProps(cluster.bootstrapServers(), "app-2");
+
+        KafkaStreams streams1 = new KafkaStreams(buildTopology(), props1);
+        KafkaStreams streams2 = new KafkaStreams(buildTopology(), props2);
+
+        streams1.start();
+        streams2.start();
+    }
+
+    @Test
+    public void shouldProcessEventsCorrectly() throws Exception {
+        // Produce events vào input-topic
+        produceEvent("input-topic", "key1", new MyEvent("value1"));
+
+        // Đợi output và kiểm tra
+        ConsumerRecords&lt;String, MyEvent&gt; records =
+            consumeWithTimeout("output-topic", Duration.ofSeconds(10));
+        assertEquals(1, records.count());
+        assertEquals("value1", records.iterator().next().value().getData());
+    }
+}</code></pre>
+
+<h3>Container-Based Integration Testing Với Testcontainers</h3>
+
+<p>Testcontainers cho phép tạo và quản lý Docker containers trong JVM test, cung cấp môi trường integration testing giống production hơn in-JVM broker:</p>
+
+<pre><code>// Example 20-7: Testcontainers với Kafka, PostgreSQL, và Vault
+public class ContainerIntegrationTest {
+
+    @ClassRule
+    public static KafkaContainer kafka =
+        new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.0"));
+
+    @ClassRule
+    public static PostgreSQLContainer&lt;?&gt; postgres =
+        new PostgreSQLContainer&lt;&gt;(DockerImageName.parse("postgres:15"))
+            .withDatabaseName("testdb")
+            .withUsername("test")
+            .withPassword("test");
+
+    @ClassRule
+    public static VaultContainer&lt;?&gt; vault =
+        new VaultContainer&lt;&gt;(DockerImageName.parse("vault:1.15"))
+            .withVaultToken("test-root-token");
+
+    @Before
+    public void configureVaultTransitSecrets() {
+        // Kích hoạt transit secrets engine trong Vault để encrypt event fields
+        VaultTransitOperations transit = vaultTemplate().opsForTransit();
+        transit.createKey("my-encryption-key");
+    }
+
+    @Test
+    public void shouldEncryptSensitiveFieldsInEvents() {
+        // Test rằng PII fields được encrypt trước khi ghi vào Kafka
+        String ssn = "123-45-6789";
+        produceEventWithEncryption(kafka.getBootstrapServers(),
+                                   vault.getHttpHostAddress(),
+                                   ssn);
+
+        ConsumerRecord&lt;String, String&gt; record =
+            consumeNextRecord(kafka.getBootstrapServers(), "secure-topic");
+
+        // Confirm SSN được encrypt, không phải plaintext
+        assertNotEquals(ssn, extractSsnFromRecord(record));
+        assertTrue(extractSsnFromRecord(record).startsWith("vault:v1:"));
+    }
+}</code></pre>
+
+<p>Testcontainers có ưu điểm lớn: containers được spin up và tear down tự động, môi trường test gần giống production, và test hoàn toàn isolated giữa các runs. Chi phí là thời gian khởi động container (~5-30 giây).</p>
+
+<h3>Figure 20-1: Lightweight Framework Với Containerized Dependencies</h3>
+
+<p>Trong kiến trúc lightweight framework (như Kafka Streams), microservice chạy trong một JVM process. Integration testing có thể được thực hiện bằng cách tạo containers cho các dependencies:</p>
+
+<pre><code>[Test Process]
+  ├─ Kafka container (event broker)
+  ├─ Schema Registry container
+  ├─ State store container (nếu dùng external store)
+  └─ Microservice instance (chạy trong test process)</code></pre>
+
+<h3>Figure 20-2: Heavyweight Framework Containerized</h3>
+
+<p>Với heavyweight frameworks (Flink, Spark), cần containerize cả framework cluster:</p>
+
+<pre><code>[Test Environment]
+  ├─ Kafka container
+  ├─ Schema Registry container
+  ├─ Flink/Spark cluster container (JobManager + TaskManagers)
+  └─ Microservice job được submit lên cluster container</code></pre>
+
+<p>Môi trường này phức tạp hơn nhưng mô phỏng chính xác hơn cách service chạy trong production.</p>
+
+<hr class="divider">
+
+<h2>Kiểm Thử Với Fully Remote Cloud Services</h2>
+
+<p>Thay vì tạo infrastructure local hoặc container, có thể test trên cloud services thực. Có ba chiến lược, từ tốt nhất đến kém nhất:</p>
+
+<h3>1. Temporary Single-Tenant Environment (Tốt Nhất)</h3>
+
+<p>Tạo một môi trường cloud hoàn chỉnh, riêng biệt cho mỗi test run. Sau khi test xong, môi trường được xóa.</p>
+
+<ul>
+<li><strong>Ưu điểm:</strong> hoàn toàn isolated, không có multitenancy issues, giống production nhất.</li>
+<li><strong>Nhược điểm:</strong> chi phí cloud cao hơn, thời gian provisioning lâu hơn.</li>
+<li><strong>Khi nào dùng:</strong> integration testing quan trọng trước deployment, performance testing cần môi trường sạch.</li>
+</ul>
+
+<p>Môi trường tạm thời có thể được populate với một <strong>curated testing source</strong> — một snapshot của production data đã được anonymize và sanitize để phù hợp cho testing.</p>
+
+<h3>2. Durable Multitenant Environment (Kém Nhất)</h3>
+
+<p>Nhiều team chia sẻ một môi trường staging duy nhất chạy liên tục.</p>
+
+<ul>
+<li><strong>Ưu điểm:</strong> chi phí thấp hơn vì chia sẻ infrastructure.</li>
+<li><strong>Nhược điểm:</strong> "tragedy of the commons" — mỗi team có thể làm ô nhiễm môi trường chung; test data bị contaminate; resource contention giữa các teams.</li>
+<li><strong>Thực tế:</strong> team A break schema gây lỗi cho team B; team C flood broker gây latency spike cho team D. Overhead để maintain môi trường shared rất cao.</li>
+</ul>
+
+<h3>3. Production Environment (Chỉ Smoke Tests)</h3>
+
+<p>Test trực tiếp trên production với lưu lượng thực.</p>
+
+<ul>
+<li><strong>Khi nào phù hợp:</strong> smoke tests — kiểm tra nhanh sau deployment rằng service cơ bản hoạt động, không phải test đầy đủ.</li>
+<li><strong>Không nên:</strong> regression tests, performance tests, hay bất kỳ test nào có thể gây side effects cho production data.</li>
+</ul>
+
+<p>Ngoài ra, môi trường cloud tạm thời có thể dùng cho <strong>performance và load testing</strong>: tạo environment, chạy production-like load để đo throughput và latency, sau đó tear down. Kết quả được lưu trữ để tracking theo thời gian.</p>
+
+<hr class="divider">
+
+<h2>Chiến Lược Chọn Môi Trường Test</h2>
+
+<p>Không có một chiến lược đúng cho mọi trường hợp. Quyết định phụ thuộc vào:</p>
+
+<ul>
+<li><strong>Quy mô tổ chức:</strong> startup nhỏ có thể dùng môi trường shared; enterprise lớn cần isolated environments.</li>
+<li><strong>Tính chất service:</strong> service stateless dễ test hơn service stateful phức tạp với nhiều input streams.</li>
+<li><strong>SLA yêu cầu:</strong> service mission-critical cần testing environment giống production nhất.</li>
+<li><strong>Ngân sách:</strong> temporary single-tenant tốt nhất nhưng tốn kém nhất.</li>
+</ul>
+
+<p>Nguyên tắc tổng quát: môi trường test shared có overhead cao vì phải maintain và debug khi bị contaminate. Môi trường disposable (tạm thời) đòi hỏi đầu tư ban đầu vào automation nhưng cho isolation tốt hơn và ít overhead về lâu dài.</p>
+
+<hr class="divider">
+
+<h2>Tóm Tắt</h2>
+
+<p>Kiểm thử event-driven microservices đòi hỏi một chiến lược nhiều lớp. Unit test kiểm tra logic từng hàm riêng lẻ — stateless functions thì đơn giản, stateful functions cần mock datastore. <code>TopologyTestDriver</code> (Kafka Streams), <code>MiniClusterWithClientResource</code> (Flink), và <code>StreamingSuiteBase</code> (Spark) cho phép test toàn bộ topology mà không cần broker thực, với tốc độ nhanh phù hợp cho CI. Schema evolution testing dùng curl hoặc SDK để verify tính tương thích với schema registry, nên được tích hợp vào CI pipeline.</p>
+
+<p>Integration testing với Testcontainers cho phép tạo môi trường isolation hoàn chỉnh với Kafka, PostgreSQL, Vault thực trong Docker containers. Đối với testing ở quy mô lớn hơn, temporary single-tenant cloud environment là lựa chọn tốt nhất — isolation hoàn toàn, không có multitenancy issues — mặc dù tốn kém hơn durable shared environment. Sự đầu tư vào automation để tạo môi trường disposable sẽ trả lại rất nhiều lần qua việc giảm overhead debugging và tăng độ tin cậy của test results.</p>
+
+<nav class="chapnav">
+  <a href="ch19-edm.html">← Chương 19: Công Cụ Hỗ Trợ</a>
+  <a href="ch21-edm.html">Chương 21: Triển Khai →</a>
+</nav>
+</body>
+</html>

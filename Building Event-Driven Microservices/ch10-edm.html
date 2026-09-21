@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 10: Xây Dựng Workflow Với Microservices — Building Event-Driven Microservices</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/building-event-driven-microservices">← Về mục lục</a></p>
+<div class="book-label">Building Event-Driven Microservices · Adam Bellemare · Chương 10</div>
+<h1>Xây Dựng Workflow Với Microservices</h1>
+<p class="chapter-subtitle">Choreography, orchestration, saga pattern, và durable execution engine trong hệ thống phân tán</p>
+
+<p>Khi nghiệp vụ đòi hỏi phối hợp nhiều microservice để hoàn thành một quy trình (workflow), câu hỏi kiến trúc quan trọng đặt ra: ai điều phối, ai lắng nghe, và cách xử lý thất bại? Chương này khảo sát hai pattern tổ chức workflow lớn — <strong>choreography</strong> (vũ đạo, mỗi service tự phản ứng) và <strong>orchestration</strong> (nhạc trưởng, có service điều phối trung tâm) — cùng với Saga pattern cho distributed transaction, Compensation pattern thay thế rollback, và Durable Execution Engine như một hướng triển khai hiện đại.</p>
+
+<hr class="divider">
+
+<h2>Choreography Pattern — Kiến Trúc Phản Ứng Phân Tán</h2>
+
+<p>Trong <strong>choreography pattern</strong>, không có một thành phần nào "biết" toàn bộ workflow. Thay vào đó, mỗi microservice phản ứng với sự kiện nó nhận được, xử lý theo nghiệp vụ của mình, rồi phát ra sự kiện mới — kích hoạt service tiếp theo. Toàn bộ workflow xuất hiện như một hệ quả hữu cơ của các phản ứng độc lập này (Hình 10-1: A→B→C).</p>
+
+<p>Đây là kiến trúc <em>phân quyền cao nhất</em>: mỗi service chỉ biết input của mình và output cần phát ra. Không service nào cần biết workflow tổng thể trông như thế nào.</p>
+
+<h3>Ưu Điểm Của Choreography</h3>
+
+<p><strong>Loose coupling triệt để:</strong> Các service hoàn toàn độc lập về mặt triển khai và phát triển. Thêm service mới vào workflow chỉ cần service đó subscribe vào đúng event stream — không cần chỉnh sửa service nào khác. Điều này cho phép workflow "phát triển hữu cơ" (organic growth) theo thời gian khi nghiệp vụ thay đổi.</p>
+
+<p><strong>Phù hợp với các workflow đơn giản:</strong> Khi workflow có ít bước, ít dependency giữa các service, và thứ tự thực hiện ổn định, choreography hoạt động rất tốt với ít overhead.</p>
+
+<h3>Thách Thức Của Choreography</h3>
+
+<p><strong>Khó định nghĩa điểm bắt đầu và kết thúc:</strong> Không có thành phần trung tâm nào theo dõi "workflow bắt đầu từ đây" hay "workflow kết thúc khi nào." Mỗi service chỉ biết trước mắt của mình.</p>
+
+<p><strong>Quyền sở hữu phân tán:</strong> Khi có lỗi hoặc cần thay đổi, khó xác định team nào "sở hữu" toàn bộ workflow — các team chỉ sở hữu từng service riêng lẻ.</p>
+
+<p><strong>Brittle khi thay đổi cross-boundary:</strong> Nếu schema của một event thay đổi, tất cả các service downstream phụ thuộc vào event đó đều bị ảnh hưởng. Điều phối schema evolution phức tạp hơn nhiều khi không có điểm tập trung.</p>
+
+<h3>Sửa Đổi Choreography Workflow</h3>
+
+<p>Khi cần thay đổi thứ tự các bước trong workflow hoặc thêm bước mới, choreography đòi hỏi chỉnh sửa nhiều service song song (Hình 10-2). Nếu thứ tự xử lý thay đổi, có thể phải tạm dừng toàn bộ pipeline để đảm bảo tính nhất quán — không thể deploy từng service độc lập mà không gây ra trạng thái sự kiện bị xử lý sai thứ tự.</p>
+
+<p>Breaking changes trong schema event stream đặc biệt nguy hiểm trong môi trường choreography: cần đảm bảo tất cả consumer đã được update trước khi producer bắt đầu phát schema mới.</p>
+
+<h3>Monitoring Choreography Workflow</h3>
+
+<p>Vì không có điểm tập trung, monitoring toàn bộ workflow đòi hỏi một thành phần riêng biệt (Hình 10-3) — thường là một <em>centralized state store</em> tiêu thụ từ tất cả các event stream liên quan và tổng hợp trạng thái. Đây về bản chất là một form của orchestration nhẹ dành cho mục đích observability.</p>
+
+<hr class="divider">
+
+<h2>Orchestration Pattern — Nhạc Trưởng Trung Tâm</h2>
+
+<p>Trong <strong>orchestration pattern</strong>, có một service đặc biệt — <em>orchestrator</em> — nắm giữ toàn bộ logic workflow. Orchestrator biết workflow gồm những bước nào, bước nào phụ thuộc vào bước nào, và phải làm gì khi có bước thất bại.</p>
+
+<p>Ranh giới quan trọng: <strong>orchestrator chỉ chứa workflow logic</strong>, không chứa business logic. Business logic vẫn nằm trong từng microservice riêng lẻ. Orchestrator chỉ ra lệnh ("gửi A-Command"), theo dõi kết quả ("nhận A-Response"), và quyết định bước tiếp theo.</p>
+
+<h3>Simple Event-Driven Orchestration</h3>
+
+<p>Hình 10-4 minh họa orchestration cơ bản qua event stream. Orchestrator duy trì một <strong>state table</strong> (Table 10-1) theo dõi trạng thái từng bước cho mỗi workflow instance (ví dụ: Input Event ID × Service A/B/C × Status).</p>
+
+<p>Vòng lặp xử lý của orchestrator:</p>
+
+<pre><code>while (true) {
+  Event[] events = consumer.consume(streams)
+  for (Event event : events) {
+    if (event.source == "Input Stream") {
+      processInput(event);
+      updateProgress(event);
+      producer.send("A-Command", ...)
+    } else if (event.source == "A-Response") {
+      processAResponse(event);
+      updateProgress(event);
+      producer.send("B-Command", ...)
+    } else if (event.source == "B-Response") {
+      processBResponse(event);
+      updateProgress(event);
+      producer.send("C-Command", ...)
+    } else if (event.source == "C-Response") {
+      processCResponse(event);
+      updateProgress(event);
+      producer.send("Output", ...)
+    }
+  }
+  consumer.commitOffsets()
+}</code></pre>
+
+<p>Logic rõ ràng, tập trung, dễ follow. Khi workflow thay đổi, chỉ cần sửa orchestrator.</p>
+
+<h3>Request-Response Orchestration</h3>
+
+<p>Orchestrator cũng có thể giao tiếp với các service qua <strong>request-response synchronous</strong> (HTTP/RPC) thay vì event stream (Hình 10-5). Cách này hữu ích khi cần tích hợp với third-party SaaS API không hỗ trợ event streaming, hoặc khi latency thấp là ưu tiên. Với async request-response, orchestrator dùng futures/promises để không block trong lúc chờ.</p>
+
+<h3>Sửa Đổi Orchestration Workflow</h3>
+
+<p>Đây là ưu điểm lớn nhất của orchestration: tất cả thay đổi workflow tập trung tại <strong>một điểm duy nhất</strong> — orchestrator. Thêm bước mới, thay đổi thứ tự, xử lý case đặc biệt — tất cả chỉ cần sửa một service. Các downstream microservice không cần biết workflow thay đổi gì.</p>
+
+<p>Cảnh báo antipattern: <strong>"God" service</strong> — orchestrator bắt đầu ra các lệnh quá chi tiết ("cập nhật trường X trong database Y") thay vì lệnh nghiệp vụ cấp cao ("xử lý thanh toán"). Khi orchestrator vi phạm ranh giới domain của microservice khác, nó tạo ra coupling ngầm và phá vỡ encapsulation.</p>
+
+<h3>Monitoring Orchestration</h3>
+
+<p>Monitoring trở nên đơn giản hơn rất nhiều: toàn bộ trạng thái workflow nằm trong state store của orchestrator. Orchestrator có thể expose trạng thái qua API hoặc phát output monitoring stream — từ đó dashboard có thể hiển thị "bước A đang xử lý", "bước B đã hoàn thành", "bước C đang chờ".</p>
+
+<h3>So Sánh Request-Response Và Event-Driven Orchestration</h3>
+
+<p><strong>Event-driven orchestration</strong> có lợi thế: I/O monitoring (có thể quan sát từng sự kiện qua broker), cho phép các service khác cũng consume cùng command/response streams, và bền vững hơn (event đã được persist trong broker ngay cả khi orchestrator restart). Thích hợp cho workflow phức tạp, dài hạn, cần audit trail.</p>
+
+<p><strong>Request-response orchestration</strong> có lợi thế: latency thấp hơn (không qua broker), tích hợp tự nhiên với third-party API, và đơn giản hơn về mặt triển khai cho các workflow ngắn. Nhược điểm: cần thêm infrastructure để scale và monitor.</p>
+
+<hr class="divider">
+
+<h2>Distributed Transactions Và Saga Pattern</h2>
+
+<p><strong>Distributed transaction</strong> là giao dịch trải rộng trên 2 hoặc nhiều hơn data store độc lập. Đây là vấn đề khó nhất trong hệ thống phân tán: không thể dùng ACID transaction thông thường khi data nằm ở nhiều service khác nhau.</p>
+
+<p>Nguyên tắc: <strong>tránh distributed transaction trừ khi thực sự cần thiết</strong>. Nhiều trường hợp tưởng cần distributed transaction thực ra có thể giải quyết bằng thiết kế khác (eventual consistency, compensation).</p>
+
+<p>Khi cần distributed transaction, <strong>Saga pattern</strong> là giải pháp phổ biến nhất. Saga chia transaction lớn thành chuỗi các local transaction nhỏ, mỗi transaction thành công phát ra event kích hoạt bước tiếp theo. Nếu một bước thất bại, saga thực hiện các <em>compensating transaction</em> để hoàn tác các bước trước.</p>
+
+<h3>Sagas Via Choreography</h3>
+
+<p>Saga choreography (Hình 10-6, 10-7, 10-8): mỗi service lắng nghe saga stream và instruction stream, thực hiện local transaction, phát saga event thành công hoặc thất bại. Khi thất bại, event thất bại kích hoạt rollback ở các service trước đó theo chiều ngược lại.</p>
+
+<p>Nhược điểm saga choreography: brittle (khó sửa đổi), khó monitor tổng thể, và debug rất phức tạp khi có failure ở bước giữa trong workflow dài.</p>
+
+<h3>Sagas Via Orchestration</h3>
+
+<p>Saga orchestration (Hình 10-9, 10-10): orchestrator điều phối cả forward transaction lẫn rollback. Khi bước N thất bại, orchestrator biết chính xác cần gửi compensating command cho bước N-1, N-2... theo đúng thứ tự ngược lại.</p>
+
+<p>Ưu điểm rõ ràng: visibility tốt hơn (orchestrator biết trạng thái toàn bộ saga), linh hoạt hơn khi sửa đổi, và dễ monitor hơn. Nhược điểm: thêm overhead của orchestrator service.</p>
+
+<hr class="divider">
+
+<h2>Compensation Workflow Pattern</h2>
+
+<p>Rollback đôi khi không phải là giải pháp tốt nhất — hay thậm chí không khả thi. <strong>Compensation workflow pattern</strong> thay vì cố gắng hoàn tác các hành động đã xảy ra, thực hiện <em>hành động bù đắp tiến về phía trước</em> (forward compensating action) để đạt trạng thái mong muốn từ trạng thái hiện tại.</p>
+
+<p>Ví dụ thực tế: hệ thống bán vé hoặc quản lý tồn kho. Khách hàng đặt mua sản phẩm nhưng sau đó phát hiện hết hàng. Thay vì cố rollback toàn bộ đơn hàng (phức tạp, có thể đã xử lý nhiều bước), compensation workflow:</p>
+
+<ul>
+<li>Đặt hàng nhập thêm hàng từ nhà cung cấp</li>
+<li>Thông báo cho khách hàng về tình trạng và thời gian dự kiến</li>
+<li>Cung cấp mã giảm giá như một khoản bù đắp</li>
+</ul>
+
+<p>Compensation workflows <strong>không phải lúc nào cũng phù hợp</strong> — đôi khi rollback thực sự là cần thiết. Nhưng với các hệ thống ánh xạ thế giới thực (physical world), đặc biệt khi discrepancy chỉ được phát hiện hàng tuần hay hàng tháng sau, việc reverse trạng thái thường không khả thi. Compensation là tư duy thực dụng: tiến về phía trước để đạt kết quả tốt nhất có thể, thay vì cố "xóa" những gì đã xảy ra.</p>
+
+<hr class="divider">
+
+<h2>Triển Khai Orchestration Qua Durable Execution Engine</h2>
+
+<p><strong>Durable Execution Engine (DEE)</strong> là một loại nền tảng phần mềm thiết kế để quản lý và thực thi các business process phức tạp, dài hạn, có trạng thái trong hệ thống phân tán — với đảm bảo về độ tin cậy. DEE còn được gọi là <em>workflows-as-code</em> hay <em>fault-tolerant workflow engines</em>.</p>
+
+<p>Khác với ứng dụng thông thường có thể mất tiến trình khi crash, DEE đảm bảo code của bạn cuối cùng sẽ chạy đến hoàn thành — bất kể có failures, restarts, timeouts, hay các vấn đề gián đoạn khác.</p>
+
+<p>Các DEE phổ biến (nhiều options mã nguồn mở): <strong>Cadence, Temporal, Restate, Resonate</strong>. Các platform này trở nên phổ biến hơn nhiều kể từ ấn bản đầu tiên của cuốn sách (2020).</p>
+
+<h3>Các Tính Năng Nổi Bật Của DEE</h3>
+
+<p><strong>Automatic retries và fault tolerance:</strong> Khi một component workflow gặp lỗi (microservice down, network error), engine tự động retry bước thất bại hoặc tiếp tục workflow từ trạng thái tốt cuối cùng — không mất tiến trình.</p>
+
+<p><strong>Quản lý distributed transaction:</strong> Điều phối các quy trình phức tạp nhiều bước qua nhiều service, đảm bảo eventual consistency và cung cấp compensation logic nếu một bước thất bại.</p>
+
+<p><strong>Giảm boilerplate error handling:</strong> Developer chỉ cần viết business logic như code thông thường — DEE xử lý retry, failure, và state management. Không cần viết thủ công các cơ chế phức tạp này.</p>
+
+<p><strong>Resource savings:</strong> Workflow tránh re-execute code đã chạy thành công, bao gồm các tính toán và lời gọi đến các service khác.</p>
+
+<p><strong>Hỗ trợ long duration:</strong> Workflow có thể chạy từ vài phút đến nhiều ngày — chờ phê duyệt từ con người, chờ external event — mà không mất state hay progress.</p>
+
+<h3>Ví Dụ Code Temporal (Java)</h3>
+
+<p>Ví dụ dưới đây (từ Temporal's sample Java code) cho thấy cách DEE tích hợp trực tiếp vào code microservice:</p>
+
+<pre><code>import io.temporal.workflow.Async;
+import io.temporal.workflow.Promise;
+// Trimmed for brevity
+// ...
+{
+  /** Simple activity implementation, concatenates two strings. */
+  static class GreetingActivitiesImpl implements GreetingActivities {
+    @Override
+    public String composeGreeting(String greeting, String name) {
+      return greeting + " " + name + "!";
+    }
+  }
+}
+// Trimmed for brevity
+// ...
+@Override
+public String getGreeting(String name) {
+  /*
+   * This is our workflow method.
+   * We invoke the composeGreeting method two times using
+   * Async.function so that results of each async method invocation
+   * returns a Promise similar to a Java Future.
+   */
+  Promise&lt;String&gt; hello =
+    Async.function(activities::composeGreeting, "Hello", name);
+  Promise&lt;String&gt; bye =
+    Async.function(activities::composeGreeting, "Bye", name);
+
+  // Application waits until receiving both async results
+  return hello.get() + "\n" + bye.get();
+}</code></pre>
+
+<p>Điểm quan trọng: nếu <code>getGreeting</code> bị gián đoạn sau khi gửi "Hello" nhưng trước "Goodbye", khi service khởi động lại, DEE <em>tự động khôi phục</em> về đúng trạng thái — bỏ qua lại việc gửi "Hello" và tiếp tục với "Goodbye". Không cần viết thêm code recovery.</p>
+
+<h3>Event Sourcing Qua Durable Append-Only Log</h3>
+
+<p>DEE dùng một <strong>append-only durable log</strong> (bất biến, chỉ thêm vào) để theo dõi toàn bộ tiến trình orchestration. Log này ghi lại:</p>
+
+<ul>
+<li><em>Workflow progress:</em> dòng code cuối cùng đã thực thi (thành công hay thất bại), tiến trình qua các nhánh và vòng lặp</li>
+<li><em>All relevant state:</em> mọi state được đánh dấu là quan trọng cần persist</li>
+<li><em>Parameters cho function calls:</em> tham số truyền vào các function call hoặc direct API call (HTTP, RPC)</li>
+<li><em>Returns từ function calls:</em> giá trị trả về từ các function invocation</li>
+<li><em>Durable promises:</em> theo dõi các function và direct call API nào đã được invoke, tránh gọi lại khi restore từ state</li>
+</ul>
+
+<p>Toàn bộ thông tin cần orchestrate tiến trình service đều nằm trong append-only log. Format cụ thể khác nhau tùy framework — xem documentation của từng framework để hiểu guarantees cụ thể.</p>
+
+<p><em>Lưu ý quan trọng:</em> DEE có thể giúp ngăn chặn duplicate work và xử lý lại không cần thiết, nhưng không thể loại bỏ race condition hoàn toàn — vẫn có thể xảy ra tình huống gửi request đến service khác nhưng crash trước khi ghi request vào DEE. <strong>Luôn giữ các operation và request idempotent.</strong></p>
+
+<h3>Cân Nhắc Khi Dùng DEE</h3>
+
+<p><strong>Nhược điểm và rủi ro:</strong></p>
+
+<p><em>Dependency mới và vendor lock-in:</em> DEE là thêm một hệ thống cần deploy, monitor, maintain. Tích hợp với DEE tạo ra degree of vendor lock-in — nếu vendor không còn tồn tại sau 5-10 năm, cần migrate toàn bộ orchestration logic sang DEE khác.</p>
+
+<p><em>Learning curve:</em> Khái niệm DEE (workflows, activities, workers, timers, signals, await, promises...) khá challenging với developer mới với distributed systems.</p>
+
+<p><em>Engine-specific abstractions:</em> Mỗi DEE có những abstraction và concept riêng — không có standard chung.</p>
+
+<p><em>Versioning challenges:</em> Workflow code cần evolve theo business requirements. Có thể cần chạy song song nhiều phiên bản của cùng workflow, hoặc viết code handle cả data cũ lẫn data mới khi reprocessing.</p>
+
+<p><em>State persistence overhead:</em> Persist state workflow sau mỗi bước tạo operational overhead về computation và storage. Performance có thể giảm với high-throughput, low-latency operations.</p>
+
+<p><em>Extra resources:</em> Cần resources để chạy DEE infrastructure (hoặc trả tiền cho managed solution).</p>
+
+<p>DEE phù hợp nhất cho <strong>workflow phức tạp, dài hạn, có trạng thái</strong> — đặc biệt những workflow không có reliable/retriable triggers (ví dụ nhận request HTTP từ service khác, không thể reprocess từ event stream). Khi workflow đơn giản có thể recover bằng cách reconsuming input event stream, DEE có thể là overkill. Tuy nhiên, khi bắt đầu mix direct requests via HTTP/RPC với các service khác, độ tin cậy và durability mà DEE mang lại có thể trở nên thiết yếu.</p>
+
+<hr class="divider">
+
+<h2>Tổng Kết</h2>
+
+<p><strong>Choreography</strong> cho phép loose coupling cao giữa các business unit và workflow độc lập. Phù hợp nhất cho workflow đơn giản với ít dependency, ít microservice, và thứ tự nghiệp vụ ít thay đổi.</p>
+
+<p><strong>Orchestration</strong> mang lại kiểm soát tường minh hơn trên workflow, với chi phí tạo thêm một dedicated service. Orchestration cung cấp visibility và monitoring tốt hơn, xử lý được distributed transaction phức tạp hơn. Logic workflow nằm trong orchestrator và có thể sửa đổi dễ dàng hơn. Các workflow thường xuyên thay đổi, chứa nhiều microservice độc lập, phù hợp tốt với orchestration pattern.</p>
+
+<p>Không phải mọi workflow đều cần distributed transaction. <strong>Compensation</strong> thường là lựa chọn thực dụng hơn — tiến về phía trước để đạt trạng thái mong muốn thay vì cố rollback hoàn toàn.</p>
+
+<p><strong>Durable Execution Engine</strong> là công cụ mạnh cho orchestrator độ phức tạp trung bình đến cao, đặc biệt khi xử lý non-event-driven inputs. Nhưng learning curve và operational overhead đòi hỏi đánh giá cẩn thận liệu điểm mạnh của nó có phù hợp với nhu cầu cụ thể của hệ thống hay không.</p>
+
+<nav class="chapnav">
+  <a href="/building-event-driven-microservices/ch09-edm">← Chương 9</a>
+  <a href="/building-event-driven-microservices/ch11-edm">Chương 11 →</a>
+</nav>
+</body>
+</html>
