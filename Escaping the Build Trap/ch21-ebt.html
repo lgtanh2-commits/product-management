@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 21: Rewards and Incentives — Escaping the Build Trap</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
+<div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 21</div>
+<h1>Rewards and Incentives</h1>
+<p class="chapter-subtitle">Khi incentive structures tạo ra build trap — và cách leaders có thể thay đổi điều đó</p>
+
+<nav class="chapnav">
+  <a href="ch20-ebt.html">← Chương 20: Outcome-Focused Communication</a>
+  <a href="ch22-ebt.html">Chương 22: Safety and Learning →</a>
+</nav>
+
+<hr class="divider">
+
+<p>Một trong những quan sát thực tế nhất trong cuốn sách: nhiều người giỏi trong nhiều tổ chức đang làm đúng những gì hệ thống yêu cầu họ làm — dù điều đó có thể tệ cho sản phẩm và cho khách hàng. Build trap không chỉ là cultural problem. Nó là structural problem, được baked in vào cách tổ chức measure và reward người của mình.</p>
+
+<h2>Corporate Scorecards Và Tháng 12 Của Nỗi Ám Ảnh</h2>
+
+<p>Tại một công ty mà Perri làm việc cùng, product managers được evaluated hàng năm bằng corporate scorecard — một danh sách features và milestones cam kết phải ship trước cuối năm. Bonus được tính theo tỷ lệ phần trăm số items trong scorecard được complete.</p>
+
+<p>Điều xảy ra every single December là predictable và đáng lo ngại: teams rush để ship features trước ngày 31/12. Code quality giảm. Testing bị cắt bớt. Features được mark "complete" với known bugs chưa được fix. Engineers biết đây là sloppy work — nhưng tháng 12 quá áp lực để làm khác được. Leadership thì celebrate: "Great, chúng ta hit 87% scorecard!" Và January bắt đầu bằng nhiều tuần cleanup, fixing bugs từ tháng 12, unraveling kitschy shortcuts.</p>
+
+<p>Không ai trong loop này là bad person. Engineers không muốn ship bad code. PMs không muốn sabotage product. Nhưng incentive structure đã create một game nơi "shipping feature by deadline" là metric được reward, và "solving user problem" là metric không được đo. Trong một game như vậy, rational players optimize for the measurable thing.</p>
+
+<h2>Khi PM Tốt Bị Hệ Thống Tệ Nghiền Nát</h2>
+
+<p>Perri kể câu chuyện về một product manager cô gặp tại một conference. PM này là người tư duy đúng — hiểu product kata, biết importance của user research, không muốn build without validation. Khi team bắt đầu một initiative mới, PM này push back: "Chúng ta cần research trước khi commit feature này. Tôi không thấy evidence nào rằng users cần nó theo cách này."</p>
+
+<p>Boss của PM: "Just ship it. Chúng ta đã promise với customers rồi." PM refuse. Boss không chấp nhận pushback. Initiative tiếp tục không có research. Khi feature ship, nó perform poorly — như PM đã predict. Nhưng thay vì học từ điều này, boss quyết định sunset toàn bộ product. PM, người đã đúng về problem, mất việc theo đó.</p>
+
+<p>Bài học: cá nhân dũng cảm không đủ. Nếu một PM có đủ courage để push back nhưng organization không có structure để support behavior đó, PM đó sẽ bị punish. Thay đổi cần xảy ra ở system level, không chỉ individual level.</p>
+
+<h2>Sales Commission: Bán Trước, Nhớ Sau</h2>
+
+<p>Vấn đề tương tự nhưng ở một function khác: sales commission structures. Traditional sales compensation: tiền thưởng dựa trên giá trị contract ký kết. Close a big deal = big bonus. Điều này rational về mặt cá nhân, nhưng tạo ra dangerous incentive: salespeople có strong motivation để close deal bằng bất cứ giá nào, kể cả overpromising product capabilities.</p>
+
+<p>"Yes, chúng tôi có thể integrate với legacy system của bạn." (Product team: không biết điều này.) "Chúng tôi sẽ có AI feature đó vào Q2." (Product team: nó đang trong experiment stage, chưa committed.) "Sure, chúng tôi có thể custom report đó cho bạn." (Product team: không bao giờ nghe về request này.)</p>
+
+<p>Kết quả: product teams ở nhiều companies đang làm việc với một 2-year backlog của promises sales đã make mà product không biết. Customers có expectations không khớp với reality. Customer success struggle vì churn cao khi customers nhận ra product không làm được những gì được promise.</p>
+
+<p>Fix: thay đổi what sales is measured on. Thay vì chỉ measure new logo acquisition và initial contract value, add renewal rate và expansion revenue vào compensation. Khi success của một salesperson phụ thuộc vào whether customer renews sau 12 tháng, overpromising trở nên self-defeating. Bạn close deal bằng false promises, customer churns, bạn không get renewal bonus. Game theory changes completely.</p>
+
+<h2>Cái Nên Được Rewarded Thay Vào Đó</h2>
+
+<p>Nếu feature shipping không phải là thứ nên được reward, thì cái gì nên? Melissa Perri đề xuất shift sang rewarding behaviors dẫn đến long-term outcomes:</p>
+
+<p><strong>Outcomes achieved:</strong> Đây là metric rõ ràng nhất — nhưng phải được define đúng. Không phải "ship feature X" mà là "reduce churn by 5%," "increase NPS by 10 points," "achieve 70% teacher adoption." Gắn reward với outcomes đo lường được, không với outputs.</p>
+
+<p><strong>Learning velocity:</strong> Bao nhiêu insights có giá trị team học được trong một quarter? Bao nhiêu experiments được chạy? Bao nhanh team có thể move từ hypothesis đến validated learning? Đây là leading indicator của future outcomes.</p>
+
+<p><strong>Quality of decision-making:</strong> Khi teams đưa ra decisions, chúng có evidence-backed không? Chúng có clear about uncertainty không? Chúng có set clear criteria before deciding không? Reward the process, not just the result — vì một good decision process với bad outcome còn tốt hơn lucky outcome từ bad process.</p>
+
+<p>Thay đổi incentives không dễ. Nó đụng đến HR policy, compensation structure, management philosophy. Nhưng không thay đổi incentives, mọi training và culture initiative khác sẽ chỉ là surface-level. People respond to incentives — và nếu incentives nói "ship features," đó là những gì sẽ được ship, dù leadership nói gì về product culture.</p>
+
+<nav class="chapnav">
+  <a href="ch20-ebt.html">← Chương 20: Outcome-Focused Communication</a>
+  <a href="ch22-ebt.html">Chương 22: Safety and Learning →</a>
+</nav>
+</body>
+</html>

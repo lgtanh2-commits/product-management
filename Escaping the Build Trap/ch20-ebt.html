@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 20: Outcome-Focused Communication — Escaping the Build Trap</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
+<div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 20</div>
+<h1>Outcome-Focused Communication</h1>
+<p class="chapter-subtitle">Roadmaps, cadences, và cách communicate strategy xuống toàn bộ tổ chức mà không rơi vào feature-list thinking</p>
+
+<nav class="chapnav">
+  <a href="ch19-ebt.html">← Chương 19: Building and Optimizing Your Solution</a>
+  <a href="ch21-ebt.html">Chương 21: Rewards and Incentives →</a>
+</nav>
+
+<hr class="divider">
+
+<div class="part-intro">
+  <h2>Phần V: Tổ Chức Product-Led</h2>
+  <p>Bốn phần đầu đã bàn về <em>cái gì</em> cần thay đổi trong cách làm product: framework chiến lược, vai trò của PM, quy trình discovery. Phần V hỏi một câu hỏi lớn hơn: <em>tổ chức</em> cần thay đổi như thế nào để những điều đó có thể xảy ra? Một product manager giỏi trong một tổ chức tệ vẫn sẽ bị hệ thống đó nghiền nát. Phần V bàn về cách xây dựng môi trường trong đó product-led thinking có thể thực sự tồn tại và phát triển.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Bài Học Từ Kodak</h2>
+
+<p>Năm 2008, một nhóm sinh viên từ Cornell University — bao gồm cả tác giả Melissa Perri — được mời vào làm tư vấn cho Kodak. iPhone vừa ra mắt. Camera phone đang bùng nổ. Nhóm research và present một khuyến nghị rõ ràng với leadership Kodak: tích hợp camera technology của Kodak vào điện thoại di động. Kodak có technology tốt nhất về image processing và sensor. Họ có brands, partnerships, và distribution. Nếu ai đó có thể build camera phone tốt nhất thế giới, đó là Kodak.</p>
+
+<p>Leadership Kodak nghe, gật đầu — nhưng không làm gì. Không phải vì họ không hiểu cơ hội. Vấn đề sâu hơn: innovation lab của Kodak tồn tại trong một bubble hoàn toàn tách biệt với rest of company. Không có path rõ ràng nào từ một concept trong lab đến một product thực sự được executed. Không có ai trong tổ chức có mandate để làm điều đó xảy ra. Kodak nộp đơn phá sản năm 2012. Instagram, Apple, Android, và Facebook đã build những gì Kodak có thể đã build.</p>
+
+<p>Bài học: innovation không thiếu. Strategy không thiếu. Điều thiếu là cơ chế để communicate strategy xuống và translate nó thành execution. Đây chính xác là vấn đề của tổ chức thiếu outcome-focused communication.</p>
+
+<h2>Ba Cadences Của Communication</h2>
+
+<p>Để giữ toàn bộ tổ chức aligned mà không cần micromanagement, Melissa Perri đề xuất ba communication cadences tương ứng với ba levels của tổ chức:</p>
+
+<p><strong>Quarterly Business Review (QBR):</strong> Diễn ra hàng quý với senior leadership (C-suite và VPs). Nội dung: strategic intents và tiến độ so với chúng, financial update, major market changes cần respond. Đây là nơi leadership communicate về "big bets" của công ty và adjust based on new information. Marquetly QBR sau năm đầu tiên với Jen là CPO: acquisition up từ 15% lên 25%, retention đạt 60% — cả hai đều đang move đúng hướng. Một strategic intent mới được added: platform stability (một số outages ảnh hưởng learner experience).</p>
+
+<p><strong>Product Initiative Review:</strong> Diễn ra hàng tháng hoặc cứ 6 tuần, với CPO, CTO, design leadership, VPs, và Product Managers. Nội dung: mỗi product team present results của experiments gần nhất, những gì họ học được, và request funding hoặc resources cho phase tiếp theo. Đây là nơi teams "sell" direction của mình cho leadership dựa trên evidence — không phải một presentation đẹp mà là data thực. Leadership quyết định có tiếp tục fund direction đó không hay pivot.</p>
+
+<p><strong>Release Reviews:</strong> Diễn ra hàng tháng, focused vào sales, customer success, và marketing teams. Nội dung: những gì thực sự đã được confirmed shipped, là available cho customers ngay bây giờ, với feature flags và rollout status. Đây là meeting để update go-to-market teams — không phải về roadmap tương lai (vì roadmap sẽ thay đổi) mà về những gì đang thực sự live. Sales có thể sell. CS có thể support.</p>
+
+<p>Ba cadences này giải quyết ba audience rất khác nhau với nhu cầu rất khác nhau. Lỗi phổ biến: dùng một meeting để serve tất cả — leadership nghe quá nhiều về feature details, sales nghe quá nhiều về experiments mà họ không thể sell. Tách ra giúp mỗi group có thông tin phù hợp với vai trò của họ.</p>
+
+<h2>Living Roadmaps: Thay Gantt Chart Bằng Learning Journey</h2>
+
+<p>Produx Labs (công ty tư vấn của Melissa Perri) phát triển khái niệm <em>Living Roadmap</em> — một format roadmap được thiết kế để communicate cả direction và learning stage, thay vì chỉ là commit list với dates.</p>
+
+<p>Mỗi item trên Living Roadmap có năm components: <strong>Theme</strong> (vấn đề lớn đang được giải quyết, không phải feature name), <strong>Hypothesis</strong> (chúng ta tin rằng nếu làm X, sẽ dẫn đến Y, vì Z), <strong>Goals và Success Metrics</strong> (số liệu cụ thể chứng minh hypothesis đúng), <strong>Stage of Development</strong> (experiment, alpha, beta, hay GA — xem phần dưới), và <strong>Milestones</strong> (khi nào expect học được gì hoặc reach stage nào).</p>
+
+<p>Roadmap này "living" vì nó thay đổi khi team học được điều mới. Một item đang ở "Experiment" stage có thể move lên Alpha nếu experiments succeed, hoặc bị removed nếu experiments fail. Điều này rất khác với Gantt chart cứng nhắc nơi mọi feature có ship date và mọi delayed date là một "failure."</p>
+
+<h2>Bốn Giai Đoạn Phát Triển Sản Phẩm</h2>
+
+<p>Living Roadmap sử dụng bốn stages rõ ràng để communicate về mức độ maturity và certainty của một initiative:</p>
+
+<p><strong>Experiment:</strong> Không có production code. Team đang chạy concierge tests, wizard of oz, prototype, interviews. Goal là học đủ để quyết định có worth building không. Sales không được phép promise bất kỳ điều gì liên quan đến experiment-stage items.</p>
+
+<p><strong>Alpha:</strong> Minimum feature set được build trong production, nhưng chỉ available cho một nhóm nhỏ users (early access program). Goal là test scalability và gather real-world feedback từ real users trong production environment. Vẫn có thể pivot nếu learning chỉ ra hướng sai.</p>
+
+<p><strong>Beta:</strong> Feature available cho nhiều customers hơn, đang reduce technical risk và gather broader feedback. Engineering invest nhiều hơn — performance, security, reliability. Sales có thể start selling với caveats ("đang trong beta, có thể có limitations").</p>
+
+<p><strong>Generally Available (GA):</strong> Feature available cho tất cả customers. Sales team có thể actively sell. Support team đã được trained. Documentation hoàn chỉnh. Pricing confirmed.</p>
+
+<p>Khi roadmap items được labeled rõ ràng bằng stage này, CEO biết khác nhau giữa "chúng ta đang experiment với concept này" (Experiment) và "chúng ta đang rollout này cho all customers" (GA). Sales không thể vô tình promise Experiment items như là upcoming features. Đây là shared language quan trọng.</p>
+
+<h2>Product Operations: Nhân Vật Mới Trong Tổ Chức</h2>
+
+<p>Khi Marquetly scale lên, một vai trò mới xuất hiện trong organization: Product Operations. Đây là một small team (thường 2–3 người) báo cáo thẳng lên CPO, với nhiệm vụ là enable toàn bộ product organization hoạt động hiệu quả.</p>
+
+<p>Product Operations team ở Marquetly đảm nhiệm: tự động hóa data collection và analytics reporting (để PMs không phải tự SQL), maintain analytics platform và data pipeline, standardize experiment processes và templates, tổ chức ba cadences meetings và ensure quality của content, coach junior PMs về process, và document best practices.</p>
+
+<p>Một điểm thú vị về vai trò này: Melissa Perri nói với Product Operations lead của Marquetly rằng "success for you would be automating away your team." Nghe paradoxical — nhưng ý nghĩa là: nếu Product Ops làm tốt công việc của mình, toàn bộ tổ chức sẽ internalize practices đến mức không cần centralized support nữa. Những tools, processes, và habits sẽ tự duy trì. Đó là thành công thực sự.</p>
+
+<p>Trong một ví dụ khác mà Perri share, một công ty có đến 350 Scrum teams đã hire một Product Operations team để đảm bảo coherence — không phải để control, mà để ensure rằng 350 teams đang có enough alignment để move trong cùng direction. Không có Product Ops, 350 teams sẽ optimize cho local goals và company strategy sẽ fragmentation.</p>
+
+<nav class="chapnav">
+  <a href="ch19-ebt.html">← Chương 19: Building and Optimizing Your Solution</a>
+  <a href="ch21-ebt.html">Chương 21: Rewards and Incentives →</a>
+</nav>
+</body>
+</html>

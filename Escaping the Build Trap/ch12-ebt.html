@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 12: Tạo Ra Một Strategic Framework Tốt — Escaping the Build Trap</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
+<div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 12</div>
+<h1>Tạo Ra Một Strategic Framework Tốt</h1>
+<p class="chapter-subtitle">Từ OKRs output-oriented đến bốn cấp độ chiến lược — cách deploy strategy xuống toàn tổ chức</p>
+
+<nav class="chapnav">
+  <a href="ch11-ebt.html">← Chương 11: Strategic Gaps</a>
+  <a href="ch13-ebt.html">Chương 13: Company Vision Và Strategic Intents →</a>
+</nav>
+
+<hr class="divider">
+
+<p>Khi Jen được hire vào Marquetly với tư cách CPO — người đầu tiên giữ vị trí này trong lịch sử công ty — một trong những điều đầu tiên bà nhận ra là cách công ty đang sử dụng OKRs hoàn toàn sai. Marquetly đã adopt OKRs (Objectives and Key Results) vì đó là thứ mọi startup tech đều làm. Nhưng khi bà nhìn vào các OKRs thực tế, chúng đều là output-oriented.</p>
+
+<p>Ví dụ một OKR điển hình: "Objective: Launch enterprise tier. Key Results: (1) Build billing system for enterprise, (2) Launch enterprise dashboard, (3) Ship 5 enterprise-requested features." Không có gì trong đó đo lường xem điều này có thực sự tạo ra giá trị cho khách hàng hay cho công ty không. Đây là danh sách việc cần làm được đặt tên là OKR — không phải chiến lược.</p>
+
+<h2>Hai Phần Của Strategic Framework</h2>
+
+<p>Để giải quyết vấn đề này, chúng ta cần phân biệt hai loại framework mà mọi tổ chức cần:</p>
+
+<p><strong>Operational framework</strong> là cách bạn run công việc hàng ngày — sprint planning, backlog grooming, standup meetings, retrospectives. Đây là những cơ chế giúp teams làm việc nhịp nhàng và có hệ thống. Scrum, Kanban, SAFe là các ví dụ về operational framework.</p>
+
+<p><strong>Strategic framework</strong> là cách bạn xác định hướng đi dài hạn và translate nó thành công việc cụ thể cho teams. Đây là thứ hầu hết các tổ chức thiếu — hoặc nhầm lẫn với operational framework.</p>
+
+<p>Nhiều công ty nghĩ rằng việc chạy Scrum tốt nghĩa là họ đang "làm chiến lược tốt". Nhưng Scrum chỉ giúp bạn <em>thực thi</em> hiệu quả hơn — nó không giúp bạn quyết định <em>cái gì</em> cần thực thi. Một team có thể chạy sprint hoàn hảo và vẫn build hoàn toàn sai thứ.</p>
+
+<h2>Spotify's DIBBs Framework</h2>
+
+<p>Spotify đã phát triển một framework gọi là DIBBs để cấu trúc quá trình ra quyết định chiến lược:</p>
+
+<dl>
+  <dt>Data</dt>
+  <dd>Dữ liệu thực tế quan sát được. "Tỷ lệ churn của người dùng premium là 25% trong 6 tháng đầu." Đây là sự kiện, không phải diễn giải.</dd>
+
+  <dt>Insights</dt>
+  <dd>Diễn giải và ý nghĩa của data. "Người dùng rời đi vì họ không thấy đủ giá trị trong 6 tháng đầu để justify chi phí." Đây là tầng hiểu biết được rút ra từ data.</dd>
+
+  <dt>Beliefs</dt>
+  <dd>Giả thuyết dựa trên insights. "Chúng ta tin rằng nếu người dùng tạo được 5 playlist trong tháng đầu tiên, họ sẽ có retention cao hơn đáng kể." Đây là assumption chưa được chứng minh nhưng có cơ sở.</dd>
+
+  <dt>Bets</dt>
+  <dd>Quyết định chiến lược dựa trên beliefs. "Chúng ta sẽ đầu tư vào onboarding flow để guide người dùng mới tạo 5 playlist trong tuần đầu tiên." Đây là hành động cụ thể, và được gọi là "bet" vì nó vẫn có thể sai.</dd>
+</dl>
+
+<p>DIBBs tốt vì nó buộc tổ chức phải tách biệt sự kiện (data) khỏi diễn giải (insights), và diễn giải khỏi giả thuyết (beliefs) và quyết định (bets). Điều này giúp conversations chiến lược trở nên rõ ràng hơn — thay vì tranh luận về "cái gì là đúng", teams có thể nói "chúng ta đang ở tầng nào trong DIBBs và evidence cho từng tầng là gì?"</p>
+
+<h2>Strategy Deployment Qua Nhiều Cấp Độ</h2>
+
+<p>Jabe Bloom, một nhà tư tưởng về complex systems và product strategy, đề xuất cách nhìn về strategy như là những "câu chuyện" ở các time scales khác nhau. Cấp cao nhất hoạt động trong time scale của nhiều năm; cấp thấp hơn hoạt động trong time scale của vài tháng; cấp thấp nhất hoạt động trong time scale của vài tuần. Mỗi cấp phải coherent với cấp trên nhưng có đủ tự chủ để ra quyết định trong phạm vi của mình.</p>
+
+<p>Từ khái niệm này, chúng ta có thể định nghĩa bốn cấp độ triển khai chiến lược:</p>
+
+<dl>
+  <dt>Vision (5+ năm)</dt>
+  <dd>Đây là future state mà công ty đang hướng đến. Rất ổn định, thay đổi chậm, và phải inspire mọi người trong tổ chức. "Chúng ta muốn trở thành nơi mọi chuyên gia marketing đến để phát triển sự nghiệp."</dd>
+
+  <dt>Strategic Intents (3–5 năm)</dt>
+  <dd>Một vài goals cụ thể, outcome-oriented nhằm hiện thực hóa một phần của vision. "Chiếm 30% thị phần trong phân khúc SMB trong 3 năm tới." Đây là nơi công ty đặt cược về ưu tiên — không phải mọi thứ đều là strategic intent, chỉ những thứ quan trọng nhất.</dd>
+
+  <dt>Product Initiatives (1–2 năm)</dt>
+  <dd>Các vấn đề người dùng cần giải quyết để đạt được strategic intents. "Giảm thời gian onboarding từ 2 tuần xuống còn 2 ngày để tăng conversion enterprise." Đây là nơi PM làm việc chủ yếu — xác định vấn đề đúng cần giải quyết.</dd>
+
+  <dt>Options (3–6 tháng)</dt>
+  <dd>Các "bets" — giải pháp cụ thể mà teams sẽ thử để giải quyết product initiatives. Đây là những gì thực sự được built trong các sprints. Chúng được gọi là "options" vì có nhiều cách khác nhau để giải quyết một vấn đề — teams chọn cách tốt nhất dựa trên context và experiment.</dd>
+</dl>
+
+<h2>Toyota Improvement Kata Và Product Kata</h2>
+
+<p>Để navigate từ current state đến target condition, Toyota đã phát triển một framework 4 bước gọi là <em>Improvement Kata</em>:</p>
+
+<ol>
+  <li>Understand the direction (vision)</li>
+  <li>Grasp the current condition</li>
+  <li>Establish the next target condition</li>
+  <li>Experiment toward the target condition</li>
+</ol>
+
+<p>Melissa Perri đã adapt framework này thành <em>Product Kata</em> — một quy trình có hệ thống để teams navigate từ current state đến desired outcome thông qua experimentation. Product Kata sẽ được giải thích chi tiết trong Chapter 15, nhưng ý tưởng cốt lõi là: không nhảy ngay từ "vấn đề" đến "giải pháp" mà phải có một quá trình có hệ thống để hiểu vấn đề sâu hơn và test các giả thuyết giải pháp trước khi commit.</p>
+
+<h2>Vấn Đề Của Marquetly</h2>
+
+<p>Quay lại Marquetly: khi Jen phân tích OKRs cũ của họ, bà nhận ra vấn đề không phải là họ đang làm OKRs sai — mà là họ thiếu hoàn toàn tầng Vision và Strategic Intents. Không có ai có thể trả lời câu hỏi "tại sao chúng ta build những thứ này?" ở cấp độ chiến lược. Mỗi team đang tối ưu cho phần nhỏ của mình mà không biết cách công việc của mình kết nối với bức tranh lớn hơn.</p>
+
+<p>Giải pháp không phải là viết OKRs tốt hơn — mà là xây dựng toàn bộ strategic framework từ Vision trở xuống. Và đó là công việc mà chúng ta sẽ đi vào chi tiết trong hai chương tiếp theo.</p>
+
+<nav class="chapnav">
+  <a href="ch11-ebt.html">← Chương 11: Strategic Gaps</a>
+  <a href="ch13-ebt.html">Chương 13: Company Vision Và Strategic Intents →</a>
+</nav>
+</body>
+</html>

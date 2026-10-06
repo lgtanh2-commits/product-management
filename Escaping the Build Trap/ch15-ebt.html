@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 15: The Product Kata — Escaping the Build Trap</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
+<div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 15</div>
+<h1>The Product Kata</h1>
+<p class="chapter-subtitle">Quy trình có hệ thống để di chuyển từ current state đến desired outcome thông qua experimentation</p>
+
+<nav class="chapnav">
+  <a href="ch14-ebt.html">← Chương 14: Product Vision Và Portfolio</a>
+  <a href="ch16-ebt.html">Chương 16: Understanding the Direction and Setting Success Metrics →</a>
+</nav>
+
+<hr class="divider">
+
+<div class="part-intro">
+  <h2>Phần IV: Quy Trình Product Management</h2>
+  <p>Đến đây, chúng ta đã hiểu <em>tại sao</em> product management quan trọng, <em>ai</em> nên làm nó, và <em>chiến lược</em> định hướng công việc đó. Phần IV giải quyết câu hỏi cuối cùng: công việc thực tế của product team trông như thế nào? Không phải lý thuyết — mà là quy trình cụ thể từ discovery đến delivery.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Marquetly Đứng Trước Quyết Định Khó</h2>
+
+<p>Sau khi xác định được hai strategic intents — mở rộng enterprise và tăng tốc individual growth — leadership Marquetly phải đối mặt với câu hỏi khó: <em>từ đâu bắt đầu?</em> Đây không phải là câu hỏi đơn giản, vì cả hai hướng đều hấp dẫn và đều cần investment.</p>
+
+<p>Cuộc tranh luận trong phòng họp diễn ra theo ba hướng: một nhóm muốn tập trung vào acquisition — bring new users vào platform. Nhóm khác muốn focus vào retention — giữ những người dùng đang có. Và một số người cho rằng cần xây dựng revenue streams mới — có thể là content licensing hoặc B2B solutions.</p>
+
+<p>Thay vì quyết định theo intuition, team quyết định dùng data để inform choice này. Họ deploy Qualaroo — một in-product survey tool — để hỏi trực tiếp người dùng đang rời platform. Kết quả tiết lộ hai patterns rõ ràng: 55% số người rời đi vì thiếu courses về social media và các kỹ năng marketing mới nhất — content gaps. 25% rời đi vì họ đang chuyển sang career khác và không còn cần content về marketing nữa.</p>
+
+<p>Phía teacher cũng có vấn đề: platform khó sử dụng cho việc tạo content, và teachers không biết học viên của họ muốn học gì — họ tạo content theo cảm tính, không phải theo demand.</p>
+
+<p>Từ những insights này, hai product initiatives được xác định: (1) giải quyết content gaps để giảm churn — đặc biệt là bằng cách enable teachers tạo content tốt hơn và theo đúng nhu cầu; (2) cải thiện teacher experience để attract và retain quality teachers, từ đó có content tốt hơn cho learners.</p>
+
+<h2>The Product Kata: Quy Trình Có Hệ Thống</h2>
+
+<p>Product Kata là framework 4 bước để teams navigate từ current state đến desired outcome, adapted từ Toyota Improvement Kata. Nó không phải là một process cứng nhắc mà là một <em>kata</em> — một routine được luyện tập đến khi trở thành reflex, giúp teams luôn ra quyết định đúng trong hoàn cảnh không chắc chắn.</p>
+
+<p>Bốn bước của Product Kata:</p>
+
+<ol>
+  <li><strong>Understand the direction:</strong> Company vision và strategic intent là gì? Team goal của bạn là gì trong context này?</li>
+  <li><strong>Analyze the current state:</strong> Hiện tại chúng ta đang ở đâu so với goal đó? Obstacles là gì?</li>
+  <li><strong>Set the next target condition:</strong> Bước tiếp theo nhỏ nhất mà chúng ta có thể take để tiến gần hơn đến goal?</li>
+  <li><strong>Experiment toward the target:</strong> Thiết kế và chạy experiment, học từ kết quả, và update current state.</li>
+</ol>
+
+<p>Sau đó lặp lại từ bước 2 với thông tin mới. Đây là một vòng lặp liên tục, không có điểm dừng cố định — chỉ có những "current states" và "target conditions" liên tiếp.</p>
+
+<h2>Sáu Câu Hỏi Của Product Kata</h2>
+
+<p>Để vận hành Product Kata trong thực tế, Melissa Perri đề xuất sáu câu hỏi mà team nên trả lời thường xuyên — ít nhất là mỗi sprint:</p>
+
+<dl>
+  <dt>1. What is our goal?</dt>
+  <dd>Team goal của chúng ta là gì? Đây là shorter-term metric aligned với strategic intent. Ví dụ: "Giảm churn của individual users từ 25% xuống 15% trong Q2."</dd>
+
+  <dt>2. Where are we now relative to the goal?</dt>
+  <dd>Hiện tại chúng ta đang ở đâu? Số liệu hiện tại là gì? Ví dụ: "Churn hiện tại là 23% — đã giảm 2 điểm % so với baseline."</dd>
+
+  <dt>3. What is the biggest obstacle preventing us from reaching the goal?</dt>
+  <dd>Trong tất cả những vấn đề chúng ta biết, cái nào đang cản trở progress nhất? Ví dụ: "55% users rời đi vì thiếu social media content — đây là nguyên nhân lớn nhất."</dd>
+
+  <dt>4. What is the next experiment we can run to address that obstacle?</dt>
+  <dd>Chúng ta có thể test điều gì với effort nhỏ nhất để validate hoặc invalidate giả thuyết về obstacle này? Ví dụ: "Tạo 5 courses về Facebook và Instagram Ads và measure xem churn có giảm không."</dd>
+
+  <dt>5. What do we expect to happen?</dt>
+  <dd>Hypothesis cụ thể của chúng ta là gì? "Chúng ta expect churn sẽ giảm thêm 5% trong nhóm users có access vào những courses mới này."</dd>
+
+  <dt>6. What did we learn?</dt>
+  <dd>Sau khi chạy experiment, kết quả là gì? So với expectation, chúng ta học được gì? "Churn giảm 3% — ít hơn kỳ vọng nhưng vẫn có tác động. Cần test thêm loại content nào hiệu quả nhất."</dd>
+</dl>
+
+<h2>Ba Giai Đoạn Của Product Discovery</h2>
+
+<p>Trong Product Kata, discovery process thường đi qua ba giai đoạn tự nhiên — và hiểu giai đoạn nào mình đang ở giúp team biết nên dùng loại experiment nào:</p>
+
+<p><strong>Problem Exploration:</strong> Đây là giai đoạn đầu tiên — khi bạn chưa chắc chắn vấn đề thực sự là gì. Mục tiêu là understand sâu hơn về người dùng và bối cảnh của họ. Công cụ ở đây là user research, interviews, observations — không phải surveys (surveys chỉ tốt khi bạn đã biết câu hỏi cần hỏi). Bạn cần "go to the gemba" — ra ngoài quan sát người dùng trong môi trường thực của họ.</p>
+
+<p><strong>Solution Exploration:</strong> Khi bạn đã hiểu đủ về vấn đề, giai đoạn này là test các giải pháp tiềm năng với effort thấp nhất có thể — prototypes, mock-ups, concierge tests (manually doing what the product would automate). Mục tiêu là học xem solution nào có potential trước khi invest heavily vào engineering.</p>
+
+<p><strong>Solution Optimization:</strong> Khi bạn đã validate rằng một solution có potential, giai đoạn này là tối ưu hóa nó — A/B testing, phân tích funnel, tweaking UX — để maximize impact. Đây là lúc engineering effort lớn nhất được đầu tư.</p>
+
+<p>Sai lầm phổ biến nhất là nhảy thẳng từ "chúng ta có vấn đề" vào Solution Optimization mà không đi qua Problem Exploration và Solution Exploration. Đây là nguồn gốc của build trap — bạn đang optimize cho một solution mà chưa biết nó có giải quyết đúng vấn đề không.</p>
+
+<h2>Context Matters: Đừng Vội Rush To Experiment</h2>
+
+<p>Brian Kalma, UX Director tại Zappos, đã chia sẻ một insight quan trọng: không phải mọi thứ đều cần được experimented. Đối với những vấn đề không phải core của business — ví dụ như authentication flow, payment processing — bạn nên dùng best practices có sẵn thay vì reinvent the wheel. Experiment tốn kém thời gian và effort; chỉ invest vào experimentation khi đó là core competitive advantage của bạn.</p>
+
+<p>Zappos đã quyết định không experiment với checkout flow — họ dùng standard e-commerce patterns. Nhưng họ experiment rất nhiều với customer service experience — vì đó là core differentiation của họ. Đây là cách dùng resources thông minh.</p>
+
+<p>Product Kata không có nghĩa là bạn experiment với mọi thứ. Nó có nghĩa là bạn có một quy trình có hệ thống để phân biệt khi nào cần experiment và khi nào nên dùng best practices — và luôn bắt đầu từ understanding problem thay vì jumping vào solution.</p>
+
+<nav class="chapnav">
+  <a href="ch14-ebt.html">← Chương 14: Product Vision Và Portfolio</a>
+  <a href="ch16-ebt.html">Chương 16: Understanding the Direction and Setting Success Metrics →</a>
+</nav>
+</body>
+</html>

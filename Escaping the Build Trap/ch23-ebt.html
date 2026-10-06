@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 23: Budgeting — Escaping the Build Trap</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
+<div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 23</div>
+<h1>Budgeting</h1>
+<p class="chapter-subtitle">Tại sao annual feature commitments phá vỡ product development — và cách budget như một venture capitalist</p>
+
+<nav class="chapnav">
+  <a href="ch22-ebt.html">← Chương 22: Safety and Learning</a>
+  <a href="ch24-ebt.html">Chương 24: Customer Centricity →</a>
+</nav>
+
+<hr class="divider">
+
+<p>Hầu hết các công ty budget theo cách hoàn toàn không phù hợp với cách product development thực sự hoạt động. Annual planning cycle yêu cầu product teams commit features cụ thể sẽ build trong 12 tháng tới. Engineering capacity được allocated dựa trên những commitments đó. Và khi thực tế đến, learning thay đổi requirements — nhưng budget đã locked.</p>
+
+<h2>Waterfall Budgeting Trong Agile World</h2>
+
+<p>Có một paradox kỳ lạ trong nhiều tech companies: họ đã adopt Agile development practices — sprint planning, retrospectives, iterative delivery. Nhưng họ vẫn giữ waterfall budgeting — planning toàn bộ năm, committing features theo scope, locking capacity theo roadmap cứng nhắc.</p>
+
+<p>Đây là contradiction không thể sustain. Agile development thừa nhận rằng requirements sẽ thay đổi khi bạn learn more. Nhưng waterfall budgeting assume requirements đã fixed khi budget được set. Một team có thể run perfect sprints, discover rằng users need something completely different, và vẫn bị locked vào build original committed features vì budget has been allocated.</p>
+
+<p>Kết quả là một loại cargo cult: teams perform rituals của Agile (standups, sprints, retros) nhưng deliver outputs của waterfall (committed feature lists, fixed scope, predetermined roadmaps). Product kata không thể hoạt động trong môi trường này vì học được điều gì đó và muốn change direction đồng nghĩa với việc phải fight budget processes.</p>
+
+<h2>Budget Như Một Venture Capitalist</h2>
+
+<p>Venture capitalists không fund một startup với toàn bộ capital needed để reach profitability upfront. Đó sẽ là rủi ro khổng lồ — bạn đang bet tất cả vào một unproven hypothesis. Thay vào đó, VCs fund theo stages:</p>
+
+<p>Seed round: đủ để prove problem-solution fit. Đủ nhỏ để không catastrophic nếu fail. Goal: learn whether this is a problem worth solving.</p>
+
+<p>Series A: đủ để build product và get first users. Mục tiêu của vòng này là prove product-market fit — liệu users có thực sự use và pay for this không. Requires evidence từ seed stage.</p>
+
+<p>Series B và beyond: scale và accelerate what's working. Capital lớn hơn, nhưng với evidence tốt hơn từ các rounds trước. Không phải bet — đây là accelerate với proven playbook.</p>
+
+<p>Mỗi round yêu cầu team chứng minh họ đã học được gì từ round trước và tại sao tiếp tục đầu tư là hợp lý. VCs không tiếp tục fund một company mà evidence consistently pointing away from viability, dù sao đến thời điểm funding đã committed rồi.</p>
+
+<p>Tại sao internal product teams không hoạt động theo logic tương tự?</p>
+
+<h2>Stage-Based Funding Nội Bộ</h2>
+
+<p>Melissa Perri propose rằng companies nên fund product initiatives theo stages, tương tự như VC rounds, với checkpoints để review evidence và decide on continued investment:</p>
+
+<p><strong>Experiment funding:</strong> Nhỏ, đủ để run experiments và validate hypotheses. Không cần engineering resources lớn — chủ yếu là researcher, PM, designer time, và tools để chạy concierge tests hoặc prototypes. Goal: học đủ để quyết định worth building không.</p>
+
+<p><strong>Alpha funding:</strong> Thêm để build minimum feature set cho real production environment với small user group. Engineering resources được added, nhưng scope vẫn limited. Goal: validate với real users trong real conditions, không chỉ trong lab.</p>
+
+<p><strong>Beta funding:</strong> Invest vào scalability, security, và broader rollout. Significant engineering resources. Goal: reduce technical risk, get broader feedback, prepare for GA.</p>
+
+<p><strong>GA funding:</strong> Marketing, sales enablement, support training. Product đã proven — now là scale distribution.</p>
+
+<p>Với model này, leadership không commit 12 tháng của engineering capacity upfront. Họ commit experiment budget, review results, then decide whether Alpha funding is warranted. Từng checkpoint là một go/no-go decision dựa trên actual evidence — không phải gut feel hay political pressure.</p>
+
+<h2>Marquetly Đổi Cách Budget</h2>
+
+<p>Sau khi Jen join as CPO và strategic framework được established, Marquetly thay đổi cách budget product work. Thay vì annual planning cycle với feature lists, họ áp dụng initiative-based funding với quarterly checkpoints.</p>
+
+<p>Teacher initiative nhận một team: 3 engineers, 1 PM, 1 designer cho 6 tháng đầu với explicit checkpoint ở tháng 3. Tại checkpoint tháng 3: team present evidence từ experiments (the 30/40 teacher result). Dựa trên evidence đó, leadership quyết định continue và increase investment cho Budapest acquisition và full build.</p>
+
+<p>Finance team ban đầu nervous: "Làm sao chúng ta plan budget nếu không biết features nào sẽ được build?" Câu trả lời của Jen: bạn biết bạn đang funding một team để solve a specific problem. Bạn không biết chính xác cách họ sẽ solve nó — và pretending bạn biết không làm process tốt hơn, nó chỉ tạo ra false certainty và real inflexibility. Finance học rằng stage-based funding thực ra more predictable về business outcomes, dù less predictable về feature delivery.</p>
+
+<h2>Portfolio Allocation: Explore Và Exploit</h2>
+
+<p>Ở cấp độ portfolio, CFO và CPO cùng nhau quyết định allocation giữa hai modes:</p>
+
+<p><strong>Exploit mode:</strong> Đầu tư vào những gì đã proven — products ở Beta hoặc GA với positive evidence. Đây là phần lớn budget vì risk thấp, return predictable. Scale marketing, improve reliability, expand market.</p>
+
+<p><strong>Explore mode:</strong> Đầu tư vào experiment và alpha stage work — những initiatives mà chưa biết outcome. Smaller budget per initiative, nhưng nhiều initiatives in parallel. Nhiều sẽ fail — điều đó expected và acceptable. Một số sẽ prove out và move to exploit mode.</p>
+
+<p>Heuristic phổ biến: ~70% budget cho exploit, ~20% cho grow (Beta stage), ~10% cho explore (Experiment/Alpha). Công ty early-stage nên có explore percentage cao hơn vì họ chưa có nhiều proven products. Công ty mature hơn có thể shift về exploit nhưng phải be careful không to cut explore entirely — that's how disruption happens from below.</p>
+
+<p>Budgeting không phải chỉ là finance function. Đây là strategic decision về how much uncertainty và risk bạn willing to take on, và ở đâu. Product-led organizations treat budgeting như một product decision, không chỉ là một numbers exercise.</p>
+
+<nav class="chapnav">
+  <a href="ch22-ebt.html">← Chương 22: Safety and Learning</a>
+  <a href="ch24-ebt.html">Chương 24: Customer Centricity →</a>
+</nav>
+</body>
+</html>

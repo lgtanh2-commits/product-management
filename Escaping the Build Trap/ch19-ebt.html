@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 19: Building and Optimizing Your Solution — Escaping the Build Trap</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
+<div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 19</div>
+<h1>Building and Optimizing Your Solution</h1>
+<p class="chapter-subtitle">Khi đã validate, làm thế nào để build đúng cách — và biết khi nào thực sự "done"</p>
+
+<nav class="chapnav">
+  <a href="ch18-ebt.html">← Chương 18: Solution Exploration</a>
+  <a href="ch20-ebt.html">Chương 20: Outcome-Focused Communication →</a>
+</nav>
+
+<hr class="divider">
+
+<p>Sau 5 iterations của Product Kata và kết quả 30/40 teachers publish trong experiment, Karen và team đã sẵn sàng để justify investment engineering lớn hơn. Nhưng ngay cả ở giai đoạn này, những quyết định quan trọng về cách build vẫn còn ở phía trước.</p>
+
+<h2>Build vs. Partner vs. Buy</h2>
+
+<p>Karen present kết quả research và experiments lên leadership. Bây giờ cần quyết định: làm thế nào để giải quyết video editing problem ở scale? Ba lựa chọn được đánh giá:</p>
+
+<p><strong>Build from scratch:</strong> Full control, customized hoàn toàn cho Marquetly. Nhưng: ước tính 12–18 tháng để có MVP thực sự. Video editing technology phức tạp — codecs, real-time processing, cross-platform compatibility. Team engineering của Marquetly không có expertise về video.</p>
+
+<p><strong>Partner với existing tool:</strong> Integrate với một video editing platform như WeVideo hay Camtasia. Nhanh hơn nhiều, nhưng tạo ra dependency nguy hiểm. Nếu partner thay đổi pricing, API, hay bị acquire, Marquetly mất đi một core capability.</p>
+
+<p><strong>Acquire technology:</strong> Mua hoặc license technology từ một công ty nhỏ hơn đang giải quyết cùng problem. Kết quả tốt nhất về long-term control mà không cần xây từ đầu.</p>
+
+<p>Qua quá trình evaluation, team tìm được một công ty nhỏ ở Budapest có SDK video editing đã được tested trong production. Quyết định: acquire company này. Lý do: 3–4x faster time-to-market so với build from scratch, full control của technology, và team Budapest có deep expertise mà Marquetly không có. Đây là quyết định build/partner/buy không thể được đưa ra tốt nếu không có learning từ experiments trước đó — team biết chính xác cần gì.</p>
+
+<h2>Story Mapping: Planning Without Feature Lists</h2>
+
+<p>Với technology acquisition in progress, team cần plan được sẽ build gì trước. Jeff Patton đã phát triển một kỹ thuật gọi là <em>story mapping</em> — một cách để plan releases mà không fall into feature list trap.</p>
+
+<p>Thay vì một backlog dọc (feature A, feature B, feature C, priority ordered), story map là một grid hai chiều. Trục ngang là hành trình của user theo thời gian — ở Marquetly, journey của một teacher từ lúc quyết định tạo course đến lúc publish: Record → Upload → Edit → Review → Publish → Promote. Trục dọc là độ ưu tiên và độ sâu của mỗi bước — những gì là absolutely essential (phải có trong release đầu tiên), những gì là nice-to-have (version 2), và những gì là future exploration.</p>
+
+<p>Kỹ thuật này giúp team có shared understanding về user's entire experience thay vì nhìn vào isolated features. Khi bạn cut một horizontal slice qua story map, bạn get một release — không phải tất cả features cho một step, mà là ít nhất một path end-to-end mà user có thể complete. Điều này rất khác với "complete feature X" — nó là "user có thể hoàn thành task gì trong release này?"</p>
+
+<p>Marquetly dùng story mapping để identify ra rằng release đầu tiên cần: basic upload, một editing workflow đơn giản với cut/trim, và một-click publish. Không cần fancy transitions, không cần color grading, không cần fancy templates — chỉ cần path từ raw video đến published course.</p>
+
+<h2>Setting Success Criteria Before Launch</h2>
+
+<p>Trước khi bắt đầu build một dòng code nào, Karen và team define success criteria cụ thể:</p>
+
+<p>Mục tiêu 1: 75% teachers được expose với tool mới sẽ adopt và sử dụng nó cho ít nhất một course trong 3 tháng đầu. Mục tiêu 2: 60% trong số teachers đó sẽ publish course đó thành công. Mục tiêu 3: Time-to-first-publish giảm xuống dưới 1 tháng (từ baseline undefined vì hầu hết không publish).</p>
+
+<p>Tại sao phải định nghĩa trước launch? Vì nếu không, post-launch sẽ xảy ra rational rationalization: "67% adopt là gần 75% rồi, close enough." "Chúng ta mới launch, cần thêm thời gian." Success criteria được set trước khi có emotional investment vào kết quả là commitment của team — nếu hit, celebrate và continue; nếu miss, learn và adapt, không rationalize.</p>
+
+<h2>Launch Results và Gì Xảy Ra Tiếp</h2>
+
+<p>Tool ra mắt sau 4 tháng development. Kết quả sau 3 tháng: adoption rate 60% — miss 75% target. Nhưng trong số 60% adopted: 75% publish within 1 month — exceed 60% target.</p>
+
+<p>Điều thú vị không phải là hit hay miss target, mà là pattern: những ai adopted thì convert rất tốt. Vấn đề là adoption thấp hơn kỳ vọng. Điều này dẫn đến câu hỏi mới: tại sao 40% teachers exposed không adopt tool mới? Có phải awareness problem? Onboarding problem? Feature gap gì đó khiến họ không feel ready để dùng? Vòng lặp Product Kata tiếp theo bắt đầu từ đây.</p>
+
+<h2>Cost of Delay: Prioritization Thực Sự</h2>
+
+<p>Trong khi teacher tool đang được develop, Marquetly cũng có nhiều initiatives khác cần resources. Làm sao quyết định initiative nào được work on trước? Câu trả lời không phải là "RICE score" hay "effort/impact matrix" thuần túy — mà là <em>Cost of Delay</em>.</p>
+
+<p>Don Reinertsen, trong cuốn <em>The Principles of Product Development Flow</em>, argue rằng Cost of Delay là "the one thing" mà product teams nên luôn quantify. Cost of Delay = những gì chúng ta mất mỗi tuần bằng cách không làm một thứ. Nó combine hai dimension: urgency (time-sensitivity — giá trị giảm bao nhanh theo thời gian?) và value (impact — nếu chúng ta có nó hôm nay, nó worth bao nhiêu?).</p>
+
+<p>Ví dụ: một feature hỗ trợ seasonal sale (Christmas) có urgency rất cao — nếu miss Christmas, opportunity mất 12 tháng. Một feature tăng retention có urgency thấp hơn — mỗi tháng trễ có cost, nhưng không có cliff. Prioritizing theo Cost of Delay giúp tránh được việc chỉ nhìn vào "impact" mà quên mất timing matters enormously.</p>
+
+<h2>Qualitative Cost of Delay Matrix</h2>
+
+<p>Joshua Arnold và Ozlem Yuce đã phát triển một framework để áp dụng Cost of Delay ngay cả khi teams không thể quantify dollar amounts. Đây là 3×3 matrix:</p>
+
+<table style="width:100%; border-collapse:collapse; margin:1em 0; font-size:0.9em;">
+  <thead>
+    <tr style="background:#f0f0f0;">
+      <th style="padding:8px; border:1px solid #ddd;"></th>
+      <th style="padding:8px; border:1px solid #ddd; text-align:center;">Whenever (thấp)</th>
+      <th style="padding:8px; border:1px solid #ddd; text-align:center;">Soon (trung bình)</th>
+      <th style="padding:8px; border:1px solid #ddd; text-align:center;">ASAP (cao)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9;"><strong>Killer</strong> (rất có giá trị)</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">High</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">Very High</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">Very High</td>
+    </tr>
+    <tr>
+      <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9;"><strong>Bonus</strong> (có giá trị)</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">Low</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">Medium</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">High</td>
+    </tr>
+    <tr>
+      <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9;"><strong>Meh</strong> (ít giá trị)</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">Very Low</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">Very Low</td>
+      <td style="padding:8px; border:1px solid #ddd; text-align:center;">Low</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Axe dọc là Value của initiative: Killer (nếu không có nó, users sẽ churn hoặc không sign up), Bonus (có nó thì tốt, không có cũng OK), Meh (không chắc ai cần). Axe ngang là Urgency: Whenever (có thể làm bất kỳ lúc nào), Soon (cần làm trong vài months), ASAP (cần làm ngay bây giờ). Matrix cho ra mức Cost of Delay từ Very Low đến Very High cho mỗi combination.</p>
+
+<p>Marquetly dùng matrix này để quyết định: audio/image splicing cho video tool (Killer + ASAP = Very High) được prioritize trước theme templates (Bonus + Whenever = Low). Không cần dollar amounts, chỉ cần shared understanding về value và urgency.</p>
+
+<h2>Real Definition of Done</h2>
+
+<p>Câu hỏi cuối cùng của chương này là cái quan trọng nhất: khi nào thực sự "done"? Định nghĩa phổ biến nhất trong engineering là "done = shipped to production." Nhưng shipping to production không có nghĩa là bạn đã giải quyết được vấn đề.</p>
+
+<p>Jeff Gothelf, tác giả của <em>Lean UX</em>, có một câu nói thẳng thắn: "Version 2 is the biggest lie in software development." Version 2 được promise mọi lúc để justify shortcomings của version 1 — "chúng ta sẽ fix đó trong version 2" — nhưng version 2 thường không đến, hoặc khi đến thì đã có scope hoàn toàn mới và những shortcomings cũ không được fix.</p>
+
+<p>Real definition of done là: đạt được success criteria đã set trước launch. Khi Marquetly set 75% adoption + 60% publish rate + &lt;1 tháng time-to-publish, "done" là khi họ hit những numbers đó — không phải khi code được deploy. Đây là sự khác biệt cơ bản giữa output thinking (done = shipped) và outcome thinking (done = achieved goal).</p>
+
+<p>Nếu launch không đạt success criteria, đó không phải là failure — đó là learning. Vòng lặp Product Kata tiếp theo bắt đầu: phân tích tại sao miss, set target condition mới, experiment tiếp. "Done" chỉ đến khi outcomes được achieved.</p>
+
+<nav class="chapnav">
+  <a href="ch18-ebt.html">← Chương 18: Solution Exploration</a>
+  <a href="ch20-ebt.html">Chương 20: Outcome-Focused Communication →</a>
+</nav>
+</body>
+</html>

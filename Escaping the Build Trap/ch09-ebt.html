@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 9: Tổ Chức Team Sản Phẩm — Escaping the Build Trap</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+<p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
+<div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 9</div>
+<h1>Tổ Chức Team Sản Phẩm</h1>
+<p class="chapter-subtitle">Value streams, features, hay technical components — cách cấu trúc team quyết định cách team tư duy</p>
+
+<nav class="chapnav">
+  <a href="ch08-ebt.html">← Chương 8: Con Đường Sự Nghiệp Product Manager</a>
+  <a href="ch10-ebt.html">Chương 10: Những Yếu Tố Cấu Thành Chiến Lược Tốt →</a>
+</nav>
+
+<hr class="divider">
+
+<p>Cách bạn cấu trúc product teams và tổ chức chúng xung quanh công việc cần làm là vô cùng quan trọng cho sự thành công của product development. Các công ty tend to organize theo ba cách chính: value streams, features, và technical components.</p>
+
+<p>Khi tôi đến Marquetly, họ đang được cấu trúc xung quanh technical components. "Agile coach của chúng tôi gợi ý chúng tôi đặt Scrum teams lên mỗi area của product để chúng tôi có coverage," CTO giải thích. Về lý thuyết điều này có vẻ hợp lý — nhưng trong thực tế nó đã thúc đẩy poor product management.</p>
+
+<p>Trong một workshop về product management skills cho product team, tôi đang nhấn mạnh tầm quan trọng của solid foundations, thì một trong các product owner chêm vào: "Hầu hết những gì bạn nói đều rất hay. Tôi muốn làm theo cách này, nhưng tôi không thể vì tôi phải giữ backlogs đầy cho login API của chúng tôi. Nếu tôi không làm vậy, developers của tôi sẽ không có gì làm."</p>
+
+<p>"Đó có phải là một API mới không?" tôi hỏi. "Có những vấn đề lớn với nó ngay bây giờ mà bạn đang cố fix không?" Hóa ra không có vấn đề lớn nào. Nó đã hoạt động tốt. "Vậy mục tiêu của bạn là gì? Khi nào bạn biết API của bạn xong và bạn có thể chuyển sang điều quan trọng hơn?" — "Ồ không không không," bà nói. "Đây là thứ chúng tôi own. API này là thứ của team chúng tôi — chúng tôi sẽ never get something different. Đây là feature của chúng tôi — chúng tôi just own it forever."</p>
+
+<p>Họ đang actively làm việc trên một technical component đã ở trạng thái steady state, optimized và functional. Không cần tiếp tục làm việc trên nó để đạt company goals — nhưng bà đang tạo ra công việc cho team vì bà được told rằng đây là thứ bà owned và có thể làm việc trên.</p>
+
+<hr class="divider">
+
+<h2>Tại Sao Feature-Based Organization Cũng Có Vấn Đề</h2>
+
+<p>Một vấn đề tương tự xảy ra khi teams được tổ chức xung quanh specific features. Nhiều công ty làm điều này để đạt <em>coverage</em> — ownership trên mọi phần của sản phẩm. Mặc dù tốt nếu bạn literally starting from scratch và không có product organization nào được set up, nhưng theo thời gian nó promotes mindset rất output-oriented.</p>
+
+<p>Thay vì làm việc hướng đến một goal và nói no với bất cứ thứ gì không giúp đến đó, chúng ta tend to look for ways to develop more things related to our little slice of the product.</p>
+
+<p>Nếu chúng ta step back và align công việc của những teams này với overall vision của sản phẩm và strategy, chúng ta thấy rằng nhiều công việc đó thực sự không nên được prioritized. Khi features ổn định, chúng ta nên monitor chúng nhưng sau đó move on đến công việc quan trọng hơn cần thiết để support strategy.</p>
+
+<h2>Organize Xung Quanh Value Streams</h2>
+
+<p>Để organize teams hiệu quả, bạn cần cân bằng coverage và scope của teams với goals bạn đang cố đạt. Một <em>value stream</em> là tất cả activities cần thiết để deliver value cho customer. Điều này bao gồm processes, từ discovering problem, setting goals, conceiving idea, đến delivering actual product hoặc service. Mỗi tổ chức nên strive để optimize flow này để đưa value ra ngoài faster.</p>
+
+<p>Để làm điều đó, có ý nghĩa khi organize teams xung quanh value stream. Bạn bắt đầu với customer hoặc user — whomever đang consuming product của bạn ở cuối ngày. Value nào bạn đang provide cho họ? Sau đó làm việc backward. Những touchpoints nào họ có với công ty trên đường đến nhận value đó? Bạn organize như thế nào để optimize và streamline journey đó?</p>
+
+<p>TransferWise là ví dụ tuyệt vời. Công ty London này làm electronic transfers — bạn có thể gửi tiền đến các quốc gia khác với fees rất thấp. Với khoảng 12 product teams, cách họ organize teams — xung quanh strategic goals — cho phép họ stay small nhưng vẫn hoàn thành một lượng công việc khổng lồ.</p>
+
+<p>Một team focused vào retention, team khác vào implementing new currencies, team khác vào acquiring new users. Mỗi team owns goal của mình và được judged thành công dựa trên outcomes. Họ cũng được allowed làm việc across all products để làm bất cứ điều gì cần thiết để reach những goals đó. Điều này đòi hỏi coordination lớn — mọi người chịu trách nhiệm collaborate intensely — nhưng having fewer teams làm cho họ ruthlessly prioritize xung quanh những initiatives quan trọng nhất. Không có useless work.</p>
+
+<h2>Marquetly Cần Thay Đổi Gì</h2>
+
+<p>Product team của Marquetly không được thiết kế để scale. Công ty có 20 product teams organized xung quanh components, với PM đang viết user stories mỗi giây của mỗi ngày. Hầu hết 20 PM lẽ ra phải được coi là associate PMs vì họ mới với role. Và họ chỉ có một senior person, Karen — VP — để coach họ.</p>
+
+<p>Tôi giải thích với Chris: "Chúng ta cần restructure xung quanh value streams, nhưng trước tiên bạn cần nhiều senior people hơn, và bạn nên bắt đầu bằng cách hire một experienced chief product officer. Karen là một VP sản phẩm tuyệt vời, nhưng bà không thể operate ở level của CPO. Mặc dù bà rất giỏi về tactical và strategic work của việc determining single product vision và growing it, bà không hiểu cách manage một portfolio of products. Bà không thể interface với board."</p>
+
+<p>Trong khi đó, chúng ta cũng cần restructure teams. Với product team của Marquetly, tôi đã đề xuất setup được mô tả trong Figure 9-1: CPO ở trên, bên dưới là VP Student Experience và VP Teacher Platform, và các PM chuyên biệt bên dưới — PM Assessment, PM Class Experience, PM Reporting (dưới Student Experience VP) và PM Class Creation, PM Finance &amp; Management (dưới Teacher Platform VP).</p>
+
+<p>Lý do chúng ta không có 20 người trong organization? Khi chúng ta bắt đầu breaking product thành value streams và organizing xung quanh feature sets delivering whole value (thay vì component areas), chúng ta thấy không cần đến 20 areas. Điều này thường xảy ra khi teams restructure xung quanh value thay vì components.</p>
+
+<p>Pandora, một subscription music service, là ví dụ về một công ty thấy rằng constraint của small team thực ra là cơ hội để thành công. Họ có thể scale lên 70 triệu monthly users chỉ với 40 engineers — bằng cách ruthlessly prioritizing công việc công ty đang làm theo quý. Điều này đặt nền tảng cho valuation $7 tỷ của Pandora ngày nay. Staying small buộc nó focus vào việc làm những công việc quan trọng nhất để grow business.</p>
+
+<p>PM cần room để manage hướng đến một entire outcome-oriented goal. Điều này có nghĩa là người cần được aligned xung quanh value và có scope để actually make measurable impact. Khi organizations thiếu coherent product strategy được ruthlessly prioritized xung quanh một vài key goals, họ kết thúc với việc spreading themselves mỏng. Nhiều teams đang làm việc để optimize components nhưng không phải whole. Để make considerable impact, bạn cần mọi người đi cùng hướng, làm việc hướng đến cùng goals. Đó là điều chúng ta nói trong phần tiếp theo: strategy.</p>
+
+<nav class="chapnav">
+  <a href="ch08-ebt.html">← Chương 8: Con Đường Sự Nghiệp Product Manager</a>
+  <a href="ch10-ebt.html">Chương 10: Những Yếu Tố Cấu Thành Chiến Lược Tốt →</a>
+</nav>
+</body>
+</html>
