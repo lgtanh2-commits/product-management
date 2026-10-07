@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 4: Thử Nghiệm Với Nhịp Độ Cao — Hacking Growth</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+/* Thành phần riêng của sách — chỉ dùng token có sẵn trong theme.css */
+.callout{background:#fff;border:1px solid var(--color-dew);border-left:4px solid var(--color-sprout);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.callout .callout-title{font-weight:700;color:var(--color-sprout-dark);margin-bottom:6px}
+.callout p:last-child,.callout ul:last-child,.callout ol:last-child{margin-bottom:0}
+.case{background:var(--color-dew);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.case .case-title{font-weight:700;margin-bottom:6px}
+.case p:last-child,.case ul:last-child{margin-bottom:0}
+.figure-note{border:1px dashed var(--color-mist);border-radius:var(--radius-chapter-row);padding:14px 18px;margin:22px 0;color:var(--color-ash);font-size:.95rem}
+.figure-note .figure-title{font-weight:700;color:var(--color-slate-ink);margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<p class="book-topline"><a href="/hacking-growth">← Về mục lục</a></p>
+
+<div class="book-label">Hacking Growth · Sean Ellis &amp; Morgan Brown · Phần I · Chương 4</div>
+<h1>Thử Nghiệm Với Nhịp Độ Cao</h1>
+<p class="chapter-subtitle">Công ty học nhanh nhất sẽ tăng trưởng nhanh nhất — chu trình bốn bước Phân tích, Lên ý tưởng, Ưu tiên, Kiểm thử và buổi growth meeting hằng tuần giúp biến thử nghiệm thành cỗ máy.</p>
+
+<div class="case">
+<div class="case-title">Case: Đội bóng Baylor Bears và lối tấn công "không thể cản phá"</div>
+<p>Năm 2007, đội bóng bầu dục của Đại học Baylor một lần nữa xếp bét bảng Big 12 South của giải bóng bầu dục đại học. Đã hơn một thập kỷ đội không được dự một trận bowl game (các trận đấu sau mùa giải dành cho những đội có thành tích tốt). Rồi Art Briles lên nắm chức huấn luyện viên trưởng, và chẳng bao lâu sau, Baylor Bears ghi trung bình tới 64 điểm mỗi trận — một con số đáng kinh ngạc — và năm nào cũng góp mặt tại các bowl game với tư cách một trong những đội được xếp hạng cao nhất toàn quốc. Chìa khoá của cuộc lột xác là một lối tấn công mới với nhịp độ cao, không tụm lại bàn bạc (no-huddle) giữa các pha bóng, khiến đối thủ bị bất ngờ và hụt hơi chật vật theo kịp tốc độ trận đấu. Một nhà báo thể thao đã gọi lối tấn công của Baylor là một "hệ thống không thể cản phá". Tốc độ tấn công của Baylor không chỉ giúp đội lấn lướt đối thủ về thể lực và sự xông xáo: mỗi trận đấu còn dạy cho đội thêm nhiều điều về cách giành chiến thắng.</p>
+<p>Bằng cách triển khai các pha bóng nhanh hơn và rút ngắn thời gian giữa các pha, Baylor có thể thực hiện nhiều hơn khoảng 13 pha tấn công mỗi trận so với các đối thủ. 13 pha bóng tăng thêm đó tương đương mức tăng 20% so với số pha bóng trung bình mỗi trận của các đội bóng đại học, và cộng dồn qua một mùa giải 10 trận thì bằng gần 2 trận đấu trọn vẹn được chơi thêm. Điều đó có nghĩa là có thêm rất nhiều trải nghiệm học hỏi thực tế, ngay trong sức nóng của trận chiến, về việc pha bóng nào hiệu quả nhất và trong hoàn cảnh nào.</p>
+</div>
+
+<p>Học được nhiều hơn nhờ học nhanh hơn cũng chính là mục tiêu — và là lợi ích to lớn — của quy trình growth hacking nhịp độ cao.</p>
+
+<div class="callout">
+<div class="callout-title">Nguyên tắc cốt lõi</div>
+<p>Những công ty tăng trưởng nhanh nhất là những công ty học nhanh nhất. Bạn chạy càng nhiều thử nghiệm (experiment), bạn càng học được nhiều. Thật sự đơn giản như vậy.</p>
+</div>
+
+<p>Khối lượng thử nghiệm lớn là điều lý tưởng, bởi phần lớn các thử nghiệm sẽ không mang lại kết quả như bạn mong đợi. Một số khác cho thấy vài dấu hiệu thành công nhưng chưa đủ để kết luận (inconclusive), tức là không tạo ra kết quả đủ có ý nghĩa để ủng hộ việc áp dụng thay đổi được thử nghiệm. Một số mang lại chiến thắng nhỏ nhưng không gây chấn động. Chỉ một số rất ít bài test tạo ra mức tăng đột phá. Nói cách khác, việc tìm ra những chiến thắng, dù lớn hay nhỏ, là một trò chơi của những con số.</p>
+
+<p>Hãy nhớ rằng, nhìn chung, những thành công lớn trong growth hacking đến từ một chuỗi các chiến thắng nhỏ, được cộng dồn theo cấp số nhân (compounding) theo thời gian. Mỗi chút hiểu biết thu được sẽ dẫn tới hiệu quả tốt hơn và những ý tưởng tốt hơn để thử nghiệm, từ đó dẫn tới nhiều chiến thắng hơn nữa, cuối cùng biến những cải thiện nhỏ thành lợi thế cạnh tranh áp đảo.</p>
+
+<p>Để minh hoạ sức mạnh của những bước tiến nhỏ, Peep Laja — một chuyên gia nổi tiếng về conversion rate optimization (tối ưu hoá tỷ lệ chuyển đổi — môn khoa học giúp biến nhiều khách truy cập website hay app hơn thành khách hàng) — rất thích chỉ ra rằng: cải thiện tỷ lệ chuyển đổi 5% mỗi tháng sẽ đem lại mức cải thiện 80% sau một năm, nhờ bản chất cộng dồn của các chiến thắng. Nếu bạn đang thu hút khách truy cập qua quảng cáo tìm kiếm (search ads), mức tăng chuyển đổi đó sẽ cắt giảm chi phí quảng cáo trên mỗi khách hàng xuống gần một nửa. Nguyên lý tương tự áp dụng ở mọi nơi trong một công ty. Thực tế, những mức tăng nhỏ về retention (tỷ lệ giữ chân khách hàng) thậm chí có thể còn mạnh mẽ hơn. Như một nhóm nhà nghiên cứu từ Bain &amp; Company và Trường Kinh doanh Harvard (Harvard Business School) đã phát hiện, tăng 5% retention dẫn tới lợi nhuận tăng từ 25% đến 95%, bởi chỉ những mức tăng nhỏ về retention cũng dẫn tới tăng trưởng doanh thu cộng dồn khi khách hàng gắn bó càng lâu.</p>
+
+<p>Chương này sẽ bàn về cách chạy những thử nghiệm dồn dập, tốc độ cao có khả năng tạo ra những chiến thắng cộng dồn như vậy.</p>
+
+<hr class="divider">
+
+<h2>Nhịp độ tăng dần theo thời gian (Tempo Picks Up Over Time)</h2>
+
+<p>Khối lượng và nhịp độ (tempo) thử nghiệm mà các growth team có thể chạy thay đổi rất nhiều tuỳ theo quy mô công ty và nguồn lực sẵn có để hỗ trợ việc kiểm thử. Nhiều growth team hàng đầu thường xuyên chạy 20 đến 30 thử nghiệm mỗi tuần, và một số còn chạy nhiều hơn thế. Các start-up giai đoạn đầu có thể chỉ triển khai được một hoặc hai bài test mỗi tuần, rồi đều đặn nâng dần lên khối lượng cao hơn; trong khi các start-up giai đoạn sau và các doanh nghiệp lớn, lâu năm hoàn toàn có thể bắt đầu với con số cao hơn nhiều. Dù công ty hay đội ngũ có quy mô thế nào, để tối đa hoá số thử nghiệm có thể chạy và những thành quả thu được từ chúng, điều thiết yếu là phải tuân theo một quy trình hết sức kỷ luật, cho phép bạn tạo ra một đường ống (pipeline) các ý tưởng tốt và ưu tiên hoá chúng một cách hiệu quả. Điều này đảm bảo bạn có thể duy trì việc kiểm thử liên tục ở tốc độ cao nhất mà mình xoay xở được, mà không trở nên cẩu thả trong khâu thực thi, không thu thập kết quả test sai lệch, và không sa lầy vào những buổi brainstorm, tranh luận tốn thời gian về việc nên thử ý tưởng nào tiếp theo.</p>
+
+<p>Chúng tôi khuyên các đội nên bắt đầu chậm và nâng dần lên nhịp độ nhanh hơn sau khi đội đã vững chân với quy trình mới; cố gắng tung ra quá nhiều thử nghiệm ngay từ đầu có thể dẫn tới việc triển khai test kém chất lượng, sự bối rối trong đội, và sự nản lòng khi không đạt được mục tiêu. Chạy các bài test cẩu thả hoặc thiết kế kém có thể gây hại nhiều hơn lợi. Cũng như bạn không nên thi ba môn phối hợp (triathlon) khi chưa được tập luyện và khởi động đúng cách, bạn cũng không nên lao vào quy trình growth hacking với tốc độ chóng mặt. Đó chắc chắn là công thức dẫn tới thất bại.</p>
+
+<p>Chúng tôi đã phát triển một chu trình bốn phần cùng một bộ công cụ đơn giản nhưng mạnh mẽ để đảm bảo growth team vận hành như một cỗ máy thử nghiệm nhịp độ nhanh, được huấn luyện bài bản và tinh chỉnh kỹ lưỡng — những thứ chúng tôi sẽ giới thiệu trong chương này.</p>
+
+<hr class="divider">
+
+<h2>Chu trình Growth Hacking (The Growth Hacking Cycle)</h2>
+
+<p>Hãy nhớ lại rằng các giai đoạn của quy trình gồm: phân tích dữ liệu và thu thập insight, lên ý tưởng (idea generation), ưu tiên hoá thử nghiệm, chạy thử nghiệm, rồi quay trở lại bước phân tích để xem xét kết quả và quyết định các bước tiếp theo, trong một vòng lặp liên tục. Bất kể sản phẩm của bạn là gì hay bạn đang thử nghiệm khía cạnh nào, mỗi vòng quay qua chu trình này nên được hoàn tất theo một chu kỳ nhất quán, tốt nhất là trong một hoặc hai tuần (tại GrowthHackers, chúng tôi dùng chu kỳ một tuần). Chu trình được điều phối bởi một buổi growth meeting (họp growth team) kéo dài một giờ mỗi tuần, nhằm xem xét kết quả và thống nhất bộ thử nghiệm sẽ triển khai trong tuần kế tiếp.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Quy trình Growth Hacking (The Growth Hacking Process)</div>
+Sơ đồ vòng lặp khép kín gồm bốn bước nối tiếp nhau: <strong>Phân tích (Analyze)</strong> → <strong>Lên ý tưởng (Ideate)</strong> → <strong>Ưu tiên (Prioritize)</strong> → <strong>Kiểm thử (Test)</strong> → quay lại Phân tích. Mỗi vòng được hoàn tất trong một chu kỳ cố định (một hoặc hai tuần) và được điều phối bởi buổi growth meeting hằng tuần.
+</div>
+
+<p>Để minh hoạ cách quy trình vận hành từ đầu đến cuối, chúng tôi sẽ dùng một trường hợp giả định về một growth team vừa được thành lập tại một chuỗi bán lẻ thực phẩm truyền thống (brick-and-mortar) lớn. Nhưng như chúng tôi hy vọng sẽ sớm trở nên rõ ràng, đây là quy trình có thể áp dụng cho bất kỳ đội ngũ hay công ty nào — lớn hay nhỏ — và cho bất kỳ sản phẩm hay dự án nào — từ một công cụ phần mềm mới, một nhà bán lẻ trực tuyến, một sản phẩm truyền thông, một doanh nghiệp phần cứng, cho tới cả một blog hay một chiến dịch quảng cáo hoặc PR đơn lẻ. Chúng tôi sẽ mô tả mọi thành viên trong đội nên làm gì ở từng giai đoạn, và sẽ giới thiệu một chương trình họp mẫu (model agenda) mô tả chi tiết chính xác cách điều hành buổi growth meeting quan trọng.</p>
+
+<hr class="divider">
+
+<h2>Chuẩn bị cất cánh (Preparing for Liftoff)</h2>
+
+<p>Trước khi bắt đầu chu trình, bạn nên tổ chức một buổi họp khởi động với cả đội để giải thích cho mọi người quy trình sẽ vận hành như thế nào. Tại đây, growth lead (trưởng nhóm tăng trưởng) cần làm rõ vai trò của từng thành viên và cách họ được kỳ vọng làm việc cả độc lập lẫn phối hợp để hỗ trợ công việc chung của đội. Các phương pháp để lên ý tưởng và ưu tiên hoá ý tưởng — sẽ được giới thiệu ở phần sau của chương — cũng cần được giải thích. Sau đó, growth lead nên đề nghị data analyst (chuyên viên phân tích dữ liệu) chia sẻ kết quả của phân tích ban đầu đã thực hiện, và growth lead trình bày các đòn bẩy tăng trưởng (growth lever) chủ chốt, North Star metric (chỉ số Sao Bắc Đẩu — chỉ số định hướng duy nhất), cùng lĩnh vực trọng tâm hay mục tiêu của đội. Tiếp đó, đội nên đặt ra mục tiêu về khối lượng và nhịp độ thử nghiệm sẽ triển khai mỗi tuần; tức là họ nghĩ mình có thể thiết kế và triển khai bao nhiêu bài test một cách hợp lý. Thông thường, các data analyst và kỹ sư sẽ có chuyên môn để đưa ra đánh giá ban đầu, và gần như chắc chắn sẽ có những điều chỉnh trong quá trình vận hành.</p>
+
+<div class="case">
+<div class="case-title">Case giả định: Growth team của ứng dụng di động chuỗi siêu thị</div>
+<p>Giả sử growth team của chuỗi siêu thị giả định được giao nhiệm vụ thúc đẩy doanh số thông qua ứng dụng di động mới của công ty. Được ra mắt cùng một đợt quảng bá marketing truyền thống rầm rộ cách đây vài tháng, ứng dụng đã thu hút được một lượng khá lớn người dùng sớm (early adopter), với 100.000 người đã tải về điện thoại. Nhưng cho đến nay, doanh số đến từ các đơn hàng đặt qua app vẫn ì ạch. Thay vì tiếp tục một đợt đẩy mạnh thu hút người dùng (acquisition) lớn khác, công ty quyết định thử growth hacking.</p>
+<p>Đội sản phẩm đã làm rất tốt trong việc xây dựng app. Họ đã thiết lập hệ thống đo lường analytics phù hợp để cung cấp phản hồi hữu ích nhất về hành vi người dùng khi họ di chuyển trong app. Họ cũng đã thử nghiệm app với những người dùng tiềm năng trong giai đoạn phát triển, và phản hồi cho thấy app được thiết kế tốt. App cung cấp rất nhiều tính năng hấp dẫn, như tìm kiếm mặt hàng, gợi ý sản phẩm, mức tồn kho và tình trạng còn hàng, các công thức nấu ăn lành mạnh kèm lựa chọn mua toàn bộ nguyên liệu chỉ với một cú chạm, cũng như một bộ đếm calo cho phép người mua nhanh chóng nắm được lượng calo của bất kỳ mặt hàng nào, và của cả một bữa ăn. Đội sản phẩm cũng cho rằng người mua sẽ đánh giá cao tính năng cho phép chỉ tìm kiếm các lựa chọn không chứa gluten (gluten-free), đạt chuẩn kosher và hữu cơ (organic). Nhìn chung, app là một sản phẩm ấn tượng. Vì vậy thật khó hiểu khi nó không tạo ra nhiều doanh số hơn.</p>
+<p>Để tìm ra gốc rễ của vấn đề khó hiểu này, công ty đã mời về một trưởng nhóm growth dày dạn kinh nghiệm. Bước đầu tiên của cô là điều động nhân sự từ các bộ phận marketing, kỹ thuật (engineering), sản phẩm và khoa học dữ liệu để lập thành một đội. Tiếp theo, đội cần khám phá aha moment (khoảnh khắc "à há" — lúc người dùng nhận ra giá trị cốt lõi của sản phẩm) của những người đang dùng app là gì, và điều gì ở bản thân họ cũng như cách họ sử dụng khác biệt so với những người không dùng. Giả sử nghiên cứu ban đầu của đội cho thấy aha moment chính là sự tiện lợi khi đặt mua thực phẩm trên điện thoại và nhận hàng tận cửa vào ngày hôm sau. Để chuẩn bị cho buổi growth meeting đầu tiên, growth lead làm việc với các thành viên marketing và dữ liệu để suy nghĩ thấu đáo về phương trình tăng trưởng (growth equation) của app, và họ xác định được như sau:</p>
+</div>
+
+<div class="callout">
+<div class="callout-title">Phương trình tăng trưởng của app siêu thị</div>
+<p><strong>Số lượt cài đặt × Số người dùng hoạt động hằng tháng (monthly active users) × Số người mua hàng × Giá trị đơn hàng trung bình × Tỷ lệ mua lặp lại = Mức tăng trưởng</strong></p>
+</div>
+
+<p>Họ xác định North Star của mình nên là <strong>doanh thu hằng tháng trên mỗi người mua (monthly revenue per shopper)</strong>. Lý do là vì suy cho cùng, mục tiêu cuối cùng là tạo ra doanh số. Họ không chỉ muốn thu hút nhiều người hơn sử dụng app mà còn muốn xây dựng một tập lớn những người mua rất tích cực, thực hiện các giao dịch đáng kể một cách đều đặn. Khi đã nắm được aha moment, hệ thống theo dõi dữ liệu đã sẵn sàng, các chỉ số cốt lõi đã được xác định và đội ngũ đã được tập hợp, đã đến lúc khởi động quy trình growth hacking nhịp độ cao.</p>
+
+<p>Trong buổi growth meeting đầu tiên, bạn chưa đưa ra quyết định về việc sẽ chạy bài test nào. Thay vào đó, các thành viên sẽ dành tuần kế tiếp để brainstorm và ấp ủ các ý tưởng thử nghiệm cho chu kỳ đầu tiên; những ý tưởng này sẽ được thảo luận và chọn lọc tại buổi growth meeting của tuần sau đó. Chúng ta sẽ tiếp tục theo chân đội app siêu thị xuyên suốt chương này để xem họ nghĩ ra những ý tưởng gì và quy trình kiểm thử nên được vận hành chính xác ra sao.</p>
+
+<hr class="divider">
+
+<h2>Giai đoạn 1: Phân tích (Stage 1: Analyze)</h2>
+
+<p>Trong giai đoạn này, growth lead làm việc với data analyst của mình để đào sâu vào dữ liệu có được từ làn sóng người dùng đầu tiên nhằm xác định các nhóm đặc thù, bắt đầu bằng việc tách những người mua thường xuyên ra khỏi những người hầu như chưa bao giờ, hoặc chưa từng, sử dụng app sau khi tải về. Để bắt đầu thăm dò các vùng cơ hội tăng trưởng, họ xây dựng một bộ câu hỏi định hướng cho việc phân tích, như sau:</p>
+
+<h3>Những khách hàng tốt nhất của tôi có hành vi gì?</h3>
+<ul>
+<li>Họ dùng những tính năng nào?</li>
+<li>Họ ghé những màn hình nào trong app?</li>
+<li>Họ mở app thường xuyên đến mức nào?</li>
+<li>Họ mua những mặt hàng gì?</li>
+<li>Giá trị đơn hàng trung bình của họ là bao nhiêu?</li>
+<li>Họ mua sắm vào thời điểm nào trong ngày và vào những ngày nào?</li>
+</ul>
+
+<h3>Những khách hàng tốt nhất của tôi có đặc điểm gì?</h3>
+<ul>
+<li>Họ được thu hút từ nguồn nào? Đó là một quảng cáo, một email khuyến mãi gửi tới tập khách hàng của chuỗi, hay một nơi nào khác?</li>
+<li>Họ dùng những thiết bị nào?</li>
+<li>Đặc điểm nhân khẩu học của họ ra sao, bao gồm tuổi tác, thu nhập và các yếu tố khác?</li>
+<li>Họ sống ở đâu?</li>
+<li>Họ ở gần cửa hàng này hoặc các cửa hàng khác đến mức nào?</li>
+<li>Họ dùng những app nào khác?</li>
+</ul>
+
+<h3>Những sự kiện nào khiến người dùng rời bỏ app?</h3>
+<ul>
+<li>Những màn hình nào có tỷ lệ thoát (exit rate) cao nhất?</li>
+<li>Có lỗi (bug) nào đang ngăn người dùng thực hiện một hành động cụ thể không?</li>
+<li>Giá sản phẩm như thế nào so với các dịch vụ khác?</li>
+<li>Những hành động nào họ không thực hiện mà những người dùng có mua hàng lại thực hiện?</li>
+<li>Hành trình của họ trong app như thế nào, và họ dành bao nhiêu thời gian trong app trước khi rời bỏ?</li>
+</ul>
+
+<p>Trong khi data analyst bận rộn xử lý các con số, chuyên gia marketing trong đội tiến hành một loạt khảo sát người dùng và một loạt cuộc phỏng vấn. Với một bản khảo sát, mục tiêu là thu được một bộ thông tin tốt về nhân khẩu học (demographic) và tâm lý học (psychographic) của người dùng. Ở một bản khác, người dùng được hỏi về thói quen mua sắm trực tuyến và ngoại tuyến của họ. Cuối cùng, người dùng được hỏi về những app yêu thích và cách họ sử dụng thiết bị di động.</p>
+
+<p>Toàn bộ phân tích dữ liệu cùng các câu trả lời từ khảo sát và phỏng vấn người dùng được tổng hợp thành một bộ báo cáo từ data analyst và thành viên marketing, và được gửi tới cả đội trước buổi growth meeting đầu tiên, vốn được lên lịch một tuần sau đó. Để chuẩn bị cho buổi họp, growth lead viết một bản tóm tắt các phát hiện cho tới thời điểm đó, trong đó cô nêu bật một số đặc điểm chung thú vị của nhóm người mua thường xuyên so với những người chưa bao giờ mua hoặc chỉ mua một hai lần.</p>
+
+<p>Thứ nhất, nhóm người mua nhiệt tình có giá trị đơn hàng trung bình trên 50 đô-la, tức là vừa vượt ngưỡng mua hàng để được miễn phí giao hàng. Thêm vào đó, một số lượng lớn người mua thường xuyên mua nhiều mặt hàng giống nhau mỗi lần — rõ ràng là các mặt hàng thiết yếu đối với họ. Cuối cùng, một tỷ lệ lớn những người mua tích cực nhất đến với app từ website di động (mobile website) của chuỗi siêu thị.</p>
+
+<p>Dựa trên phân tích, đội đã có sẵn khá nhiều ý tưởng tăng trưởng trong đầu, và giờ đã sẵn sàng cùng nhau họp buổi đầu tiên, trong đó họ sẽ thảo luận các phát hiện cho tới nay, xem xét những ý tưởng ban đầu để tận dụng các phát hiện đó, và vạch ra lộ trình bắt đầu thử nghiệm các cách tăng doanh thu từ người dùng app với bộ bài test đầu tiên.</p>
+
+<hr class="divider">
+
+<h2>Giai đoạn 2: Lên ý tưởng (Stage 2: Ideate)</h2>
+
+<p>Ý tưởng là nhiên liệu tên lửa của tăng trưởng. Và bạn cần một đường ống (pipeline) liên tục cung cấp chúng thành dòng chảy đều đặn. Như Linus Pauling từng nói:</p>
+
+<blockquote><p>"Cách tốt nhất để có một ý tưởng hay là có thật nhiều ý tưởng." — Linus Pauling</p></blockquote>
+
+<p>Đó là lý do việc lên ý tưởng không giới hạn là chìa khoá của quy trình growth hacking. Điều này không có nghĩa là bạn cũng sẽ kiểm thử chúng một cách không giới hạn; việc kiểm thử sẽ được ưu tiên hoá một cách nghiêm ngặt. Nhưng bạn muốn khuyến khích growth team khai thác sự sáng tạo của mình và không ngần ngại đề xuất ý tưởng. Điều này đảm bảo bạn sẽ tạo ra đủ khối lượng ý tưởng cần thiết để tìm thấy vài viên kim cương thô giữa đống sỏi đá.</p>
+
+<p>Trong bốn ngày sau buổi họp đội, tất cả thành viên nên gửi càng nhiều ý tưởng càng tốt về những "hack" có thể thử để cải thiện doanh thu từ người dùng app. Việc tự kiểm duyệt bị khuyến khích tránh, và không ý tưởng nào bị coi là quá điên rồ để đưa ra. Các thành viên nên được giao nhiệm vụ đóng góp ý tưởng dựa trên chuyên môn riêng của mình, dù không nên bị giới hạn trong lĩnh vực đó. Ví dụ, nhà thiết kế trải nghiệm người dùng (user experience designer) có thể đề xuất thay đổi thiết kế một số màn hình hiển thị, trong khi thành viên marketing có thể tập trung vào các cách khác nhau để khuyến khích người dùng thực hiện lần mua đầu tiên, còn các kỹ sư có thể nghĩ ra ý tưởng tăng tốc độ vận hành của sản phẩm.</p>
+
+<p>Growth lead nên thiết lập một hệ thống quản lý dự án để điều phối việc gửi và quản lý ý tưởng, cũng như việc theo dõi và báo cáo kết quả. Hãy nhớ rằng cộng tác liên chức năng (cross-functional) và chia sẻ thông tin là những nguyên tắc then chốt của growth hacking; vì vậy, điều tối quan trọng là mọi người trong growth team đều có quyền truy cập vào kho ý tưởng ngày càng lớn và có thể bổ sung vào đó bất cứ lúc nào. Tại GrowthHackers, chúng tôi đã tự xây dựng một chương trình phần mềm gọi là Projects, cho phép bất kỳ ai được cấp quyền truy cập vừa có thể gửi ý tưởng, vừa có thể theo dõi, bình luận và xem xét các thử nghiệm cùng kết quả của chúng. Có thể dùng bất kỳ gói phần mềm quản lý dự án nào để hỗ trợ việc quản lý thử nghiệm và giao tiếp giữa các thành viên về tình trạng của các thử nghiệm.</p>
+
+<p>Ý tưởng nên được gửi vào một idea pipeline (đường ống ý tưởng), theo một định dạng mẫu (template) quy định. Việc chuẩn hoá định dạng rất quan trọng để ý tưởng có thể được đánh giá nhanh chóng mà đội không cần hỏi lại quá nhiều. Thay vì những đề xuất mơ hồ như "Form đăng ký của chúng ta quá khó; chúng ta nên làm cho việc đăng ký dễ hơn", các đề xuất phải nêu rõ chính xác thay đổi nào sẽ được kiểm thử, lập luận vì sao thay đổi đó có thể cải thiện kết quả, và giải thích kết quả nên được đo lường như thế nào.</p>
+
+<p>Để minh hoạ cách gửi ý tưởng đúng chuẩn, hãy quay lại với đội đang phát triển app di động của chuỗi siêu thị. Những ý tưởng được tạo ra trong tuần đầu tiên, giữa buổi growth meeting thứ nhất và thứ hai, có thể hướng tới một trong vài phương thức thúc đẩy mua sắm nhiều hơn. Một số ý tưởng có thể nhằm lôi kéo những người đã tải app nhưng chưa mua hàng mạnh dạn thực hiện lần mua đầu tiên. Những hack khác có thể nhắm tới những người đã từng mua, bằng cách khiến họ mua thường xuyên hơn, hoặc tăng giá trị đơn hàng trung bình ở các lần mua tiếp theo. Cuối cùng, đội có thể thử một số nỗ lực để đưa thêm nhiều người mua mới tới app từ website của công ty, vì dữ liệu cho thấy những người đến từ website có xu hướng là những người mua tốt nhất.</p>
+
+<p>Giả sử product manager (quản lý sản phẩm) của đội app siêu thị nghĩ ra ý tưởng xây dựng tính năng "danh sách mua sắm" (shopping list), lưu lại danh sách các mặt hàng người mua đã mua trước đó để họ có thể dễ dàng đặt lại. Ý tưởng nên được gửi theo định dạng sau:</p>
+
+<h3>Tên ý tưởng (Idea Name)</h3>
+<p>Chúng tôi nhận thấy việc đặt cho mỗi ý tưởng một cái tên ngắn gọn giúp việc thảo luận trở nên dễ dàng và hiệu quả hơn. Tại GrowthHackers, để buộc sự ngắn gọn và rõ ràng, chúng tôi giới hạn tên dưới 50 ký tự. Trong ví dụ này, hãy gọi ý tưởng tính năng là "Shopping List".</p>
+
+<h3>Mô tả ý tưởng (Idea Description)</h3>
+<p>Cách tốt nhất để hình dung phần mô tả ý tưởng nên trông như thế nào là coi nó như một bản tóm tắt dành cho lãnh đạo (executive summary). Nó nên trả lời các câu hỏi ai, cái gì, ở đâu, khi nào, tại sao và như thế nào về ý tưởng:</p>
+<ul>
+<li><strong>Ai (Who)</strong> là đối tượng nhắm tới? Ví dụ: tất cả khách truy cập, chỉ người dùng mới, người dùng quay lại, hay người dùng đến từ một nguồn traffic cụ thể?</li>
+<li><strong>Cái gì (What)</strong> sẽ được tạo ra, chẳng hạn nội dung marketing (marketing copy) mới hay một tính năng mới?</li>
+<li><strong>Ở đâu (Where)</strong> nội dung hay tính năng mới sẽ được triển khai: trên màn hình chính của app hay ở chỗ khác?</li>
+<li><strong>Khi nào (When)</strong> nó sẽ xuất hiện trong quá trình khách hàng sử dụng, chẳng hạn trên landing page khi khách truy cập lần đầu đến trang?</li>
+<li>Ngoài ra, phần mô tả phải bao gồm <strong>tại sao (Why)</strong> — lập luận đằng sau ý tưởng — và <strong>như thế nào (How)</strong> — đề xuất loại test sẽ thực hiện, chẳng hạn một A/B test, một tính năng mới cần xây dựng, hay một chiến dịch quảng cáo mới cần tung ra.</li>
+</ul>
+<p>Với ý tưởng danh sách mua sắm, phần mô tả của product manager có thể trông như sau:</p>
+<blockquote><p>"Việc giúp người dùng dễ dàng xem và đặt lại các mặt hàng đã mua trước đây sẽ làm tăng số người mua lặp lại và có thể cả tần suất mua của họ. Tăng sự tiện lợi trong việc đặt lại hàng sẽ thúc đẩy việc đặt lại nhiều hơn. Tính năng danh sách mua sắm — nên được thêm vào thanh điều hướng của app và khả dụng cho mọi người dùng — sẽ giúp người dùng dễ dàng lưu và đặt lại những mặt hàng yêu thích. Tính năng này nên được thử nghiệm với một nhóm người dùng ban đầu trước khi được phát hành rộng rãi cho tất cả người dùng."</p></blockquote>
+
+<h3>Giả thuyết (Hypothesis)</h3>
+<p>Như trong bất kỳ loại thử nghiệm nào khác, giả thuyết nên là một mệnh đề đơn giản về quan hệ nhân – quả được kỳ vọng. Một lần nữa, những nét phác hoạ chung chung và kết quả mơ hồ sẽ không đáp ứng được yêu cầu ở đây; câu "Không đủ người quay lại và mua lặp lại; chúng ta nên tạo động lực để họ làm vậy" chỉ đơn thuần là phát biểu một vấn đề và một hướng cải thiện chung. Thay vào đó, một giả thuyết có thể là: "Bằng cách giúp người mua dễ dàng xem và đặt lại các mặt hàng đã mua trước đó, số người mua lặp lại sẽ tăng 20%."</p>
+<p>Một số đội có thể chọn nêu mức tăng kỳ vọng trong giả thuyết, trong khi số khác thì không. Ưu điểm của việc nêu ra là nó cho đội một hình dung rõ ràng về thành công trông như thế nào. Nếu họ kỳ vọng mức tăng 40% mà chiến thắng chỉ đạt 5%, thì họ vẫn còn việc phải làm. Mặt khác, dự đoán trước kết quả của một bài test tốt nhất cũng chỉ là một môn khoa học thiếu chính xác, nên một số đội bỏ qua việc này. Tại GrowthHackers, chúng tôi có nêu mức tăng kỳ vọng (expected lift), được tính toán từ các thử nghiệm tương tự trước đây, dữ liệu benchmark (chuẩn so sánh) có sẵn trên mạng, và các ước lượng sơ bộ dựa trên số người có khả năng nhìn thấy thử nghiệm cùng tác động kỳ vọng của nó lên hành vi hiện tại của họ.</p>
+
+<h3>Các chỉ số cần đo lường (Metrics to Be Measured)</h3>
+<p>Phải chỉ rõ các chỉ số cần theo dõi để đánh giá kết quả của bài test. Hầu hết các thử nghiệm nên đo nhiều hơn một chỉ số, bởi đôi khi sự cải thiện ở một chỉ số lại phải trả giá bằng các chỉ số khác. Giả sử bạn đang thử nghiệm một form đăng ký mới trên landing page. Bạn có thể nhận thấy thiết kế mới làm tăng số người mới đăng ký vì bạn đã khiến việc đăng ký dễ dàng hơn, nhưng những người đăng ký đó lại kém gắn kết (engaged) hơn so với những người dùng mới trước đây, vì họ không hiểu rõ chính xác mình đang đăng ký cái gì. Rốt cuộc, điều đó có thể trở thành một trở ngại nghiêm trọng cho tăng trưởng.</p>
+<p>Hãy xác định các chỉ số cần theo dõi bằng cách xem xét những chỉ số "ở hạ nguồn" (downstream) của thử nghiệm sẽ bị tác động. Ví dụ, với danh sách mua sắm, các chỉ số cần đo là: số khách hàng sử dụng tính năng danh sách mua sắm, số mặt hàng được lưu vào mỗi danh sách, số đơn mua lặp lại, tỷ lệ người đặt lại hàng, và giá trị trung bình của mỗi đơn hàng. Những chỉ số này sẽ giúp growth team đánh giá thử nghiệm và tác động của nó lên những chỉ số quan trọng với họ. Phạm vi đo lường bao gồm cả số người sử dụng tính năng mới lẫn tác động của tính năng lên hành vi mua sắm của họ, giúp đội có được insight về việc thử nghiệm có cải thiện chỉ số then chốt — cụ thể là doanh thu trên mỗi người mua — hay không, và giả thuyết của thử nghiệm đúng hay sai, chẳng hạn liệu nó có làm tăng tỷ lệ đặt hàng lặp lại của những người dùng app đã sử dụng tính năng hay không.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Một ý tưởng tăng trưởng trong "Projects" (A Growth Idea in "Projects")</div>
+Ảnh chụp màn hình một ý tưởng được gửi trong phần mềm Projects của GrowthHackers, thể hiện các trường của định dạng mẫu vừa mô tả: Tên ý tưởng, Mô tả ý tưởng, Giả thuyết và Các chỉ số cần đo lường (cùng điểm số dùng để ưu tiên hoá).
+</div>
+
+<p>Hãy nhớ rằng, càng nhiều ý tưởng đi vào pipeline thì cơ hội tìm ra những ý tưởng chiến thắng thúc đẩy tăng trưởng càng cao. Ở giai đoạn tiếp theo của chu trình, bạn sẽ triển khai một quy trình để sàng lọc khối lượng ý tưởng (hy vọng là) khổng lồ đang được tạo ra và ưu tiên hoá xem nên kiểm thử ý tưởng nào ngay bây giờ, để sau, hay không bao giờ.</p>
+
+<h3>Mở rộng nguồn ý tưởng ra ngoài growth team</h3>
+<p>Một lưu ý cuối cùng. Với mục tiêu tạo ra càng nhiều ý tưởng càng tốt, rốt cuộc bạn sẽ muốn ý tưởng đến không chỉ từ các thành viên trong đội mà từ mọi người trong toàn công ty. Đội bán hàng có thể có những insight giá trị về các nỗi đau (pain point) của khách hàng, còn những người làm marketing có thể đã biết về một nền tảng quảng bá mới để thử nghiệm cho việc thu hút khách hàng. Dù những nỗ lực ban đầu nên tận dụng sự sáng tạo của những người trong công ty, theo thời gian bạn nên cân nhắc mở rộng lời kêu gọi ý tưởng tới các nhà cung cấp và đối tác bên ngoài. Người ngoài có thể đưa ra những gợi ý hữu ích đến bất ngờ, giúp đội phá vỡ những định kiến có sẵn về loại việc họ nên thử. Đặc biệt, những cố vấn từng làm việc với một doanh nghiệp tương tự doanh nghiệp của bạn có thể biết về một chiến thuật từng mang lại hiệu quả lớn ở nơi khác. Đề nghị khách hàng chia sẻ ý tưởng cũng có thể mang lại nhiều điều sáng tỏ, đặc biệt là những người dùng nhiệt huyết nhất của bạn. Họ thường rất hào hứng khi được hỏi ý kiến và có thể có nhiều kinh nghiệm thực tế với việc sử dụng sản phẩm của bạn hơn hẳn (đáng buồn thay) chính đội ngũ của bạn.</p>
+
+<div class="case">
+<div class="case-title">Case: GrowthHackers mở rộng việc lên ý tưởng</div>
+<p>Tại GrowthHackers, ban đầu chúng tôi chỉ giữ quá trình lên ý tưởng trong phạm vi các thành viên growth team. Nhưng chúng tôi nhận ra mình bị mắc kẹt trong lối mòn của những bài test na ná nhau. Vì vậy, chúng tôi tìm đến các đồng nghiệp và xin ý tưởng của họ. Lúc đầu, chúng tôi phạm sai lầm khi không chia sẻ các growth lever và chỉ số mục tiêu với họ, dẫn tới rất nhiều phản hồi mơ hồ kiểu "Các anh cần giúp gì?" hay "Nếu nghĩ ra gì tôi sẽ báo." Nhưng khi chúng tôi chia sẻ trọng tâm của mình, vô số ý tưởng tuyệt vời đã tràn về. Kết quả tích cực đến mức sau đó chúng tôi mở rộng việc lên ý tưởng tới cả các nhà đầu tư và cố vấn, rồi cuối cùng tới cả những thành viên đáng tin cậy của cộng đồng growth hacking.</p>
+<p>Chúng tôi bắt đầu bằng việc nhận ý tưởng qua email và tự mình chuyển chúng sang đúng định dạng để thêm vào pipeline. Khi đã xây dựng phần mềm Projects, chúng tôi cho phép tất cả những người được mời gửi ý tưởng đăng nhập và tự thêm ý tưởng của họ.</p>
+<p>Và quả thật, một số ý tưởng hay nhất mà đội từng thử nghiệm đến từ bên ngoài công ty. Chẳng hạn, một trong những thành viên tích cực nhất của cộng đồng đã đề xuất chúng tôi tổ chức các phiên hỏi – đáp (Q&amp;A) trên trang với những chuyên gia growth nổi tiếng; các phiên này từ đó đã trở thành động lực quan trọng thúc đẩy traffic và mức độ tương tác (engagement) cho trang. Và sau khi một cố vấn của chúng tôi chia sẻ một số chiến thuật tối ưu hoá công cụ tìm kiếm (SEO) từng hiệu quả trên trang của anh ấy, chúng tôi nhận thấy khi triển khai, chúng phát huy tác dụng mạnh mẽ trong việc đẩy thứ hạng tìm kiếm của chúng tôi trên Google lên cao. Đây chỉ là hai trong số hàng chục ý tưởng chiến thắng đến từ bên ngoài đội.</p>
+</div>
+
+<p>Bước cuối cùng trước khi gửi một ý tưởng là chấm cho nó một điểm số để giúp những người còn lại trong đội ưu tiên hoá nó so với các ý tưởng thử nghiệm khác ở giai đoạn 3. Chúng ta sẽ tìm hiểu hệ thống chấm điểm và cách dùng nó để xếp hạng và lựa chọn các hack trong giai đoạn tiếp theo này.</p>
+
+<hr class="divider">
+
+<h2>Giai đoạn 3: Ưu tiên (Stage 3: Prioritize)</h2>
+
+<p>Trước khi một ý tưởng sẵn sàng để đội xem xét, nó phải được chấm điểm. Việc chấm điểm này giúp đội xếp hạng các ý tưởng so với nhau để xác định nên kiểm thử cái gì và khi nào. Ý tưởng được chấm điểm bởi chính người gửi, trước khi ý tưởng đi vào kho các hack có sẵn để cân nhắc kiểm thử.</p>
+
+<p>Tại GrowthHackers, Sean đã phát triển hệ thống ICE score, trong đó ICE là viết tắt của <strong>Impact</strong> (Tác động), <strong>Confidence</strong> (Mức độ tin tưởng) và <strong>Ease</strong> (Mức độ dễ thực hiện), như một cách để sắp xếp tất cả ý tưởng được tạo ra trong giai đoạn lên ý tưởng của chu trình. Đây là cách nó hoạt động.</p>
+
+<h3>Điểm ICE (The ICE Score)</h3>
+<p>Khi gửi ý tưởng, người gửi nên chấm mỗi ý tưởng trên thang điểm 10, theo từng tiêu chí trong ba tiêu chí sau: tác động tiềm năng của ý tưởng, mức độ tin tưởng của người gửi về hiệu quả của nó, và mức độ dễ dàng khi triển khai. Sau đó các điểm này được lấy trung bình để ra một điểm tổng hợp cho mỗi ý tưởng. Toàn bộ kho ý tưởng sau đó được xếp hạng theo điểm, và đội bắt đầu thử nghiệm với những ý tưởng có điểm cao nhất trong lĩnh vực trọng tâm mà growth team đã chọn. Ví dụ, một ý tưởng thu hút khách hàng (customer acquisition) có điểm cao sẽ bị gác lại để nhường cho một ý tưởng điểm thấp hơn xoay quanh việc giữ chân người dùng nếu growth team hiện đang tập trung vào cải thiện retention.</p>
+
+<div class="callout">
+<div class="callout-title">Công thức ICE</div>
+<p>ICE score = (Impact + Confidence + Ease) ÷ 3, với mỗi tiêu chí được chấm trên thang 1–10. Ý tưởng được xếp hạng theo điểm tổng hợp, nhưng chỉ chọn trong phạm vi lĩnh vực trọng tâm (focus area) hiện tại của đội.</p>
+</div>
+
+<p>Dưới đây là ví dụ về kiểu bảng xếp hạng chúng tôi tạo ra, liệt kê kết quả cho các ý tưởng của đội app siêu thị. Việc xếp hạng này có thể làm trong bảng tính (spreadsheet) hoặc trong phần mềm quản lý dự án của bạn. Bạn có thể thấy việc chấm điểm đã giúp làm rõ hai ý tưởng nào là tốt nhất để thử trước. Dù điểm tổng hợp của một ý tưởng không phải lúc nào cũng là trọng tài cuối cùng quyết định ý tưởng nào được chọn và theo thứ tự nào — vì sau khi thảo luận trong buổi họp, đội có thể quyết định rằng có lý do để chọn một phương án điểm thấp hơn — bạn đã có một điểm khởi đầu tuyệt vời.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Bảng xếp hạng ICE các ý tưởng của đội app siêu thị</div>
+Một bảng liệt kê từng ý tưởng của đội kèm điểm Impact, Confidence, Ease và điểm ICE tổng hợp, sắp xếp từ cao xuống thấp. Theo phần chữ của chương, các ý tưởng trong bảng gồm khuyến mãi cho người mua lần đầu (first-time-shopper promotion), tăng độ hiển thị của ưu đãi miễn phí giao hàng (free delivery offer) và tính năng danh sách mua sắm (Shopping List); hai ý tưởng đầu nổi lên rõ ràng là tốt nhất để thử trước nhờ điểm cao về cả tác động lẫn mức độ dễ thực hiện. (Nguồn không cung cấp số điểm cụ thể.)
+</div>
+
+<p>Đúng là việc tự chấm điểm ý tưởng của chính mình có thể khá thách thức, vì nó đòi hỏi sự chủ quan tương đối và một mức độ cố gắng dự đoán tương lai. Nhưng với kinh nghiệm và sự luyện tập, bạn sẽ sớm học được cách dùng dữ liệu, kết quả các thử nghiệm trước và các benchmark trong ngành để ước lượng giá trị ý tưởng của mình. Thêm nữa, "cảm giác" của bạn về lợi ích tiềm năng của một ý tưởng sẽ ngày càng tốt hơn khi bạn chứng kiến càng nhiều ý tưởng được kiểm thử và quan sát kết quả chúng mang lại. Nhưng việc nắm vững chính xác ba tiêu chí này là gì và cách đánh giá chúng cũng rất hữu ích. Vì vậy, hãy cùng xem xét kỹ hơn từng tiêu chí.</p>
+
+<h3>Impact — Tác động</h3>
+<p>Đây là kỳ vọng về mức độ ý tưởng sẽ cải thiện chỉ số đang được tập trung — trong trường hợp app siêu thị là doanh thu trên mỗi người dùng. Bạn có thể nghĩ rằng chỉ những ý tưởng có tác động rất cao mới đáng được gửi, nhưng hãy nhớ rằng một đội nên chọn một tổ hợp gồm những thử nghiệm có tác động tiềm năng cao — thường đòi hỏi nhiều công sức hơn — và một số thử nghiệm dễ triển khai hơn nhưng vẫn có khả năng tốt, dù không phải tuyệt vời, tạo ra kết quả có ý nghĩa. Mục tiêu là ưu tiên càng nhiều bài test tác động cao càng tốt, nhưng nếu một số trong đó mất vài tuần, hoặc lâu hơn, để chuẩn bị ra mắt, thì nên xếp xen kẽ một số bài test dễ hơn vào lịch — đó là lý do mức độ dễ kiểm thử cũng là một thành phần của điểm ICE.</p>
+
+<h3>Confidence — Mức độ tin tưởng</h3>
+<p>Đây là thước đo mức độ người đề xuất tin tưởng rằng ý tưởng sẽ tạo ra tác động như kỳ vọng. Điểm này không nên chỉ dựa trên phỏng đoán, mà phải dựa trên một loại bằng chứng thực nghiệm nào đó, dù là từ phân tích dữ liệu, xem xét benchmark trong ngành, các case study đã được công bố, hay hiểu biết về các thử nghiệm trước đây.</p>
+<p>Mức độ tin tưởng nên cao hơn nếu bài test là một phiên bản lặp lại (iteration) của một bài test thành công trước đó — một thực hành tốt, thường được cộng đồng growth hacking gọi là <strong>doubling down</strong> (nhân đôi đặt cược). Giả sử một form đăng ký email đề nghị dùng thử demo sản phẩm miễn phí trên một landing page được quảng bá qua quảng cáo Facebook đã mang về rất nhiều địa chỉ email mới. Tiếp theo, bạn có thể thử quảng bá chính landing page đó qua các nguồn khác, chẳng hạn Google. Mức độ tin tưởng của bạn với thử nghiệm đầu tiên có thể tương đối thấp, chẳng hạn điểm 4, vì bạn nghĩ form đăng ký sẽ khiến mọi người ngại muốn xem demo. Nhưng với bài test tiếp theo, bạn có thể nâng điểm lên 8 nhờ thành công của thử nghiệm đầu. Điểm tin tưởng cao cũng có thể đến từ việc biết rằng một thử nghiệm đã được một đội khác thực hiện thành công, dù trong hay ngoài công ty bạn.</p>
+
+<h3>Ease — Mức độ dễ thực hiện</h3>
+<p>Ease là thước đo thời gian và nguồn lực cần thiết để chạy thử nghiệm. Những ý tưởng như thiết kế lại đáng kể trải nghiệm người dùng mới (new user experience) hay cải tổ giỏ hàng trong quy trình thanh toán (checkout) có thể có tác động cao, nhưng thường không phải là việc dễ dàng, đòi hỏi hàng tuần hoặc hàng tháng làm việc để ra mắt. Điểm Ease vừa giúp growth team tỉnh táo trước những ý tưởng quá tham vọng, vừa giúp xác định một số bài test kiểu "quả ngọt trong tầm tay" (low-hanging fruit) để chạy trong mỗi vòng quy trình growth hacking.</p>
+
+<h3>Rà soát điểm số và giữ cho đội tiến lên</h3>
+<p>Trước buổi họp đội, các điểm số ban đầu nên được growth lead xem xét; cô ấy có thể nhìn ra những vấn đề mà người gửi ý tưởng chưa thấy hoặc chưa đánh giá đúng. Growth lead có thể đề xuất điều chỉnh điểm dựa trên kinh nghiệm của mình và sự tham vấn với các thành viên khác. Điều quan trọng là đội không sa lầy vào việc cố tinh chỉnh điểm số quá mức. Điểm số được dùng để ưu tiên hoá tương đối và sẽ không hoàn hảo. Một buổi growth meeting có thể nhanh chóng xuống cấp nếu các thành viên cãi vã về điểm Impact của một bài test, chẳng hạn. Tốt hơn hết là đội dùng điểm số như một kim chỉ nam có giá trị, thay vì coi nó là tất cả trong việc ưu tiên hoá bài test. Khi có sự không chắc chắn hay băn khoăn về một điểm số, growth lead nên dùng phán đoán tốt nhất của mình và hành động dứt khoát để giữ cho đội tiếp tục tiến lên.</p>
+
+<p>Hệ thống chấm điểm này rõ ràng không phải là không thể sai, và kết quả các bài test thường đi ngược kỳ vọng. Một số thử nghiệm được chấm điểm thấp nhất có thể — và đã từng — trở thành những chiến thắng lớn nhất.</p>
+
+<div class="case">
+<div class="case-title">Case: Di chuyển form đăng ký newsletter "Top Posts" — tăng 700%</div>
+<p>Tại GrowthHackers, chúng tôi từng chạy một thử nghiệm đơn giản là thay đổi vị trí của form đăng ký nhận email newsletter hằng tuần "Top Posts". Ban đầu chúng tôi đặt form ở cuối trang chủ vì nghĩ rằng người dùng sẽ muốn đánh giá nội dung trên trang — tức là cuộn qua dòng bài viết đang thịnh hành (trending) mà chúng tôi giới thiệu trên trang chủ — trước khi quyết định có muốn đăng ký nhận newsletter hay không. Rồi Morgan có một ý tưởng khiêm tốn là chuyển lời mời từ cuối trang lên đầu trang, giúp nó hiển thị rõ hơn. Thú thật, anh ấy không mấy tin vào tác động mà thay đổi này mang lại, chỉ chấm Impact 4/10. Nhưng dù vậy chúng tôi vẫn quyết định thử, vì anh ấy chấm Ease 9 dựa trên phản hồi từ đội kỹ thuật, những người cho biết việc triển khai tương đối dễ dàng; và vì anh ấy tin rằng thay đổi sẽ cải thiện lượt đăng ký email ở một mức độ nào đó nhờ hiển thị rõ hơn, nên chấm Confidence 8.</p>
+<p>Kết quả thật đáng kinh ngạc. Trước sự ngạc nhiên của chúng tôi, lượt đăng ký tăng vọt 700%, vượt xa những giả định khiêm tốn của chúng tôi về tác động tiềm năng của thử nghiệm đối với tăng trưởng.</p>
+</div>
+
+<table>
+<thead><tr><th>Tiêu chí</th><th>Điểm Morgan chấm</th><th>Lý do</th></tr></thead>
+<tbody>
+<tr><td>Impact</td><td>4/10</td><td>Không mấy tin vào tác động của thay đổi</td></tr>
+<tr><td>Confidence</td><td>8/10</td><td>Tin rằng hiển thị rõ hơn sẽ cải thiện lượt đăng ký ở một mức độ nào đó</td></tr>
+<tr><td>Ease</td><td>9/10</td><td>Đội kỹ thuật cho biết triển khai tương đối dễ</td></tr>
+<tr><td colspan="3"><strong>Kết quả thực tế: lượt đăng ký tăng 700%</strong></td></tr>
+</tbody>
+</table>
+
+<p>Chúng tôi kể câu chuyện này không phải để khoe khả năng nghĩ ra ý tưởng test hay của Morgan — anh ấy cũng đã đề xuất không ít ý tưởng "xịt" — mà để cho thấy rằng kỳ vọng của chính chúng ta về các ý tưởng của mình không phải lúc nào cũng chính xác, và để cảnh báo đừng vứt bỏ tất cả những ý tưởng không có điểm cao.</p>
+
+<h3>Các hệ thống chấm điểm khác</h3>
+<p>Dù chúng tôi thích dùng hệ thống ICE, nhiều hệ thống chấm điểm khác cũng đã được các growth hacker đồng nghiệp tạo ra. Bryan Eisenberg, người được coi là "bố già" của tối ưu hoá chuyển đổi (conversion optimization), đề xuất hệ thống <strong>TIR</strong> của ông, viết tắt của Time (Thời gian), Impact (Tác động) và Resources (Nguồn lực). Một hệ thống khác là <strong>PIE</strong>, viết tắt của Potential (Tiềm năng), Importance (Tầm quan trọng) và Ease (Mức độ dễ). Nhiều đội cũng tự phát triển hệ thống riêng phù hợp với nhu cầu đặc thù của mình. Dù chi tiết có thể khác nhau, mọi phương pháp chấm điểm đều đạt cùng một mục tiêu bao trùm — đánh giá ý tưởng theo cách định lượng, giúp việc sàng lọc các phương án và quyết định nên kiểm thử gì tiếp theo trở nên dễ dàng hơn.</p>
+
+<h3>Lên lịch cho những ý tưởng chưa thể chạy ngay</h3>
+<p>Ngay cả sau khi đã trải qua quá trình chấm điểm và thu hẹp danh sách những thử nghiệm bạn biết chắc mình muốn thử, rất có thể bạn vẫn còn nhiều ý tưởng hơn số bạn có thể kiểm thử trong tuần tới. Một số ý tưởng cũng sẽ đòi hỏi khâu chuẩn bị nhiều hơn mức có thể làm trong một tuần, chẳng hạn những ý tưởng cần phát triển phần mềm hoặc thiết kế khối lượng lớn. Những ý tưởng đó nên được gán một ngày test mục tiêu trong tương lai, theo tư vấn của những người sẽ tham gia nhiều nhất vào việc đưa thử nghiệm từ ý tưởng tới ra mắt. Vì vậy, nếu công việc liên quan đến kỹ thuật phần mềm, kỹ sư và product manager nên đưa cho growth team ước lượng về thời gian; còn nếu thử nghiệm liên quan đến việc kiểm thử một kênh thu hút khách hàng mới, đội marketing chịu trách nhiệm tư vấn cho growth team về lịch trình.</p>
+
+<p>Mọi ý tưởng không thể triển khai trong tuần hiện tại nên được lưu trong experiment pipeline (đường ống thử nghiệm). Bạn có thể quyết định xếp lịch một số cho tuần kế tiếp, và một số khác thì chờ xem xét lại về sau. Điều then chốt là đội ưu tiên hoá nỗ lực để sử dụng thời gian và nguồn lực một cách tối ưu, hướng tới những nhu cầu cấp bách nhất của doanh nghiệp trong lĩnh vực trọng tâm mà growth lead đã xác định.</p>
+
+<h3>Đội app siêu thị chọn thử nghiệm</h3>
+<p>Để thấy quy trình lựa chọn diễn ra như thế nào, hãy quay lại với đội app di động siêu thị — những người, như bạn còn nhớ, có mục tiêu tăng doanh thu trên mỗi người dùng. Từ bộ ý tưởng của họ, giả sử họ đạt được đồng thuận và chọn <strong>khuyến mãi cho người mua lần đầu</strong> (first-time-shopper promotion) và <strong>tăng độ hiển thị của ưu đãi miễn phí giao hàng</strong> (free delivery offer) để kiểm thử, nhờ điểm cao về cả tác động lẫn mức độ dễ thực hiện.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Bộ ý tưởng của đội app siêu thị và hai ý tưởng được chọn</div>
+Danh sách các ý tưởng của đội kèm điểm ICE, trong đó hai ý tưởng được chọn cho tuần test đầu tiên là khuyến mãi cho người mua lần đầu và tăng độ hiển thị của ưu đãi miễn phí giao hàng (cho đơn từ 50 đô-la). Tính năng danh sách mua sắm được đánh giá là đáng thử nhưng phức tạp hơn để xây dựng.
+</div>
+
+<p>Thành viên marketing của đội nhiều khả năng sẽ được giao phụ trách khuyến mãi cho người mua lần đầu, còn nhà thiết kế sản phẩm (product designer) được giao làm chủ bài test về miễn phí giao hàng.</p>
+
+<p>Giả sử đội cũng quyết định rằng thử nghiệm danh sách mua sắm đáng để thử, nhưng vì việc tạo tính năng này khá phức tạp, growth lead có thể giao cho product manager nhiệm vụ trao đổi với đội sản phẩm xem khi nào họ có thể xếp công việc này vào lịch. Growth team sẽ cân nhắc thời điểm xếp lịch thử nghiệm khi có thông tin đó.</p>
+
+<h3>Đề cử ý tưởng một cách cộng tác</h3>
+<p>Chúng tôi khuyên nên biến việc lựa chọn thử nghiệm thành một quy trình cộng tác. Một ngày trước buổi growth meeting, growth lead nên thông báo cho đội rằng đã đến lúc xem lại idea pipeline và đề cử (nominate) những thử nghiệm mà họ cho là ứng viên hứa hẹn nhất (có thể bao gồm không chỉ bộ ý tưởng mới gửi mà cả một số ý tưởng đã có sẵn trong pipeline). Những đề cử này sẽ quyết định bộ ý tưởng được thảo luận trong buổi growth meeting, nơi đội sẽ đi đến quyết định chung về việc triển khai thử nghiệm nào, và khi nào. Việc đề cử có thể thực hiện qua email hoặc, nếu hệ thống bạn đang dùng cho phép, bằng cách đánh dấu chúng trong pipeline. Ví dụ, trong GrowthHackers Projects, các thành viên "gắn sao" (star) cho ý tưởng, và những ý tưởng này sau đó được kéo vào một hàng đợi riêng, nơi growth lead có thể xem tất cả để xem xét và tranh luận trong buổi họp sắp tới. Để giữ số ý tưởng thảo luận ở mức kiểm soát được, chúng tôi giới hạn mỗi thành viên đề cử tối đa ba ứng viên test mỗi tuần.</p>
+
+<p>Những ý tưởng "lọt vào chung kết" này sẽ được trình bày và xem xét tại buổi growth meeting, nơi growth team chọn ra các thử nghiệm sẽ chạy. Phần tiếp theo mô tả cách làm điều đó.</p>
+
+<hr class="divider">
+
+<h2>Giai đoạn 4: Kiểm thử (Stage 4: Test)</h2>
+
+<p>Khi các thử nghiệm cho chu kỳ test của tuần tới đã được chọn, chúng được chuyển vào hàng đợi mà chúng tôi gọi là <strong>Up Next</strong> ("Kế tiếp") — có thể đơn giản chỉ là một bảng tính mới nếu bạn theo dõi thủ công, hoặc nếu dùng phần mềm quản lý dự án, các thử nghiệm này có thể được chuyển vào một hàng đợi công việc hay danh sách riêng trong hệ thống. Giờ là lúc những người phụ trách thử nghiệm làm việc với các thành viên khác của growth team, và/hoặc với đồng nghiệp ở các phòng ban cần đóng góp công sức, để chuẩn bị và triển khai thử nghiệm.</p>
+
+<p>Đây là lúc sự cộng tác liên chức năng thực sự phát huy tác dụng. Lấy ví dụ quen thuộc của chúng ta về app mua sắm, thành viên marketing có thể làm việc với đội thiết kế đồ hoạ và đội email để tạo hình ảnh và nội dung marketing cho chương trình khuyến mãi người mua lần đầu. Cô ấy cũng sẽ phối hợp với data analyst để xác định cả nhóm đối chứng (control group) — nhóm người dùng sẽ không tiếp xúc với thử nghiệm — lẫn nhóm thử nghiệm (experiment group), và để đảm bảo kết quả có thể được theo dõi đúng cách.</p>
+
+<p>Khi các thử nghiệm đã sẵn sàng, growth lead sẽ gửi thông báo tới toàn công ty rằng chúng sắp được triển khai, để không gây bất ngờ cho các đội khác cũng đang làm việc trên sản phẩm. Nếu gặp trở ngại khi triển khai một số thử nghiệm (ví dụ, các kỹ sư đang làm một sáng kiến lớn khác và sẽ không có thời gian lập trình growth hack đó trong vài tuần tới), thành viên phụ trách phải báo ngay cho growth lead để có thể cân nhắc triển khai các thử nghiệm khác trong hàng đợi Up Next thay thế.</p>
+
+<h3>Luật đi đường khi kiểm thử (Testing Rules of the Road)</h3>
+<p>Mỗi thử nghiệm được chạy đều phải trả giá bằng việc gác lại một ứng viên khác. Vì vậy, điều quan trọng là phải cẩn trọng trong việc chọn ý tưởng và cách kiểm thử ý tưởng đó. Một bài test kém là bớt đi một cơ hội học hỏi, khiến đội chậm lại, còn dữ liệu sai có thể đẩy đội đi theo một hướng hoàn toàn sai lầm. Đó là lý do điều tối quan trọng là mọi thử nghiệm phải được thiết kế để tạo ra kết quả có giá trị về mặt thống kê (statistically valid). Các hướng dẫn để đảm bảo kết quả đáng tin cậy cần được thiết lập rõ ràng, và data analyst của đội nên chịu trách nhiệm áp dụng các quy tắc này cho những thử nghiệm đang chạy. Chi tiết về thiết kế test nằm ngoài phạm vi cuốn sách này, nhưng chúng tôi muốn đưa ra hai nguyên tắc kinh nghiệm (rule of thumb) về kiểm thử mà chúng tôi thấy đặc biệt hữu ích.</p>
+
+<div class="callout">
+<div class="callout-title">Quy tắc 1: Dùng mức độ tin cậy thống kê 99%</div>
+<p>Nhiều công cụ tự động thiết lập, hoặc cho phép bạn tự thiết lập, mức độ tin cậy (confidence level) cho các bài test. Các mức phổ biến là 95% và 99%. Dù chênh lệch bốn điểm phần trăm nghe có vẻ không nhiều, nó thực ra khá đáng kể xét về mặt thống kê. Mức độ tin cậy 95% nghĩa là một bài test "thắng" vẫn có thể sai trong 5% trường hợp. Tức là cứ 20 bài test được báo là thắng thì có 1 bài thực ra có thể là thua. Tuy nhiên, ở mức tin cậy 99%, số bài test dương tính giả (false positive) giảm xuống còn 1 trên 100: một kết quả đáng tin cậy hơn nhiều. Vì vậy, khi phân vân, hãy chọn mức tin cậy 99% để giảm mạnh rủi ro chọn nhầm một thử nghiệm "thắng" dựa trên một kết quả dương tính giả.</p>
+</div>
+
+<div class="callout">
+<div class="callout-title">Quy tắc 2: Phiên bản đối chứng luôn thắng (Control Always Wins)</div>
+<p>Khi một thử nghiệm thất bại rõ ràng, đội thường dễ dàng nhìn vào dữ liệu và nhanh chóng đồng ý với thực tế đó. Việc đạt đồng thuận trở nên khó khăn hơn khi kết quả của bài test không rõ ràng là tích cực hay tiêu cực, đặc biệt nếu việc chạy nó đã tốn khá nhiều thời gian và công sức. Không ai thích lãng phí công sức tốt, và các thành viên có thể muốn để bài test chạy lâu hơn nhiều so với mức hiệu quả về chi phí, với hy vọng một cỡ mẫu (sample size) lớn hơn sẽ thay đổi xu hướng hiện tại. Dù chúng tôi hiểu vì sao điều đó hấp dẫn, khi kết quả không đủ để kết luận, hướng đi tốt nhất là giữ nguyên phiên bản gốc, hay phiên bản đối chứng (control). Lý do là dù kết quả chưa thể kết luận, biến thể (variant) mới thực ra có thể là kẻ thua trong dài hạn — một rủi ro có thể tốn kém. Hãy nghĩ theo cách này: trong trường hợp "hoà", "chiến thắng" nên thuộc về phiên bản đối chứng.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Trở lại Giai đoạn 1: Phân tích và học hỏi (Back to Stage 1: Analysis and Learning)</h2>
+
+<p>Việc phân tích kết quả test nên do data analyst hoặc growth lead thực hiện, nếu người đó có chuyên môn. Kết quả nên được viết thành một bản tóm tắt bài test (test summary), và tài liệu này nên bao gồm:</p>
+<ul>
+<li><strong>Tên và mô tả bài test</strong>, bao gồm các biến thể được dùng và khách hàng mục tiêu (ví dụ: bài test được chạy trong một kênh marketing, chỉ nhắm tới người dùng di động, hay tới người đăng ký trả phí, v.v.?)</li>
+<li><strong>Loại test đã chạy</strong>: đó là test một chức năng sản phẩm, một thay đổi nội dung marketing trên một trang web hay một màn hình trong app di động, một test sáng tạo (creative test), hay một chiến thuật marketing mới được triển khai?</li>
+<li><strong>Những tính năng chịu tác động</strong>: có thể bao gồm ảnh chụp màn hình vị trí chạy test trên website hay trên màn hình app di động, hoặc bản sao nội dung sáng tạo của một thử nghiệm quảng cáo biển bảng (billboard), truyền hình hay phát thanh cụ thể</li>
+<li><strong>Các chỉ số then chốt</strong>: bạn đang cố cải thiện những chỉ số nào bằng bài test?</li>
+<li><strong>Thời gian test</strong>, bao gồm ngày bắt đầu và kết thúc, kể cả thứ trong tuần</li>
+<li><strong>Giả thuyết của bài test và kết quả</strong>, bao gồm điểm ICE ban đầu, cỡ mẫu, độ tin cậy thống kê (statistical confidence) và lực thống kê (statistical power)</li>
+<li><strong>Các yếu tố gây nhiễu tiềm ẩn</strong> (confounding issue), chẳng hạn thời điểm trong năm khi chạy test, hoặc liệu có chương trình khuyến mãi nào khác có thể làm sai lệch hành vi khách truy cập</li>
+<li><strong>Các kết luận rút ra.</strong></li>
+</ul>
+
+<p>Bản tóm tắt này sau đó nên được chia sẻ với growth team qua email, kèm một bản ghi nhớ (memo) tóm lược ngắn gọn những gì đã học được. Nó cũng nên được thêm vào một cơ sở dữ liệu nơi bạn lưu trữ tất cả các bản tóm tắt test, mà chúng tôi gọi là <strong>knowledge base</strong> (kho tri thức). Kho này có thể đơn giản chỉ là một thư mục riêng mà mọi người trong đội đều truy cập được trên một máy chủ chia sẻ tệp, hoặc có thể là một trang trên wiki hay intranet của công ty. Trong GrowthHackers Projects, knowledge base là một phần riêng của phần mềm, có tính năng đánh dấu bài test là thắng, thua hay không đủ để kết luận. Bất kể các báo cáo được lưu trữ theo cách nào, yêu cầu thiết yếu là kết quả của mọi thử nghiệm đều phải dễ dàng tìm kiếm, để các đội có thể xem lại và cân nhắc các biến thể, đồng thời đảm bảo họ không lặp lại các bài test — điều rất dễ xảy ra, đặc biệt khi vận hành ở nhịp độ cao.</p>
+
+<p>Ngoài việc tạo knowledge base, nhiều đội còn gửi thông tin định kỳ rộng khắp trong công ty, hoặc nếu phù hợp hơn thì trong phòng ban, để giữ cho nhân viên cập nhật về quy trình tăng trưởng. Văn hoá và chuẩn mực của công ty sẽ quyết định kiểu truyền thông nào phù hợp nhất với bạn, nhưng dưới đây là vài ví dụ bạn có thể muốn thử:</p>
+<ul>
+<li>Tạo một danh sách phân phối email <strong>"Wins"</strong> (Chiến thắng), để người nhận được cập nhật định kỳ về những thử nghiệm đã thắng và tác động của chúng tới doanh nghiệp. Chúng tôi đã làm việc này tại Inman, và danh sách này gửi tới 20 người, tất cả đều đã bày tỏ mong muốn được cập nhật thông tin. Một số công ty còn gửi email liệt kê tất cả các bài test đã chạy, và chia sẻ cả kết quả của những bài test thất bại và chưa đủ kết luận.</li>
+<li>Với những đội dùng phần mềm nhắn tin tức thời (như Slack), bạn có thể cân nhắc tạo một kênh hay phòng chat dành riêng cho việc chia sẻ kết quả test và thảo luận về chúng. Chúng tôi có một kênh testing tại Inman trong tài khoản Slack của công ty, chỉ dùng để thông báo các bài test mới được triển khai và kết quả của các bài test vừa kết thúc — cả thắng lẫn thua.</li>
+<li>Công bố kết quả test lên các dashboard của công ty. Nếu công ty không dùng dashboard, thì đơn giản in và dán kết quả test ở các khu vực chung trong văn phòng là một cách "công nghệ thấp" hiệu quả để lan truyền thông tin.</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Buổi Growth Meeting (The Growth Meeting)</h2>
+
+<p>Vì phần lớn quy trình mô tả ở trên diễn ra xoay quanh nhịp của buổi growth meeting, sẽ rất hữu ích nếu có một khuôn mẫu cho cách tiến hành buổi họp. Chúng tôi khuyên nên tổ chức growth meeting mỗi tuần một lần, nhưng một số đội có thể muốn họp hai tuần một lần, tuỳ vào thời gian họ có thể dành cho quy trình. Mục tiêu của buổi họp là tập trung nghiêm ngặt vào bộ ý tưởng đã được đề cử và thống nhất kế hoạch thử nghiệm. Điều tối quan trọng là buổi họp này không được dùng để brainstorm ý tưởng; ý tưởng nên được brainstorm từ trước rất lâu theo quy trình mô tả ở trên. Các đội cũng có thể muốn tổ chức thêm các buổi brainstorm riêng, chẳng hạn mỗi tháng một lần.</p>
+
+<p>Dưới đây là quy trình điều hành buổi họp mà chúng tôi đã phát triển tại GrowthHackers và đã chứng minh là rất hiệu quả. Bạn cứ thoải mái điều chỉnh chi tiết cho phù hợp với nhu cầu của đội mình, nhưng quy trình tổng thể được thiết kế để vận hành cho bất kỳ đội hay công ty nào, lớn hay nhỏ.</p>
+
+<h3>Chuẩn bị trước buổi họp</h3>
+<p>Buổi growth meeting được tổ chức vào thứ Ba, giúp đội có một ngày đầu tuần để hoàn tất một số công việc chuẩn bị cần thiết. Vào thứ Hai, các thành viên kiểm tra các thử nghiệm đang chạy để xác định những thử nghiệm có thể kết thúc, hoặc để thu thập dữ liệu cập nhật cho đội trong buổi họp. Growth lead rà soát hoạt động của tuần trước, bao gồm:</p>
+<ul>
+<li>xem xét số thử nghiệm đã được triển khai thành công và so sánh với mục tiêu tốc độ (velocity goal) của đội</li>
+<li>trao đổi với data analyst để cập nhật tất cả các chỉ số then chốt mà đội đang theo dõi, để cô ấy có thể báo cáo tóm tắt cho đội, có thể kèm phân phát báo cáo</li>
+<li>thu thập dữ liệu về bất kỳ bài test nào đã kết thúc</li>
+<li>đánh giá tổng quan hoạt động và kết quả của tuần trước, bao gồm tóm tắt các phát hiện về cả tác động tích cực lẫn tiêu cực đối với tăng trưởng được phát hiện qua các thử nghiệm</li>
+<li>tổng hợp các thông tin này và đưa vào chương trình họp (agenda) — một tài liệu "sống" được chia sẻ với đội từ trước. Một số đội lưu tài liệu này dưới dạng tệp trên đám mây, chẳng hạn Google Docs hay Dropbox, trong khi số khác dùng một trang wiki nội bộ trên phần mềm như Google Sites, Confluence, hoặc intranet của công ty.</li>
+</ul>
+
+<p>Vào ngày họp, growth team cùng nhau ngồi lại trong một giờ và đi lần lượt qua chương trình họp chuẩn dưới đây. Hãy nhớ rằng growth lead chịu trách nhiệm giữ cho đội bám sát chương trình họp này cũng như điều hành buổi họp nói chung.</p>
+
+<table>
+<thead><tr><th>Thời lượng</th><th>Nội dung</th></tr></thead>
+<tbody>
+<tr><td>15 phút</td><td>Xem xét chỉ số và cập nhật lĩnh vực trọng tâm</td></tr>
+<tr><td>10 phút</td><td>Xem lại hoạt động test tuần trước</td></tr>
+<tr><td>15 phút</td><td>Bài học then chốt từ các thử nghiệm đã phân tích</td></tr>
+<tr><td>15 phút</td><td>Chọn các bài test tăng trưởng cho chu kỳ hiện tại</td></tr>
+<tr><td>5 phút</td><td>Kiểm tra mức tăng của idea pipeline</td></tr>
+</tbody>
+</table>
+
+<h3>15 phút: Xem xét chỉ số và cập nhật lĩnh vực trọng tâm (Metrics Review and Update Focus Area)</h3>
+<p>Growth lead xem lại dữ liệu mới nhất của North Star metric và các chỉ số tăng trưởng then chốt khác, chẳng hạn tiến độ của các mục tiêu tăng trưởng ngắn hạn trong lĩnh vực trọng tâm của đội. Ví dụ, đội app siêu thị có thể xem lại doanh thu trung bình trên mỗi người mua trong tuần, số người mua hoàn tất đơn hàng, v.v. Việc này giúp mọi người nắm rõ mọi thứ đang diễn ra tốt hay không, điều gì đang hiệu quả trong doanh nghiệp, và điều gì có thể tốt hơn.</p>
+<p>Ngoài ra, growth lead sẽ nêu bật các thông tin sau:</p>
+<ul>
+<li><strong>Các yếu tố tích cực then chốt (Key Positive Factors):</strong> Những cải thiện về chỉ số đến từ các thử nghiệm, hoặc có thể từ các yếu tố khác nằm ngoài phạm vi công việc của đội — chẳng hạn tỷ lệ đặt lại hàng được cải thiện sau khi triển khai ý tưởng danh sách mua sắm trong app siêu thị, hoặc một làn sóng người dùng app mới đến từ một chương trình khuyến mãi tại cửa hàng do đội marketing thực hiện.</li>
+<li><strong>Các yếu tố tiêu cực then chốt (Key Negative Factors):</strong> Những sụt giảm hiệu quả và việc xem xét các vấn đề đang kìm hãm tăng trưởng — chẳng hạn nếu số người dùng app siêu thị giảm đáng kể, hoặc tỷ lệ mua hàng sụt xuống, hoặc một đợt đẩy mạnh marketing đã lên kế hoạch cho app đang hoạt động kém hiệu quả hay bị trì hoãn.</li>
+<li><strong>Lĩnh vực trọng tâm tăng trưởng (Growth Focus Area):</strong> Đội đang tập trung vào phần nào của trải nghiệm người dùng hay growth lever nào? Có mục tiêu ngắn hạn nào đội cần hướng tới không? Nếu trọng tâm giữ nguyên, đây chỉ là một bước xác nhận đơn giản. Nếu trọng tâm thay đổi — chẳng hạn chuyển từ thu hút người dùng (acquisition) sang retention hay monetization (kiếm tiền) — thì cần thảo luận về lĩnh vực trọng tâm mới và lý do đằng sau sự thay đổi. Các mục tiêu ngắn hạn phục vụ những mục tiêu này cũng nên được ghi nhận, chẳng hạn mục tiêu ngắn hạn là đạt một tỷ lệ phần trăm nhất định người dùng app lưu mặt hàng vào danh sách mua sắm.</li>
+</ul>
+
+<h3>10 phút: Xem lại hoạt động test tuần trước (Review Last Week's Testing Activity)</h3>
+<p>Xem lại kết quả các nỗ lực của tuần trước, bao gồm đánh giá về:</p>
+<ul>
+<li><strong>Nhịp độ (Tempo):</strong> số thử nghiệm đã triển khai trong tuần trước so với mục tiêu nhịp độ của đội.</li>
+<li><strong>Có bao nhiêu bài test trong hàng đợi "Up Next" chưa được triển khai trong tuần trước:</strong> phần thảo luận này nên giải thích lý do các bài test bị trì hoãn.</li>
+</ul>
+
+<h3>15 phút: Bài học then chốt từ các thử nghiệm đã phân tích (Key Lessons Learned from Analyzed Experiments)</h3>
+<p>Growth lead và data analyst, cùng với bất kỳ người sở hữu thử nghiệm cụ thể nào — chẳng hạn product manager đang dẫn dắt việc phát triển một tính năng mới — điểm qua kết quả sơ bộ từ các bài test đã triển khai, cũng như kết quả cuối cùng của những thử nghiệm đã được phân tích đầy đủ. Họ trả lời mọi câu hỏi, tiếp nhận đề xuất phân tích thêm, và hệ thống hoá đánh giá của đội về thử nghiệm cũng như hàm ý của nó đối với các hành động tiếp theo, hoặc không có hành động nào.</p>
+
+<h3>15 phút: Chọn các bài test tăng trưởng cho chu kỳ hiện tại (Select Growth Tests for Current Cycle)</h3>
+<p>Đội thảo luận các đề cử cho bộ bài test tiếp theo sẽ triển khai. Growth lead đề nghị mỗi thành viên trình bày ngắn gọn tổng quan về các ý tưởng mình đã đề cử, tiếp theo là một cuộc thảo luận ngắn trong đội về giá trị của các thử nghiệm đó. Mục tiêu là đạt đồng thuận, nhưng nếu có bất đồng, growth lead sẽ đưa ra quyết định cuối cùng. Các thử nghiệm sau đó được giao cho các thành viên với tư cách "người sở hữu" (owner) của từng thử nghiệm, chịu trách nhiệm đưa bài test đi vào triển khai. Growth lead sẽ chỉ định owner dựa trên chuyên môn của thành viên phù hợp nhất để quản lý thử nghiệm. Ví dụ, một tính năng sản phẩm mới sẽ được giao cho product manager, trong khi một chiến dịch quảng cáo video mới có thể được giao cho thành viên marketing, v.v. Những thử nghiệm được đánh giá là đáng kiểm thử nhưng không thể sẵn sàng kịp cho chu kỳ tuần tới sẽ được xếp lịch vào một ngày trong tương lai, chờ thông tin từ các đội liên quan về việc họ cần bao lâu để chuẩn bị bài test cho việc triển khai.</p>
+
+<h3>5 phút: Kiểm tra mức tăng của idea pipeline (Check Growth of Idea Pipeline)</h3>
+<p>Growth lead báo cáo về số ý tưởng đang chờ được xem xét hoặc đã được gắn thẻ để triển khai trong tương lai. Nếu khối lượng ý tưởng đang giảm, growth lead nên thúc đẩy đội bổ sung thêm ý tưởng trong tuần tới. Ghi nhận những người đóng góp nhiều nhất của tuần trước là một cách tuyệt vời để truyền cảm hứng cho đội tiếp tục duy trì dòng chảy ý tưởng mới mẻ.</p>
+
+<hr class="divider">
+
+<h2>Tăng trưởng chỉ trong vài tuần (Growth Within Weeks)</h2>
+
+<p>Tốc độ mà quy trình growth hacking có thể tạo ra những cải thiện đáng kể thật đáng kinh ngạc. Đôi khi một hack có thể đi từ mầm mống của một ý tưởng tới một động lực tăng trưởng chỉ với khoảng hai tuần làm việc, kể cả thời gian dành cho phân tích dữ liệu chuẩn bị và buổi họp đội đầu tiên.</p>
+
+<div class="case">
+<div class="case-title">Case: Kết quả của đội app siêu thị sau những tuần đầu</div>
+<p>Ví dụ, đội làm app di động siêu thị hoàn toàn có thể có được kết quả kết luận được từ hai thử nghiệm đã chọn cho tuần test đầu tiên, một trong số đó có thể ủng hộ việc triển khai một cải thiện đáng kể cho app, có thể được thiết kế và triển khai gần như ngay lập tức. Giả sử số khách truy cập chuyển đổi thành người mua lần đầu tăng khoảng 15% nhờ ưu đãi đặc biệt 10 đô-la cho lần mua đầu tiên. Kết quả mạnh mẽ này khiến growth team đưa ưu đãi 10 đô-la thành một phần của trải nghiệm đầu tiên của mọi người dùng mới trong app, và mức cải thiện chuyển đổi 15% được duy trì, mang lại hàng trăm nghìn đô-la doanh thu mới từ những người mua lần đầu trên app.</p>
+<p>Thông qua thành công của thử nghiệm đơn giản này, đội cũng có thể có một phát hiện quan trọng dẫn tới một hack tốt khác để thử. Có thể khi xem xét kỹ kết quả, đội nhận thấy giá trị đơn hàng trung bình của những người mua mới nhỏ hơn mức trung bình chung của người dùng. Vì vậy, đội có thể quyết định thử một số thử nghiệm nhằm tăng giá trị các đơn hàng của những người mua lần đầu này. Ví dụ, họ thêm vào pipeline ý tưởng đưa ra mức giảm giá luỹ tiến (scaling discount) — người mua lần đầu mua càng nhiều thì được giảm càng lớn.</p>
+<p>Một trong những điều tuyệt vời về growth hacking là ngay cả những thử nghiệm thất bại cũng có thể dẫn tới những bài học quan trọng trong một khung thời gian cực kỳ ngắn. Giả sử thử nghiệm còn lại chứng tỏ là thất bại: việc tăng độ hiển thị của ưu đãi miễn phí giao hàng cho đơn từ 50 đô-la được phát hiện là không làm tăng khối lượng hàng hoá được mua. Đội có thể đặt giả thuyết rằng có lẽ 50 đô-la là ngưỡng quá cao và quyết định thêm vào pipeline một bài test để chạy tuần tới: ưu đãi miễn phí giao hàng cho đơn từ 40 đô-la. Có thể điều đó cũng không làm tăng đáng kể giá trị đơn hàng, nhưng nếu họ tiếp tục test, có thể chỉ một tuần nữa họ sẽ phát hiện rằng mức đơn tối thiểu 35 đô-la mới là thứ phát huy tác dụng. Chỉ trong hai tuần nữa, đội đã học được cách mạnh mẽ thứ hai để thúc đẩy tăng trưởng của app.</p>
+</div>
+
+<p>Giờ đây, khi bạn đã giải xong bài toán dữ liệu, đã tập hợp được đội ngũ và nắm vững quy trình growth hacking, đã đến lúc bước vào phần cẩm nang (playbook) của <em>Hacking Growth</em>. Trong Phần II, chúng tôi sẽ dành mỗi chương cho một đòn bẩy tăng trưởng chính — thu hút người dùng (acquisition), kích hoạt (activation), giữ chân (retention) và kiếm tiền (monetization) — và chia sẻ với bạn những chiến lược và hack mà growth team có thể dùng để mở khoá tăng trưởng mới trong từng lĩnh vực. Trên đường đi, chúng tôi cũng sẽ chia sẻ thêm nhiều câu chuyện từ các growth team thành công, cách họ khám phá và giải quyết để đạt những chiến thắng lớn trong từng lĩnh vực, đồng thời theo dõi tiến trình của đội app siêu thị để dẫn dắt bạn từng bước qua việc áp dụng quy trình growth hacking trong mỗi lĩnh vực.</p>
+
+<hr class="divider">
+
+<h2>Điểm chính của chương</h2>
+<ul>
+<li>Công ty học nhanh nhất sẽ tăng trưởng nhanh nhất; phần lớn thử nghiệm thất bại, nên khối lượng và nhịp độ test là yếu tố quyết định, và các chiến thắng nhỏ cộng dồn thành lợi thế lớn (5% chuyển đổi mỗi tháng ≈ 80% sau một năm).</li>
+<li>Bắt đầu chậm rồi tăng tốc; vận hành theo chu trình bốn bước Phân tích → Lên ý tưởng → Ưu tiên → Kiểm thử, mỗi vòng một đến hai tuần.</li>
+<li>Mỗi ý tưởng gửi theo mẫu: Tên, Mô tả (ai/cái gì/ở đâu/khi nào/tại sao/như thế nào), Giả thuyết, Chỉ số cần đo — và được chấm điểm ICE (Impact, Confidence, Ease).</li>
+<li>Điểm số là kim chỉ nam, không phải phán quyết tuyệt đối: một ý tưởng Impact chỉ 4/10 từng tạo ra mức tăng 700%.</li>
+<li>Hai luật kiểm thử: dùng độ tin cậy thống kê 99%, và khi kết quả không rõ ràng thì phiên bản đối chứng thắng.</li>
+<li>Mọi kết quả được ghi vào test summary và knowledge base có thể tìm kiếm, đồng thời được truyền thông rộng rãi trong công ty.</li>
+<li>Growth meeting hằng tuần kéo dài một giờ với agenda cố định 15–10–15–15–5 phút, không dùng để brainstorm.</li>
+</ul>
+
+<nav class="chapnav">
+  <a href="/hacking-growth/xac-dinh-don-bay-tang-truong"><span class="lbl">Chương trước</span>Chương 3: Xác Định Đòn Bẩy Tăng Trưởng</a>
+  <a href="/hacking-growth/hacking-acquisition"><span class="lbl">Chương sau</span>Chương 5: Hacking Acquisition — Thu Hút Khách Hàng</a>
+</nav>
+
+</body>
+</html>

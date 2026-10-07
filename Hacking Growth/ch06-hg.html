@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 6: Hacking Activation — Kích Hoạt Người Dùng — Hacking Growth</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+/* Thành phần riêng của sách — chỉ dùng token có sẵn trong theme.css */
+.callout{background:#fff;border:1px solid var(--color-dew);border-left:4px solid var(--color-sprout);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.callout .callout-title{font-weight:700;color:var(--color-sprout-dark);margin-bottom:6px}
+.callout p:last-child,.callout ul:last-child,.callout ol:last-child{margin-bottom:0}
+.case{background:var(--color-dew);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.case .case-title{font-weight:700;margin-bottom:6px}
+.case p:last-child,.case ul:last-child{margin-bottom:0}
+.figure-note{border:1px dashed var(--color-mist);border-radius:var(--radius-chapter-row);padding:14px 18px;margin:22px 0;color:var(--color-ash);font-size:.95rem}
+.figure-note .figure-title{font-weight:700;color:var(--color-slate-ink);margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<p class="book-topline"><a href="/hacking-growth">← Về mục lục</a></p>
+
+<div class="book-label">Hacking Growth · Sean Ellis &amp; Morgan Brown · Phần II · Chương 6</div>
+<h1>Hacking Activation — Kích Hoạt Người Dùng</h1>
+<p class="chapter-subtitle">Lập bản đồ đường đến aha moment, đọc funnel, khảo sát người dùng, loại bỏ friction và dùng trigger đúng cách để biến người mới thành người dùng thực sự.</p>
+
+<p>Giờ đây, khi bạn đã dày công thu hút được ngần ấy khách hàng tiềm năng, làm thế nào để khiến họ thực sự sử dụng sản phẩm — hay theo cách nói của giới growth hacking, làm thế nào để <strong>kích hoạt (activate)</strong> họ? Đáng tiếc là đây lại là việc mà rất nhiều công ty làm sai; trên thực tế, 98% lưu lượng truy cập vào các website không dẫn đến activation, và phần lớn các ứng dụng di động mất tới 80% người dùng chỉ trong vòng ba ngày.</p>
+
+<p>Về bản chất, cải thiện activation là tăng tỷ lệ người dùng mới được đưa tới <strong>aha moment</strong> (khoảnh khắc "à, ra thế!" khi họ nhận ra giá trị cốt lõi của sản phẩm). Càng nhiều khách truy cập trải nghiệm được điều khiến sản phẩm của bạn trở thành must-have (thứ không thể thiếu), thì càng nhiều người trong số họ sẽ gắn bó với bạn. Quy trình growth hacking cung cấp một chuỗi bước chặt chẽ để đào sâu vào những trở ngại ngăn cản trải nghiệm aha, rồi thử nghiệm các "hack" nhằm cải thiện activation. Không có một công thức duy nhất nào để cải thiện activation; nỗ lực của bạn phải được may đo riêng cho sản phẩm của mình, và ý tưởng thử nghiệm phải được khơi nguồn từ việc phân tích chính dữ liệu của bạn. May mắn thay, quy trình growth hacking cung cấp sẵn "cẩm nang" (playbook) giúp bạn đi tới đích.</p>
+
+<p>Trong chương này, trước hết chúng tôi sẽ giới thiệu ba bước thiết yếu mà mọi growth team phải thực hiện để xác định những thử nghiệm activation có tác động lớn nhất. Sau đó, chúng tôi sẽ trình bày một loạt best practice (thực tiễn tốt nhất) để tăng activation, vốn đã được các công ty tăng trưởng nhanh áp dụng với hiệu quả rất lớn. Phần cuối chương dành riêng để bàn về một trong những chiến thuật hiệu quả nhất nhưng cũng hay bị lạm dụng nhất: sử dụng <strong>trigger</strong> — những lời nhắc thúc giục người dùng quay lại tương tác với sản phẩm. Chúng tôi sẽ giới thiệu mọi ngóc ngách của công việc khá "dính tay" là làm sao dùng trigger cho đúng.</p>
+
+<hr class="divider">
+
+<h2>Lập bản đồ đường đến aha moment (Mapping the Route to the Aha Moment)</h2>
+
+<p>Bước đầu tiên trong hacking activation là xác định từng điểm trên hành trình của khách hàng hướng tới aha moment. Chúng tôi giả định rằng bạn đã xác định được — trong quá trình biến sản phẩm thành must-have — khoảnh khắc kỳ diệu ấy là gì. Để thấy cách tạo bản đồ các điểm dọc đường đi, hãy dùng lại ví dụ ứng dụng đi chợ (grocery app). Như bạn có thể còn nhớ từ Chương 3, nhóm đã xác định rằng trải nghiệm aha đến khi người mua nhận ra họ có thể dùng ứng dụng để đặt hàng tạp hoá một cách dễ dàng và nhanh chóng ngay khi đang di chuyển, trong những khoảng thời gian chen giữa khi họ có chút rảnh rỗi, hoặc khi họ chợt nghĩ tới hay sực nhớ ra một món đồ cần mua trong lúc đang bận rộn với cuộc sống hằng ngày.</p>
+
+<p>Việc tiếp theo nhóm cần làm là liệt kê tất cả các bước mà người dùng mới phải trải qua để có được trải nghiệm này: họ cần tải ứng dụng; tìm những món muốn mua; thêm chúng vào giỏ hàng; tạo tài khoản bằng cách nhập tên, thẻ tín dụng và thông tin giao hàng; rồi thực hiện việc mua. Và để trải nghiệm thực sự trở thành must-have, họ còn phải nhận được đơn hàng đầy đủ tại nhà đúng như kỳ vọng.</p>
+
+<p>Chỉ cần đọc qua các bước này, bạn đã có thể nghĩ ra rất nhiều cách khiến người dùng mất hứng hoặc bực bội và thoát khỏi ứng dụng thay vì mua hàng. Ứng dụng có thể chậm đến khó chịu; người dùng có thể thấy việc tìm kiếm món hàng rườm rà; việc tạo tài khoản có thể quá phức tạp. Nhưng trong growth hacking, điều cốt yếu là bạn <strong>không bao giờ được giả định</strong> lý do vì sao người dùng hành xử như vậy; thay vào đó, bạn luôn phải nghiên cứu kỹ dữ liệu cứng về hành vi của họ, rồi đặt câu hỏi cho họ dựa trên những quan sát đã có, để tập trung nỗ lực thử nghiệm một cách hiệu quả nhất vào những thay đổi có tiềm năng tác động lớn nhất. Ngay cả khi bạn nghĩ mình đã hiểu rõ những rào cản đối với activation, câu chuyện thật có thể khiến bạn khá bất ngờ.</p>
+
+<p>Khi đã xác định được các bước dẫn đến aha moment, bước tiếp theo để khoanh vùng những chỗ khách hàng vấp ngã và tìm ra điều gì khiến họ bỏ chạy là tính <strong>conversion rate</strong> (tỷ lệ chuyển đổi) cho từng bước trên đường tới aha moment — nói cách khác, là tỷ lệ phần trăm trên tổng số khách truy cập thực hiện được từng bước trên con đường dẫn tới thành công.</p>
+
+<hr class="divider">
+
+<h2>Tạo funnel report về chuyển đổi và rơi rụng (Creating a Funnel Report of Conversions and Drop-offs)</h2>
+
+<p>Một trong những cách tốt nhất để đo conversion rate là thông qua <strong>funnel report</strong> (báo cáo phễu) — công cụ hiển thị tỷ lệ những người đến với sản phẩm của bạn tiếp tục đi qua từng bước then chốt trong hành trình khách hàng (và cũng theo đó, cho thấy họ rơi rụng — drop off — ở đâu). Dưới đây là một ví dụ giả định rất cơ bản do Kissmetrics tạo ra, cho thấy một điểm rơi rụng khá phổ biến giữa lần truy cập đầu tiên và bước đăng ký.</p>
+
+<div class="figure-note"><div class="figure-title">Hình: Một funnel report đơn giản (Funnel Report từ Kissmetrics)</div>Báo cáo phễu cho một sản phẩm giả định, theo dõi tỷ lệ người dùng đi qua lần lượt các bước: truy cập lần đầu (initial visit) → đăng ký (sign-up) → kích hoạt (activation) → thanh toán (billing). Điểm rơi rụng lớn và phổ biến nằm ở khoảng giữa lần truy cập đầu tiên và bước đăng ký.</div>
+
+<p>Dĩ nhiên, những bước mà bạn tính tỷ lệ phần trăm sẽ tuỳ thuộc vào sản phẩm của bạn. Với sản phẩm giả định trên, các bước là: truy cập lần đầu, đăng ký, activation và thanh toán. Với một công ty khác — giả sử Uber — funnel report có thể hiển thị tỷ lệ người tải ứng dụng, rồi tỷ lệ mở ứng dụng, rồi số người tiếp tục tạo tài khoản mới, tỷ lệ người đặt chuyến xe, tỷ lệ người đánh giá tài xế, v.v. Với các doanh nghiệp khác, các bước có thể bao gồm chẳng hạn như mời bạn bè, tải whitepaper (sách trắng), xem video hay ghé thăm cửa hàng bán lẻ. Điểm mấu chốt là dù sản phẩm của bạn là gì, bạn cũng nên theo dõi mọi bước thiết yếu trong hành trình khách hàng dẫn tới khoảnh khắc activation.</p>
+
+<p>Ngoài việc theo dõi conversion rate của các bước hành động then chốt, báo cáo còn nên theo dõi khách truy cập theo con đường hay <strong>kênh (channel)</strong> mà họ đã dùng để đến với sản phẩm — dù là từ tìm kiếm Google hay AdWords, từ Facebook hay Twitter, từ quảng cáo banner trực tuyến, từ giới thiệu của khách hàng, v.v. Những khác biệt đáng ngạc nhiên về tỷ lệ activation giữa các kênh có thể dẫn tới những phát hiện có tác động lớn, khiến bạn phải quay lại và thử nghiệm lại một số kênh acquisition mà bạn đã khoanh vùng theo các bước ở chương trước. Khi đã có dữ liệu này, bạn sẽ tìm kiếm sự khác biệt giữa khách hàng đang hoạt động, những người đã kích hoạt nhưng sau đó "nguội lạnh", và những người chưa bao giờ kích hoạt, tức là đã "bounce" (thoát ra ngay). Về bản chất, báo cáo này cho bạn một cái nhìn tổng quan chi tiết về những điểm vướng mắc của khách hàng đến từ từng kênh, và có thể được dùng để cải thiện tỷ lệ chuyển khách hàng mới thành khách hàng hoạt động.</p>
+
+<p>Hãy xem nhóm grocery app tiến hành ở giai đoạn này của quy trình ra sao. Data analyst (chuyên viên phân tích dữ liệu) trong growth team sẽ tạo một funnel report tính toán tỷ lệ tải và mở ứng dụng, tỷ lệ người tìm kiếm món hàng để mua, tỷ lệ người thêm món vào giỏ hàng, và cuối cùng là tạo tài khoản và mua hàng. Ngoài ra, họ cũng sẽ theo dõi các bước bổ sung quan trọng, chẳng hạn tỷ lệ người kích hoạt bất kỳ ưu đãi hay khuyến mãi đặc biệt nào, như ưu đãi giảm 10 đô-la cho lần mua đầu tiên mà chúng tôi đã mô tả nhóm thử nghiệm trước đây. Giả sử nhóm đã tiến hành xây dựng tính năng danh sách mua sắm (shopping list) — như đã nói, đó là một thử nghiệm họ đưa vào lịch phát triển — và tính năng này đã ra mắt được vài tháng. Họ cũng sẽ muốn tính tỷ lệ người thêm món vào danh sách và tỷ lệ người sau đó tiếp tục mua toàn bộ danh sách đó.</p>
+
+<p>Thông thường, các activation funnel report này có thể rất đơn giản, miễn là nhóm của bạn đã thực hiện các bước được nêu trong Chương 3 để định nghĩa đúng các chỉ số (metric) và thiết lập cách theo dõi chúng. Nhiều gói phần mềm phân tích như Kissmetrics, Mixpanel, Google Analytics và Adobe Omniture SiteCatalyst cung cấp khả năng tạo các phễu này dựa trên những sự kiện (event) cụ thể, cùng nhiều công cụ trực quan hoá và theo dõi phễu sáng tạo, hữu ích. Những lúc khác, mọi thứ có thể phức tạp hơn một chút, đặc biệt nếu activation funnel của bạn cần được tạo bằng cách kết hợp nhiều nguồn dữ liệu. Nhưng một chuyên gia dữ liệu sẽ có thể xác định đúng các nguồn dữ liệu cần truy vấn và xây dựng funnel report kể cả khi dữ liệu nằm ở những nơi khác nhau (thêm một lý do nữa vì sao growth team nào cũng cần một data analyst!).</p>
+
+<p>Khi ngồi xuống xem xét dữ liệu, nhóm có một loạt quan sát thú vị. Họ biết được rằng một số lượng lớn người dùng ứng dụng thêm món vào giỏ hàng rồi rời đi trước khi nhập thông tin thẻ tín dụng. Họ cũng thấy khá nhiều người dùng không tìm kiếm nhiều món hàng, và những người mua sắm tích cực nhất trong tuần đầu tiên sau khi tải ứng dụng đều đã xem khá nhiều món hàng trong lần truy cập đầu tiên. Cuối cùng, họ nhận thấy một tỷ lệ lớn khách truy cập dùng tính năng shopping list để thêm món vào đó đã tiếp tục mua những món ấy, và nhiều người trong số những người mua đó trở thành khách mua lặp lại.</p>
+
+<p>Với dữ liệu này trong tay, rõ ràng một vật cản lớn là trải nghiệm thanh toán (checkout). Vì thế nhóm sẽ muốn cân nhắc các thử nghiệm giúp việc checkout dễ hơn, có thể bằng cách thử một thiết kế biểu mẫu thanh toán mới dễ hơn hoặc nhanh hơn để hoàn tất. Vì lượng tìm kiếm thấp ở người dùng mới, họ cũng nên cân nhắc các thử nghiệm nhằm khuyến khích người truy cập lần đầu xem nhiều món hơn, có thể bằng cách giúp tìm kiếm món hàng dễ hơn ngay từ màn hình chính của ứng dụng, hoặc làm việc tìm kiếm hấp dẫn hơn bằng cách làm nổi bật các ưu đãi đặc biệt cho nhiều sản phẩm, hoặc giới thiệu nổi bật một số khu vực của ứng dụng (chẳng hạn một màn hình "sản phẩm phổ biến nhất") để người dùng khám phá.</p>
+
+<p>Vậy là họ có rất nhiều lựa chọn. Nhưng trước khi bắt đầu thử nghiệm, còn một bước nữa trong quá trình khám phá dữ liệu. Họ phải "ra ngoài thực địa" và thực hiện một số khảo sát (survey) và phỏng vấn để đào sâu vào lý do đằng sau những hành vi người dùng mà dữ liệu đã hé lộ. Điều này sẽ giúp họ thu hẹp trọng tâm rất nhiều và nghĩ ra những hack có tiềm năng cao nhất để thử.</p>
+
+<div class="case"><div class="case-title">Case: Qualaroo và ngưỡng 50 phản hồi khảo sát</div>
+<p>Growth team ở Qualaroo — công ty khảo sát trực tuyến do Sean sáng lập — cũng đã đi theo đúng quy trình này để nghĩ ra các ý tưởng hack nhằm tăng activation. Bằng cách phân tích sâu dữ liệu người dùng, tìm kiếm sự khác biệt trong trải nghiệm giữa những người dùng Qualaroo miễn phí rồi mua với những người dùng thử sản phẩm nhưng cuối cùng không mua, chúng tôi phát hiện rằng hầu hết những người cuối cùng mua hàng đều đã chạy các khảo sát thử thu được ít nhất 50 phản hồi. Biết rằng aha moment của sản phẩm là nhận được phản hồi người dùng có thể hành động được (actionable) từ khảo sát, chúng tôi xác định 50 phản hồi khảo sát chính là điểm bùng phát (tipping point) mà sau đó giá trị của khảo sát trở nên rõ ràng.</p>
+<p>Vì vậy, để đưa nhiều người dùng hơn tới aha moment, chúng tôi đã thử nhiều thử nghiệm nhằm tăng khả năng người dùng thử mới nhận được ít nhất 50 phản hồi cho một khảo sát. Trong đó có nhiều nỗ lực nhằm cải thiện việc giáo dục khách hàng về những khảo sát nên chạy — thông qua nội dung email mới mà chúng tôi viết, cũng như qua các video hướng dẫn về các loại khảo sát nên chạy để thu thập thông tin về những vấn đề cụ thể, kèm gợi ý nên đặt khảo sát ở đâu. Chúng tôi cũng thay đổi bộ khảo sát được đề xuất cho người dùng mới, chuyển sang những khảo sát có phạm vi sử dụng rộng hơn và thu hút tỷ lệ phản hồi cao hơn, chẳng hạn khảo sát Net Promoter Score (NPS). Cuối cùng, tôi (Sean) giao cho đội customer success (thành công khách hàng) chủ động liên hệ với khách truy cập để chia sẻ mẹo triển khai khảo sát. Tất cả các thử nghiệm này kết hợp lại đã giúp tỷ lệ activation của khách hàng tăng vọt — ngay cả khi chúng tôi tăng giá sản phẩm lên gấp ba!</p>
+</div>
+
+<hr class="divider">
+
+<h2>Nên và không nên khi khảo sát (Survey Dos and Don'ts)</h2>
+
+<p>Hẳn bạn đã từng gặp những pop-up khảo sát khách hàng bật lên trong một ứng dụng hay website ngay khi bạn đang lướt xem, hoặc đang trên đường mua một thứ gì đó. Chúng có thể là công cụ khám phá rất hiệu quả cho growth hacker, nhưng cũng có thể khá phiền toái với người dùng. Để có được những câu trả lời hữu ích nhất mà vẫn đảm bảo khảo sát không làm khách hàng mất hứng, khảo sát phải thật ngắn gọn, và nên được hiển thị cho người dùng trong hai điều kiện chính: (1) khi hoạt động của họ cho thấy sự bối rối, chẳng hạn nán lại quá lâu ở một trang, hoặc rời khỏi màn hình hay trang trên ứng dụng hoặc website; hoặc (2) ngay sau khi họ đã thực hiện bước mà nhiều người khác không thực hiện, chẳng hạn tạo tài khoản hay mua hàng. Cả hai cách đều có thể mang lại những insight giá trị về lý do khách hàng quyết định đi tiếp bước tiếp theo — hoặc không.</p>
+
+<p>Chúng tôi khuyên chỉ nên hỏi tối đa một hoặc hai câu, có thể là câu hỏi mở hoặc đưa ra một bộ đáp án để chọn. Chúng tôi thiên về câu hỏi mở hơn, vì chúng không ép người trả lời vào những định kiến có sẵn của bạn về vấn đề mà người dùng đang gặp phải. Để họ trả lời bất cứ điều gì họ muốn chia sẻ sẽ cho phép họ khiến bạn bất ngờ. Ví dụ, có thể nhóm grocery app nghĩ rằng lý do hiển nhiên khiến người mua không checkout là biểu mẫu thanh toán quá phức tạp. Nhưng phản hồi khảo sát có thể tiết lộ rằng một yếu tố lớn hơn là người mua không chắc mình có bị tính phí giao hàng hay không, hoặc có lẽ họ quên mã cần nhập để nhận ưu đãi dành cho người mua lần đầu. Đây là loại thông tin định tính (qualitative) không thể rút ra chỉ từ dữ liệu cứng, và đó là lý do khảo sát khách hàng là một mảnh ghép quan trọng như vậy trong quy trình.</p>
+
+<p>Để có được thông tin này, nếu bạn có thông tin liên hệ của những khách hàng đó, bạn chỉ cần gửi email hoặc gọi điện để hỏi họ những câu hỏi này theo kiểu "nói chuyện trực tiếp".</p>
+
+<p>Với những người đã lướt xem rồi bỏ đi mà không để lại thông tin liên hệ nào, có thể lập trình một khảo sát bật lên đúng lúc hành vi duyệt web cho thấy họ sắp rời khỏi một trang hoặc màn hình (các công ty như Bounce Exchange, Qualaroo, Qualtrics và những công ty khác cung cấp công cụ làm được việc này). Bạn sẽ ngạc nhiên khi thấy có bao nhiêu người dừng lại trả lời câu hỏi của bạn trước khi rời đi (và giữ khảo sát càng ngắn càng tốt sẽ chỉ làm tăng tỷ lệ phản hồi). Trong trường hợp này, bạn muốn hỏi điều gì đã ngăn họ tiến lên, với những câu hỏi như:</p>
+<ul>
+<li>Có điều gì đang ngăn bạn đăng ký vào lúc này không?</li>
+<li>Mối lo ngại nào đang khiến bạn chưa hoàn tất đơn hàng?</li>
+<li>Nếu hôm nay bạn không mua hàng, bạn có thể cho chúng tôi biết lý do không?</li>
+<li>Bạn cần thông tin gì để cảm thấy yên tâm đăng ký ngay hôm nay?</li>
+</ul>
+
+<p>Có phần hơi ngược với trực giác, một số thông tin tốt nhất bạn có được về lý do người dùng từ bỏ sản phẩm ở bất kỳ bước nào lại đến từ <strong>những người đã không bỏ cuộc</strong>. Ví dụ, để tìm hiểu vì sao có quá nhiều người vào grocery app mà không hoàn tất việc mua, nhóm nên khảo sát những người vừa mua hàng xong. Suy cho cùng, những người mua này cũng đã gặp phải bất kỳ trở ngại nào đang chặn chân những người khác — và có thể có insight về lý do họ chọn tiếp tục trong khi người khác thì không. Vì vậy nhóm có thể hiển thị một khảo sát ngắn trên màn hình xác nhận đơn hàng, hỏi người mua: "Điều duy nhất suýt khiến bạn không hoàn tất đơn hàng là gì?" Chúng tôi nhận thấy câu hỏi "một điều duy nhất" này thu hút rất nhiều phản hồi, và là những phản hồi rất "mở mắt". Dĩ nhiên, câu hỏi bạn đặt ra sẽ tuỳ thuộc vào điểm rơi rụng mà bạn đang tìm hiểu. Một số câu hỏi khác có thể là:</p>
+<ul>
+<li>Bạn đã mong tìm thấy điều gì trên trang này?</li>
+<li>Trang này có chứa thông tin bạn đang tìm không?</li>
+<li>Hôm nay bạn đến website/ứng dụng của chúng tôi để làm gì?</li>
+<li>Điều gì đã thuyết phục bạn hoàn tất việc mua hàng hôm nay?</li>
+<li>Trên màn hình này, có vẻ như lẽ ra tôi phải có thể…</li>
+<li>Có điều gì trong quy trình thanh toán mà chúng tôi nên cải thiện không?</li>
+</ul>
+
+<p>Khi nhóm grocery đã làm xong tất cả những việc này, họ có trong tay cả dữ liệu lẫn những "lời bình luận sinh động" từ khách hàng cần thiết để đánh giá loạt ý tưởng thử nghiệm đầu tiên. Giả sử họ quyết định ưu tiên hai thử nghiệm để bắt đầu. Vì khảo sát cho thấy khách hàng thường rời đi trước khi mua hàng do không nhớ mã giảm giá, nhóm có thể thử tự động áp mã giảm giá lần đầu của khách vào trang checkout. Thay đổi này không chỉ có khả năng cải thiện kết quả, mà còn nhanh hơn và rẻ hơn đáng kể so với việc thiết kế lại toàn bộ giỏ hàng của ứng dụng.</p>
+
+<p>Bên cạnh đó, dữ liệu cho thấy rất nhiều người thêm món vào shopping list mới đã tiếp tục mua những món đó có thể khiến họ thử nghiệm việc quảng bá tính năng shopping list nổi bật hơn trên màn hình chính của ứng dụng sau khi cài đặt.</p>
+
+<p>Và thế là họ đã bắt đầu lên đường. Nhưng nhiều khả năng họ sẽ phải thử rất nhiều thử nghiệm cho mỗi ý tưởng này, và cả những ý tưởng khác nữa, để tối ưu activation. Hãy luôn nhớ rằng trong growth hacking không có "viên đạn bạc" (giải pháp thần kỳ), và ngay cả những ý tưởng tưởng như "chắc ăn" cũng có thể thất bại.</p>
+
+<hr class="divider">
+
+<h2>Kiên trì rồi bạn sẽ được đền đáp (Be Persistent and You'll Get the Payoff)</h2>
+
+<p>Để minh hoạ những phát hiện bạn có được qua quy trình này thường đáng ngạc nhiên đến mức nào, hãy cùng xem kỹ loạt thử nghiệm mà growth team của HubSpot đã chạy nhằm thúc đẩy việc sử dụng sản phẩm mới Sidekick — một công cụ cho phép nhân viên bán hàng theo dõi hiệu quả các email tiếp cận khách hàng của họ.</p>
+
+<div class="case"><div class="case-title">Case: HubSpot Sidekick — 11 thử nghiệm thất bại trước khi tìm ra lời giải</div>
+<p>Vào thời điểm đó, Sidekick đang gặp một vấn đề phổ biến ở các sản phẩm mới ra mắt: họ thấy mức chấp nhận tự nhiên (organic adoption) mạnh mẽ nhờ truyền miệng, nhưng activation lại ì ạch. Để tìm ra tận gốc lý do khiến tỷ lệ activation chững lại, nhóm Sidekick trước tiên đào sâu vào dữ liệu để tìm sự khác biệt giữa những người dùng thử sản phẩm và gắn bó với nó, và những người cài Sidekick rồi biến mất.</p>
+<p>Họ bắt đầu bằng cách phân khúc (segment) người dùng thành những nhóm có thuộc tính tương tự nhau, khởi đầu với bộ khác biệt chung phổ biến, bao gồm các nguồn traffic khác nhau mà họ đến từ đó, như Google và Facebook. Sau đó họ đi sâu hơn, phân tích người dùng mới theo vai trò công việc, loại email họ gửi, việc họ dùng Sidekick để tìm kiếm khách hàng tiềm năng (sales prospecting), tiếp cận quan hệ công chúng (PR) hay mục đích khác, và dịch vụ email họ dùng, chẳng hạn Gmail hay Outlook. Một phát hiện của họ là những người dùng đăng ký bằng địa chỉ email công việc, thay vì tài khoản email cá nhân, có tỷ lệ activation cao hơn. Vì vậy bước đầu tiên của họ là thử nghiệm cách khiến mọi người dùng email công việc thay vì email cá nhân. (Ở Qualaroo, chúng tôi cũng thấy kết quả tương tự với địa chỉ email không phải email công việc, nên chúng tôi dùng câu chữ trên form đăng ký hướng dẫn người dùng dùng địa chỉ email công việc, và không cho phép đăng ký khi người dùng nhập email có đuôi @gmail.com, @hotmail.com, v.v.)</p>
+<p>Một phát hiện khác là hầu hết những người không trở thành người dùng hoạt động chưa bao giờ gửi quá một email sau khi cài ứng dụng. Để tìm hiểu lý do, nhóm bắt đầu thu thập phản hồi từ những người dùng đã ngừng sử dụng sản phẩm. Và khi làm vậy, họ khá sốc khi phát hiện mọi người nói rằng họ "nhảy tàu" vì không hiểu cách dùng sản phẩm. Nhóm vốn tin chắc rằng ứng dụng cực kỳ dễ hiểu và dễ dùng; thực tế, sau khi được cài đặt, Sidekick chỉ đơn giản là chạy ngầm — nhưng dữ liệu lại kể một câu chuyện khác. Vì vậy họ kết luận rằng nên chạy các thử nghiệm về cách giáo dục người dùng cách sử dụng add-on theo dõi email này.</p>
+<p>Nhóm thử thêm nhiều kiểu giải thích khác nhau vào landing page mà người dùng được đưa tới sau khi cài ứng dụng, thử nghiệm các video minh hoạ cách dùng sản phẩm, và cũng thử hiển thị một mẫu báo cáo mà người dùng sẽ nhận được về hoạt động trên các email đã gửi. Nhưng trước sự ngạc nhiên của họ, từng thử nghiệm một đều không cải thiện được mức độ sử dụng. Nhóm đã chạy tổng cộng 11 thử nghiệm riêng biệt, và vẫn không có gì hiệu quả. Đến lúc này, growth team bối rối quyết định cần lùi lại một bước và lặn sâu vào dữ liệu thêm lần nữa. Có lẽ vấn đề không phải là thiếu giáo dục, mà chìa khoá là đưa mọi người tới aha moment nhanh hơn. Sẽ thế nào nếu, thay vì đưa người dùng tới landing page của ứng dụng sau khi cài đặt, họ chỉ đơn giản hiển thị một thông điệp báo rằng ứng dụng đã được cài đặt thành công và người dùng đã sẵn sàng bắt đầu gửi email? Cuối cùng, thử nghiệm này đã thành công. Thông điệp đó dường như là một trigger rất cần thiết để khiến mọi người thực sự bắt tay vào dùng ứng dụng. Sau đó, vẻ đẹp từ tính hữu dụng của nó sẽ nhanh chóng "đánh trúng" họ. Vì vậy growth team đã thêm thông điệp này, và tỷ lệ activation cải thiện đáng kể.</p>
+<p>Nhưng nhóm không dừng lại ở đó. Họ tiếp tục chạy thêm 68 thử nghiệm nữa; một số thành công, một số không, và nhiều thử nghiệm mang lại thêm những bất ngờ, nhưng tất cả đều tạo ra insight dẫn tới những mức tăng đáng kể về activation — một hình mẫu hoàn hảo của việc làm growth hacking đúng cách.</p>
+</div>
+
+<p>Bài học then chốt ở đây là bạn không thể biết trước thử nghiệm nào sẽ hiệu quả nhất. Điều tốt nhất bạn có thể làm là luôn linh hoạt và dựa trên dữ liệu (data-driven): liên tục điều chỉnh thử nghiệm theo những phát hiện bạn có được, rồi sẵn sàng nhanh chóng thay đổi và thử những cách tiếp cận khác nếu thử nghiệm không diễn ra như giả thuyết.</p>
+
+<p>Mặc dù chắc chắn có một bộ best practice cốt lõi để cải thiện activation — mà chúng tôi sẽ giới thiệu ngay sau đây — bạn nên coi chúng không hẳn là một playbook để làm theo, mà là tập hợp các ví dụ và nguồn ý tưởng khi cân nhắc những thử nghiệm cần thử. Hãy nhớ rằng mỗi sản phẩm mỗi khác, và bạn sẽ không đi được xa nếu chỉ tập trung vào những vấn đề phổ biến nhưng không phải là mấu chốt của điều đang cản trở activation đối với chính khách hàng của bạn.</p>
+
+<div class="callout"><div class="callout-title">Tóm tắt ba bước tìm ý tưởng thử nghiệm activation</div>
+<p>Điểm mấu chốt là: không có đường tắt. Nhưng nếu bạn làm theo ba bước chúng tôi đã nêu ở trên, bạn sẽ nhanh chóng khám phá ra những ý tưởng và insight tạo nên mức tăng activation ngoạn mục cho sản phẩm của mình. Tóm lại, các bước đó là:</p>
+<ol>
+<li><strong>Lập bản đồ</strong> tất cả các bước đưa người dùng tới aha moment.</li>
+<li><strong>Tạo funnel report</strong> mô tả conversion rate của từng bước và phân khúc người dùng theo kênh mà họ đến.</li>
+<li><strong>Thực hiện khảo sát và phỏng vấn</strong> cả những người dùng đã đi qua từng bước có tỷ lệ rơi rụng cao, lẫn những người đã rời đi ở điểm đó, để hiểu nguyên nhân rơi rụng.</li>
+</ol>
+<p>Sau đó, bạn có thể dùng thông tin này để tạo ra những ý tưởng thử nghiệm mới, nhắm mục tiêu cao và có tác động lớn nhằm cải thiện kết quả.</p>
+</div>
+
+<p>Bây giờ hãy cùng xem xét những trở ngại phổ biến nhất đối với activation, và cách thiết kế thử nghiệm cho các hack để tránh chúng.</p>
+
+<hr class="divider">
+
+<h2>Loại bỏ friction (Eradicating Friction)</h2>
+
+<p>Trong thiết kế trải nghiệm người dùng (UX), <strong>friction</strong> (ma sát) là thuật ngữ dùng để chỉ bất kỳ trở ngại gây khó chịu nào ngăn một người hoàn thành hành động họ đang cố thực hiện — chẳng hạn quảng cáo bật lên giữa bài báo bạn đang đọc, hay những chữ cái CAPTCHA bị bóp méo quá mức buộc bạn phải nhập đi nhập lại nhiều lần mới gửi được biểu mẫu. Với một sản phẩm vật lý, như máy pha cà phê, friction có thể là quy trình cài đặt giờ pha tự động phức tạp đến bực mình. Sự khó chịu ghê gớm của friction ai cũng hiểu rõ; có ai chưa từng trải qua nó? Nhưng điều oái oăm là trong khi chúng ta chắc chắn nhận ra friction trong những sản phẩm mình dùng, chúng ta lại thường không nhận ra các nguồn friction trong chính những sản phẩm mà mình tham gia tạo ra hoặc tiếp thị. Có lẽ là vì chúng ta biết quá rõ cách chúng vận hành đến mức não bộ không thể nhìn thấy các trở ngại. Những nhà thiết kế quan sát người khác vấp váp khi dùng sản phẩm họ đã làm ra thường sửng sốt khi thấy mọi người gặp khó khăn đến mức nào.</p>
+
+<p>Đã có rất nhiều sự chú ý dành cho nhu cầu loại bỏ friction khỏi trải nghiệm người dùng của các sản phẩm trực tuyến, vậy mà friction vẫn có mặt ở khắp nơi: từ những form checkout thương mại điện tử bắt bạn tạo tài khoản trước khi mua hàng, tới những pop-up đề nghị bạn chấm điểm hay đánh giá ứng dụng khi bạn còn chưa kịp trải nghiệm nó, cho tới những trường mã ZIP không nhận diện được mã bưu chính gồm cả chữ và số của Canada.</p>
+
+<p>Với mỗi "vòng lửa" khó chịu mà người dùng mới phải nhảy qua, cô ấy lại tự nhủ: "Có đáng không?" — và nếu giá trị sản phẩm của bạn không đủ rõ ràng và hấp dẫn, ngay cả một chút phiền toái nhỏ nhất cũng có thể khiến mọi người bỏ đi, thường là vĩnh viễn.</p>
+
+<p>Sean đã nghĩ ra một công thức đơn giản giúp luôn ghi nhớ tầm quan trọng của việc liên tục tìm cách giảm friction:</p>
+
+<div class="callout"><div class="callout-title">Công thức của Sean Ellis</div>
+<p style="text-align:center;font-weight:700">DESIRE (Mong muốn) – FRICTION (Ma sát) = CONVERSION RATE (Tỷ lệ chuyển đổi)</p>
+</div>
+
+<p>Như công thức ngụ ý, khách truy cập càng khao khát sản phẩm của bạn, họ thường càng sẵn lòng vượt qua nhiều friction hơn. Đó là lý do <strong>early adopter</strong> (người dùng tiên phong) là "món quà trời cho" với những sản phẩm mới hoặc còn non trẻ; họ thường sẵn sàng sử dụng, thậm chí trả tiền cho sản phẩm của bạn ngay cả khi nó còn những lỗi nghiêm trọng. Morgan có một địa chỉ Gmail đáng ghen tị vì trong giai đoạn beta đầu tiên của Gmail, anh sẵn sàng lên eBay đấu giá một lời mời (invite) được săn lùng vào dịch vụ, chỉ để có được địa chỉ Gmail mình muốn. Những khách hàng có mức độ khao khát như thế (cũng có thể coi là một dạng "điên rồ") sẽ sẵn lòng chịu đựng sự bất tiện của lỗi và phiền toái, nhưng số còn lại thì không.</p>
+
+<p>Để cải thiện activation, bạn có thể tăng mong muốn của khách hàng hoặc giảm friction mà họ gặp phải — và làm cho sản phẩm đáng khao khát hơn nhìn chung khó hơn nhiều so với việc phát hiện và loại bỏ các nguồn friction. Nói cách khác, loại bỏ friction là "trái cây ở cành thấp" (việc dễ làm, kết quả nhanh), và đó là lý do nhiều growth team thành công nhất đã dành rất nhiều nỗ lực cho việc này.</p>
+
+<p>Hãy coi funnel conversion report như tấm bản đồ chỉ dẫn tới các nguồn friction trên hành trình khách hàng của bạn. Đôi khi, chỉ cần soi kỹ những điểm rơi rụng lớn là đã lộ ra những trở ngại để bắt đầu thử nghiệm loại bỏ hoặc thiết kế lại. Thời gian tải chậm và giỏ hàng hay lỗi là những ví dụ phổ biến, nhưng điểm friction có lẽ gây nhiều vấn đề nhất thường nằm ngay ở đầu hành trình khách hàng, trong <strong>new user experience (NUX — trải nghiệm người dùng mới)</strong>.</p>
+
+<h2>Tối ưu trải nghiệm người dùng mới (Optimizing the New User Experience)</h2>
+
+<p><strong>Quy tắc thứ nhất</strong> khi thiết kế và tối ưu NUX là coi nó như một cuộc gặp gỡ độc nhất, chỉ diễn ra một lần với sản phẩm của bạn; vì thế, bạn nên nghĩ về nó như một sản phẩm riêng. Điều này có nghĩa là bạn cần chế tác một trải nghiệm đặc biệt cho nó, một trải nghiệm lôi cuốn người dùng tương tác với sản phẩm và trân trọng những gì sản phẩm mang lại. Một lợi ích lớn của việc tạo ra những trải nghiệm tách biệt này — tức là một chuỗi trang hoặc màn hình riêng, nằm bên trong sản phẩm nếu đó là sản phẩm web, hoặc trên website của công ty hay thương hiệu nếu không phải — là nó giúp growth team thử nghiệm NUX dễ hơn, vì họ không phải lo các thử nghiệm của mình ảnh hưởng tới trải nghiệm của người dùng hiện tại.</p>
+
+<p><strong>Quy tắc thứ hai</strong> là landing page đầu tiên của NUX phải đạt được ba điều căn bản: truyền đạt sự liên quan (relevance), thể hiện giá trị (value) của sản phẩm, và đưa ra một lời kêu gọi hành động (call to action) rõ ràng. Bryan Eisenberg, người được nhiều người coi là "bố già" của conversion optimization (tối ưu chuyển đổi), gọi ba yếu tố này là <strong>conversion trinity</strong> (bộ ba chuyển đổi). <em>Relevance</em> là mức độ trang đáp ứng ý định và mong muốn của khách truy cập — đây có phải là thứ họ tìm đến không? <em>Thể hiện giá trị</em> là trả lời ngay lập tức, rõ ràng và súc tích câu hỏi của khách truy cập: "Tôi được lợi gì?" Cuối cùng, <em>call to action</em> đưa ra một bước tiếp theo hấp dẫn để khách truy cập thực hiện. Làm được tất cả những điều này có vẻ hiển nhiên, nhưng đáng tiếc là hầu hết các landing page đều thiếu một trong số, nếu không muốn nói là thiếu tất cả, những yếu tố bắt buộc này.</p>
+
+<div class="callout"><div class="callout-title">Conversion trinity (Bryan Eisenberg)</div>
+<ul>
+<li><strong>Relevance (Liên quan):</strong> trang có khớp với ý định và mong muốn của khách truy cập không — đây có phải thứ họ tìm đến?</li>
+<li><strong>Value (Giá trị):</strong> trả lời ngay, rõ và gọn câu hỏi "Tôi được lợi gì?"</li>
+<li><strong>Call to action (Kêu gọi hành động):</strong> một bước tiếp theo hấp dẫn để khách truy cập thực hiện.</li>
+</ul>
+</div>
+
+<p>Tối ưu những trang này nhìn chung đòi hỏi chạy rất nhiều thử nghiệm với câu chữ: một lần nữa, không chỉ là tagline và call to action, mà cả phần chữ đi kèm hình ảnh và xuất hiện ở các mục con hay ở những vùng xa hơn của trang. Thông điệp ở đây quan trọng bao nhiêu thì thẩm mỹ cũng quan trọng bấy nhiêu. Vì vậy bạn cũng sẽ muốn thử nghiệm kích thước, vị trí và tỷ lệ của cả chữ lẫn hình ảnh. Thử nghiệm việc đơn giản hoá trang, lược bớt chữ và/hoặc hình ảnh, cũng quan trọng, cũng như đôi khi là thêm vào nhiều chữ và/hoặc hình ảnh giải thích hơn.</p>
+
+<p>Tóm lại, mọi yếu tố của NUX đều nên được soi xét để tìm vấn đề, nhưng có hai chiến thuật then chốt gần đây đã chứng tỏ sức mạnh trong việc loại bỏ friction ở rất nhiều loại hình doanh nghiệp và sản phẩm.</p>
+
+<h2>Single sign-on (Đăng nhập một lần)</h2>
+
+<p>Đơn giản hoá quy trình đăng ký là một trong những lĩnh vực then chốt để thử nghiệm, vì thường thì việc giảm lượng thông tin người dùng phải cung cấp ngay từ đầu có thể giúp cải thiện lớn số người chọn đăng ký. Việc này giờ đây trở nên cực kỳ đơn giản, khi Facebook, Twitter, LinkedIn, Google và nhiều nền tảng khác đã cung cấp các ứng dụng đăng nhập đơn giản cho nhà phát triển web và di động, cho phép người dùng của họ đăng nhập bằng tài khoản sẵn có — tính năng được gọi là <strong>single sign-on</strong>, hay còn gọi là <strong>social sign-on</strong>. Công nghệ này có thể là "người thay đổi cuộc chơi" (game changer) trong việc giảm friction ở quy trình đăng nhập: cho phép tạo tài khoản mới chỉ bằng một cú nhấp có thể cải thiện đáng kể conversion rate, đặc biệt trên thiết bị di động, nơi việc nhập dữ liệu có thể đặc biệt khó khăn.</p>
+
+<p>Mặc dù single sign-on thường được dùng phổ biến hơn bởi các công ty cung cấp sản phẩm tiêu dùng, nó cũng có thể hiệu quả với các công ty B2B, như growth team ở Kissmetrics — một công ty phân tích dữ liệu — đã phát hiện khi họ thử nghiệm dùng "Sign Up with Your Google Account" (Đăng ký bằng tài khoản Google) làm lời kêu gọi hành động duy nhất trên trang chủ. Không có lựa chọn nhập email và mật khẩu; hoặc là kết nối với tài khoản Google, hoặc là không gì cả. Và dường như chỉ sau một đêm, theo đồng sáng lập Neil Patel, lượt đăng ký của họ tăng tới 59,4% đầy kinh ngạc. Nhưng như chúng tôi đã cảnh báo trước đó, điều hiệu quả với sản phẩm này có thể hoàn toàn không hiệu quả với sản phẩm khác, và đó là lý do, dù việc thay đổi này hấp dẫn đến đâu, bạn vẫn phải thử nghiệm nó trước. Ở Inman, khi nhóm của Morgan thử nghiệm <em>bỏ</em> single sign-on, họ lại thấy tỷ lệ chuyển đổi tăng 24,8%. Hoá ra khi nói đến growth hack, không có chuyện "một cỡ vừa cho tất cả".</p>
+
+<h2>Lật ngược phễu (Flipping the Funnel)</h2>
+
+<p>Một cách đặc biệt táo bạo để giảm friction đang ngăn khách hàng nhanh chóng trải nghiệm aha moment là <strong>lật ngược phễu (flip the funnel)</strong>, tức là cho phép khách truy cập bắt đầu tận hưởng niềm vui từ sản phẩm của bạn trước khi yêu cầu họ đăng ký. Hello Bar — một công cụ giúp đội ngũ web marketing dễ dàng hiển thị những thông điệp ngắn hạn, quan trọng cho khách truy cập website — đã dùng chiến thuật này để giành một chiến thắng lớn trong việc tăng activation. Họ để người dùng đơn giản là tạo thông điệp Hello Bar trước, và rồi khi nó đã sẵn sàng — tức là sau khi người dùng đã đầu tư thời gian tạo và tuỳ chỉnh thông điệp đầu tiên — công ty mới yêu cầu đăng ký. Activation tăng 52,11%.</p>
+
+<p>Tương tự, Stripe, một công ty thanh toán trực tuyến, cho phép khách hàng lấy một đoạn mã nhỏ và bắt đầu dùng ngay lập tức, chỉ yêu cầu thông tin tài khoản khi đến lúc giao dịch bằng tiền thật. Điều này giúp nhiều khách hàng tiềm năng của họ thử nghiệm sản phẩm hơn — và trải nghiệm aha moment — trước khi cam kết tạo tài khoản. Kỹ thuật này cũng hiệu quả không kém với những sản phẩm không phải web; Warby Parker, thương hiệu kính mắt thời thượng, sẽ gửi cho bất kỳ ai một bộ năm gọng kính trước khi mua để giúp người dùng chọn ra kiểu mình thích trước khi phải cam kết với một cặp cụ thể. Mỗi công ty này đều lật ngược một phần then chốt nào đó của phễu thông thường và loại bỏ friction trong quá trình đó.</p>
+
+<hr class="divider">
+
+<h2>Tối ưu là cuộc giằng co với friction (Optimizing Is a Push and Pull with Friction)</h2>
+
+<p>Thường thì, khi cố cải thiện activation của người dùng mới, bạn có thể phải <em>thêm</em> một chút friction để hướng họ thực hiện các bước tiếp theo. Một ví dụ tuyệt vời về cách cân bằng tinh tế giữa việc dẫn dắt khách hàng qua một quy trình cuối cùng sẽ dẫn tới activation và việc không tạo thêm quá nhiều công sức đến mức khiến họ bỏ đi là loạt thử nghiệm mà Airbnb đã chạy.</p>
+
+<div class="case"><div class="case-title">Case: Airbnb và các sign-up prompt</div>
+<p>Airbnb nhận thấy trong dữ liệu rằng hầu hết khách truy cập đã đăng ký chỉ làm vậy vào phút chót, khi họ sẵn sàng đặt phòng. Nhóm muốn khiến mọi người trở nên active sớm hơn thế, khi họ chỉ mới đang xem phòng, để có thể tìm hiểu về họ cũng như những loại địa điểm và phòng mà họ quan tâm nhất. Bằng cách đó, nhóm có thể tìm cách điều chỉnh tốt hơn những chỗ ở được hiển thị cho mọi người khi cuối cùng họ tìm kiếm với ý định đặt phòng — điều mà nhóm kỳ vọng sẽ làm tăng tỷ lệ đặt phòng và mức độ hài lòng chung khi dùng Airbnb.</p>
+<p>Nhóm bắt đầu với một thử nghiệm rất nhẹ và hơi thô (hãy nhớ, khi ưu tiên thử nghiệm nào để chạy, bắt đầu nhỏ luôn có lợi!), bằng cách thêm một dải nổi bật chạy ngang cuối website với một đoạn chữ ngắn giải thích lợi ích của việc đăng ký. Nếu khách truy cập phớt lờ lời kêu gọi hành động đó, cô ấy sẽ thấy một lời nhắc đăng ký khác ở trang tiếp theo, và ở mọi trang sau đó.</p>
+<p>Kết quả của thử nghiệm đầu tiên rất thú vị. Họ thấy lượt đăng ký tăng khá, nhưng lượt đặt phòng lại giảm. Các lời nhắc dường như đang gây ra friction, khiến một số người dừng lại không tiếp tục tìm kiếm và đặt phòng. Nhưng khi phân tích dữ liệu sâu hơn, họ thấy lượt đăng ký tăng mang lại nhiều lợi ích giá trị, chẳng hạn nhiều lời mời được gửi tới người dùng mới tiềm năng hơn, và người dùng mới thêm nhiều chỗ ở hơn vào tính năng wish list (danh sách mong muốn), từ đó cung cấp thêm thông tin về những đặt phòng mà người dùng mong muốn. Vì vậy nhóm quyết định thử nghiệm tiếp việc giảm friction của các lời nhắc nhằm tìm ra phương án vẹn cả đôi đường: nhiều lượt đăng ký hơn <em>và</em> nhiều lượt đặt phòng hơn.</p>
+<p>Họ tập trung tối ưu cách hiển thị các lời nhắc, bao gồm thiết kế và tần suất xuất hiện. Trong một thử nghiệm, thay vì hiển thị lời nhắc đăng ký ở mọi trang, họ giảm tần suất xuống mỗi năm trang khách truy cập xem. Bằng cách thay đổi tần suất nhắc người dùng đăng ký, họ chỉ mất 4% trong mức tăng tỷ lệ đăng ký và loại bỏ hoàn toàn tác động tiêu cực tới lượt đặt phòng. Nhóm cũng thử thêm nhiều chữ hơn quanh call to action để khuyến khích đăng ký, chèn một lời chứng thực (testimonial) từ một khách hàng Airbnb hài lòng cùng vài dòng về giá trị của việc đăng ký. Ở đây họ gặp một bất ngờ thực sự. Họ phát hiện việc thêm chữ này thực ra lại làm giảm lượt đăng ký, và họ lý giải rằng đó là vì nó thực sự làm người dùng phân tâm. Đây là ví dụ về một dạng friction tinh vi hơn: nó không thực sự được cảm nhận là phiền toái, nhưng vẫn cản trở khách truy cập hay người dùng thực hiện hành động bạn mong muốn. Bạn thực sự chỉ có thể phát hiện liệu loại friction này có tồn tại hay không — và nó đang ảnh hưởng thế nào tới tỷ lệ activation — thông qua thử nghiệm.</p>
+<p>Nhóm Airbnb đã chạy thêm rất nhiều thử nghiệm để tối ưu trải nghiệm này, thử nghiệm mọi chi tiết thiết kế trong các lời nhắc đăng ký, từ màu sắc của thanh đăng ký trên trang chủ tới kiểu dáng các nút trên form đăng ký, và cuối cùng đã tìm ra "điểm ngọt" (sweet spot) giúp cải thiện tỷ lệ đăng ký tổng thể của công ty cùng các chỉ số quan trọng khác.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Sức mạnh của friction tích cực (The Power of Positive Friction)</h2>
+
+<p>Một trong những nghịch lý lớn của việc cải thiện activation là không phải friction nào cũng xấu. "Thả" mọi người vào sản phẩm càng nhanh càng tốt mà không có bối cảnh hay manh mối nào không phải lúc nào cũng tối ưu; đôi khi bạn muốn đặt một chút <strong>positive friction</strong> (friction tích cực) trên đường đi của họ. Tạo positive friction là một nghệ thuật tinh tế: đặt trên con đường của khách truy cập những bước dễ xoay xở, lý tưởng là hấp dẫn, giúp họ hiểu giá trị là gì và đi tới aha moment một cách chắc chắn hơn. Các nhà phát triển videogame đã mài giũa kỹ năng này tới mức hoàn hảo. Họ gặp một thách thức đặc thù trong việc khiến người dùng "nghiện" những trò chơi mới, vì luật chơi phải được giới thiệu (suy cho cùng, người dùng sẽ không bao giờ tới được aha moment — niềm vui khi chơi — nếu họ không biết cách thành công trong trò chơi), và trong nhiều trường hợp, luật lẫn chiến thuật chơi khá phức tạp. Để giải quyết vấn đề, các nhà phát triển đã dựa vào những insight từ nghiên cứu tâm lý học để chế tác những phần giới thiệu lối chơi lôi cuốn tuyệt vời.</p>
+
+<p>Một trong những phát hiện then chốt mà họ dựa vào được nhà tâm lý học Robert Cialdini giới thiệu trong cuốn sách kinh doanh kinh điển <em>Influence: The Psychology of Persuasion</em> (Những đòn tâm lý trong thuyết phục). Trong một số nghiên cứu mà ông dẫn ra, người ta phát hiện rằng một khi con người thực hiện một hành động, dù nhỏ đến đâu, miễn là trải nghiệm đó không nặng nề, họ sẽ có xu hướng thực hiện bất kỳ hành động nào trong tương lai hơn. Ông giải thích rằng đó là vì họ đã tạo ra một dạng <strong>cam kết tâm lý (psychological commitment)</strong> khi thực hiện hành động, và con người có thiên hướng giữ cam kết bằng những hành động tiếp nối sau đó, thường bất kể quy mô của yêu cầu thay đổi thế nào. Các nhà thiết kế game đã khôn ngoan nhận ra rằng thay vì cung cấp hướng dẫn cách chơi, họ phải khiến người chơi cam kết; họ phải khiến người chơi bắt đầu chơi thông qua những bước nhỏ, dễ dàng để định hướng và "lăn bánh".</p>
+
+<p>Các nhà phát triển game cũng dựa vào nhiều insight mạnh mẽ khác từ tâm lý học. Một là nguyên tắc đã được xác lập vững chắc về việc tạo điều kiện (conditioning) để con người thực hiện hành vi bằng cách trao thưởng cho họ. Hai là tận dụng sự thoả mãn to lớn mà con người cảm thấy khi ở trong trạng thái não bộ gọi là <strong>flow</strong> (dòng chảy) — một lý thuyết do nhà tâm lý học Mihaly Csikszentmihalyi tiên phong. Ông chỉ ra rằng con người đạt tới trạng thái tối ưu này khi họ cảm thấy được thử thách vừa đủ bởi nhiệm vụ đang làm; không bị thử thách quá mức đến nỗi thấy bực bội, nhưng cũng đủ thử thách để không thấy chán. Những người đang "ở trong flow" cuốn vào đến mức quên cả thời gian; ba giờ vẽ tranh, viết luận hay code một ứng dụng có thể cảm giác như ngắn hơn nhiều, và người ta ngẩng lên khỏi công việc mà sửng sốt vì thời gian đã trôi qua. Bất kỳ ai từng nghe một người đang chơi videogame nói "Cho tôi thêm mười phút nữa thôi!" — rồi thêm mười phút nữa, rồi lại mười phút nữa — đều biết người chơi game dễ rơi vào flow đến mức nào.</p>
+
+<p>Các nhà thiết kế game kết hợp những hiểu biết này để chế tác trải nghiệm người dùng mới dẫn dắt người chơi nhẹ nhàng vào trò chơi: bắt đầu bằng những thử thách đơn giản có thể làm chủ nhanh chóng, trao thưởng cho mỗi chướng ngại vượt qua, đồng thời giúp người chơi làm quen với luật chơi và môi trường trong quá trình đó. Sau đó họ nâng dần mức độ thử thách cũng như mức độ phần thưởng theo những bước tăng được tinh chỉnh tuyệt khéo (cả hai yếu tố này đều được họ thử nghiệm rất nhiều), để người chơi bị "móc câu" (hooked) và rơi vào flow. Và điều này không chỉ hiệu quả với videogame; các nhà thiết kế nhiều loại sản phẩm trực tuyến khác cũng đã đưa những chiến thuật tương tự vào để tạo ra trải nghiệm người dùng mới giúp tăng mạnh tỷ lệ activation — may đo một loạt hành động để người dùng thực hiện, cho họ thấy sản phẩm hoạt động thế nào, rồi trao một dạng phần thưởng nào đó cho việc làm ấy. Ví dụ, khi Facebook nhắc người dùng mới điền hồ sơ, thêm ảnh của mình và một số thông tin tiểu sử, họ không chỉ thu thập dữ liệu cá nhân có giá trị cho phân tích và bán quảng cáo (dù điều đó cũng đúng), mà còn đang thiết lập cam kết (<em>Mình đã mất ngần ấy thời gian chọn ảnh và viết tiểu sử rồi</em>, ta nghĩ, <em>thì cứ tiếp tục luôn</em>) và mang lại một phần thưởng tâm lý (sự thoả mãn khi có một hồ sơ hoàn chỉnh). Và như bất kỳ ai từng mất hàng giờ trau chuốt hồ sơ Facebook đều biết, quá trình này có gì đó mang lại trạng thái flow vô cùng thoả mãn. Trong quá trình đó, Facebook đưa mọi người tới gần hơn với việc khám phá aha moment, vì giá trị cốt lõi của trang dựa trên việc mọi người tìm thấy bạn bè của mình — điều chỉ làm được khi ai nấy đều đã điền hồ sơ.</p>
+
+<p>Người dùng càng đưa nhiều thông tin vào sản phẩm, cam kết của họ càng tăng, thông qua một khái niệm gọi là <strong>stored value</strong> (giá trị lưu trữ). Giống như gửi tiền vào két an toàn, việc đưa thông tin vào một dịch vụ ngay lập tức tạo ra cảm giác sở hữu cho người dùng, cùng thiên hướng cam kết bồi đắp và duy trì giá trị đó. Vì vậy, dù các lời nhắc yêu cầu thông tin có thể là một nguồn friction, nếu được làm đúng — tức là theo cách mang lại phần thưởng và thông qua những hành động từ từ nâng mức độ cam kết — chúng cũng có thể là chất xúc tác cho activation và tăng trưởng.</p>
+
+<h2>Thiết kế learn flow (Crafting a Learn Flow)</h2>
+
+<p>Mặc dù trải nghiệm người dùng mới đầy rẫy friction, nó cũng đầy rẫy cơ hội. Đó là vì trải nghiệm đầu tiên của mọi người với sản phẩm cũng là lúc họ đang có ý thức cố gắng tìm hiểu nó nhiều nhất. Như Josh Elman, cựu trưởng bộ phận tăng trưởng của Twitter mà chúng ta đã gặp trước đây, nói về trải nghiệm người dùng mới:</p>
+
+<blockquote><p>"Đây là khoảnh khắc của bạn. Bạn có được sự chú ý từ người dùng đó nhiều hơn bất cứ lúc nào bạn sẽ có lại, để cố dạy họ sản phẩm của bạn thực sự là gì. Để thực sự giúp họ hiểu sản phẩm một cách có ý nghĩa." — Josh Elman</p></blockquote>
+
+<p>Nhóm của Elman đã thiết kế một thứ ông gọi là <strong>learn flow</strong> (luồng học) để giúp Twitter tận dụng sự chú ý này. Learn flow, theo định nghĩa của Elman, là một trải nghiệm người dùng mới được thiết kế không chỉ để đăng ký người dùng, mà còn có chủ đích giáo dục người dùng mới về sản phẩm, lợi ích và giá trị của nó, cũng như cách sử dụng nó trong quá trình đó. Thiết kế NUX này tận dụng sự chú ý và kiên nhẫn dồi dào mà người dùng mới dành cho bạn trong lần truy cập đầu tiên để đảm bảo họ đã sẵn sàng cho activation vào lúc hoàn thành. Với Twitter, điều này không chỉ bao gồm việc tạo tài khoản mới, mà còn cho người dùng mới thấy Twitter rốt cuộc là gì. Họ thiết kế một learn flow cho người dùng thấy dòng thời gian (timeline) Twitter hoạt động thế nào, gợi ý các danh mục để theo dõi (như Thời trang, Thể thao và Tin tức), nhắc mọi người theo dõi các tài khoản nổi bật, rồi hoàn thiện hồ sơ. Đến cuối learn flow này, bạn không chỉ đã đăng ký xong dịch vụ, mà còn tuỳ chỉnh hồ sơ và có một news feed Twitter đầy ắp những tin tức bạn quan tâm. Chỉ trong một lần truy cập, Twitter đã khiến bạn cam kết với dịch vụ, trải nghiệm aha moment và xây dựng stored value. Không tệ chút nào cho một lần ghé thăm!</p>
+
+<p>Dĩ nhiên, vì Twitter cung cấp một dịch vụ quá mới lạ, đòi hỏi mọi người hình thành một thói quen mới, nên việc dạy họ về giá trị của việc theo dõi người khác và cách dùng Twitter là điều không thể bỏ qua. Với một số sản phẩm, không cần giải thích như vậy. Chẳng hạn với các website thương mại điện tử, người ta nhìn chung chỉ thực sự muốn bắt đầu lướt xem hàng càng nhanh càng tốt và thường đã có ý niệm khá rõ về thứ mình đang tìm mua, nên hầu như bất kỳ nỗ lực nào khiến họ phải đi qua một quy trình được dàn dựng sẵn đều sẽ bị phản cảm. Với những sản phẩm khác nữa, quyết định có nên yêu cầu người dùng dành chút thời gian đi qua một loạt bước hay không khó đưa ra hơn, vì dù họ có thể đoán sơ bộ cách dùng sản phẩm, việc thu thập một số thông tin từ họ và cho họ thấy một số khía cạnh về cách sản phẩm hoạt động liên quan cụ thể đến họ có thể nâng cao nhận thức của họ về giá trị sản phẩm. Đưa ra quyết định này, dĩ nhiên, đòi hỏi thử nghiệm; Pinterest là một ví dụ tuyệt vời.</p>
+
+<div class="case"><div class="case-title">Case: Pinterest cá nhân hoá NUX trên mobile</div>
+<p>Cũng như Twitter phải giáo dục mọi người về việc một "tweet" chính xác là gì và cái quá trình "tweet" xa lạ kia bao gồm những gì, Pinterest cũng phải giới thiệu với người dùng khái niệm mới lạ về Pin và chỉ cho họ cách tạo Pin. Growth team đã làm việc chăm chỉ để giáo dục người dùng mới: thông qua ba màn hình learn flow trên mobile cho thấy cách khám phá nội dung đã được pin, cách thêm Pin của riêng mình, và cách tạo Board (bộ sưu tập các mục mà người dùng tạo ra để lưu trữ và chia sẻ Pin). Sau khi đi qua ba màn hình đó, người dùng mới được đưa tới một luồng nội dung phổ biến nhất trên Pinterest và từ đó tự khám phá.</p>
+<p>Ai cũng đánh giá đây là một trải nghiệm người dùng đầu tiên vững chắc. Thế nhưng, đúng phong cách growth hacking mẫu mực, nhóm quyết định thử nghiệm để cải thiện nó thêm nữa. Họ nhận ra nội dung phổ biến nhất không phải lúc nào cũng liên quan tới từng người dùng, nên quyết định thử nghiệm một trải nghiệm người dùng mới được cá nhân hoá hơn trên ứng dụng di động. Giờ đây người dùng trước tiên chỉ được cho xem một màn hình, yêu cầu họ chọn năm chủ đề quan tâm muốn theo dõi, chẳng hạn cắm trại, đám cưới, đua xe thể thao hay trang trí nhà cửa. Sau khi họ chọn xong, ứng dụng đưa họ tới một feed chỉ gồm loại nội dung đó, nơi họ có thể tập pin và lưu các mục. Thay đổi này giúp tỷ lệ activation tăng 20% — một chiến thắng lớn.</p>
+</div>
+
+<p>Nếu bạn quyết định đưa vào một chút positive friction, có hai chiến thuật bổ sung đặc biệt đã chứng tỏ khá thành công: <strong>bảng câu hỏi (questionnaire)</strong> và <strong>gamification</strong> (game hoá) trải nghiệm người dùng mới.</p>
+
+<h2>Nghệ thuật của bảng câu hỏi (The Art of the Questionnaire)</h2>
+
+<p>Neil Patel, một chuyên gia hàng đầu về growth hacking, đã nhấn mạnh hiệu quả của việc hỏi người dùng một loạt câu hỏi khi chào đón họ. Đó phải là những câu hỏi được đặt ra rõ ràng vì mục đích phục vụ người dùng tốt hơn; gần giống như một bảng câu hỏi mini. Một ví dụ tuyệt vời mà Patel nêu ra là bảng câu hỏi mà nhà bán lẻ dụng cụ golf trực tuyến Revolution Golf yêu cầu người dùng điền trong quá trình đăng ký — thứ mà công ty cho là đã mang lại mức tăng activation giúp họ đạt doanh thu hằng năm 20 triệu đô-la. Bảng hỏi gồm những câu như giới tính, tuổi của khách truy cập, khoảng cách đánh bóng (driving distance) trung bình, điểm trung bình cho 18 lỗ, và vấn đề lớn nhất với cú swing của họ. Khi Patel thử nghiệm các bảng câu hỏi tương tự với Hello Bar — công ty mà ông sở hữu — ông đã tăng được số lượng lead (khách hàng tiềm năng) tạo ra thêm 281%.</p>
+
+<p>Hỏi khách hàng về sở thích hoặc về những vấn đề họ đang tìm giải pháp ngay lập tức tạo ra một dạng cam kết, vì họ phải đầu tư chút thời gian để trả lời, đồng thời họ đã gây dựng được một kết nối cá nhân sâu sắc hơn với bạn và sản phẩm của bạn. Nó cũng truyền tải tới họ rằng bạn quan tâm đến cá nhân họ và tới việc cung cấp dịch vụ tốt nhất có thể cho họ. Và giống như cách Pinterest onboard người dùng bằng cách cho họ xem những Pin đặc biệt phù hợp với sở thích cá nhân, nó cũng cho phép bạn bắt đầu tuỳ biến trải nghiệm sản phẩm của họ ngay từ lần tiếp xúc đầu tiên.</p>
+
+<p>Chiến thuật này hiệu quả nhất khi khách hàng thấy rõ rằng việc tuỳ biến sản phẩm theo nhu cầu và mong muốn của họ sẽ có lợi cho chính họ. Trong thời đại mà mọi người ngày càng e sợ Big Data (hay như một số người nghĩ, "Big Brother" — kẻ theo dõi), việc tuỳ biến không phải lúc nào cũng là điểm cộng. Ví dụ, khi mọi người biết rằng Google tuỳ biến kết quả tìm kiếm theo một thuật toán phức tạp có tính đến rất nhiều thông tin về người tìm kiếm từ lịch sử tìm kiếm trước đây, nhiều người đã thấy khó chịu và công ty hứng chịu rất nhiều chỉ trích trên báo chí.</p>
+
+<p>Một lưu ý then chốt ở đây là bạn cũng không muốn hỏi quá nhiều câu.</p>
+
+<div class="callout"><div class="callout-title">Gợi ý của Neil Patel cho bảng câu hỏi onboarding</div>
+<ul>
+<li>Không quá <strong>năm</strong> câu hỏi.</li>
+<li>Dùng câu hỏi trắc nghiệm (multiple-choice) thay vì câu hỏi mở, mỗi câu <strong>không quá bốn</strong> phương án trả lời.</li>
+<li>Thêm hình ảnh và yếu tố trực quan nhiều khả năng sẽ cải thiện mức độ tương tác.</li>
+<li>Như mọi hack khác, các bảng câu hỏi mini này cũng phải được đưa qua quy trình thử nghiệm nghiêm ngặt.</li>
+</ul>
+</div>
+
+<h2>Ưu và nhược của gamification (Gamification Pros and Cons)</h2>
+
+<p>Về bản chất, <strong>gamification</strong> là trao thưởng — chẳng hạn những đặc quyền và lợi ích không dành cho tất cả mọi người — cho khách hàng khi họ thực hiện những hành động nhất định. Adobe, chẳng hạn, đã dùng gamification trong hacking activation để tăng số người dùng thử miễn phí Adobe Photoshop rồi mua sản phẩm. Công ty ra mắt <strong>LevelUp for Photoshop</strong>, một trải nghiệm người dùng mới biến những bài hướng dẫn nhàm chán thành các "nhiệm vụ" (mission) để người dùng thử hoàn thành. Các nhiệm vụ giúp khách hàng dùng thử học được những lợi ích mạnh mẽ nhất của phần mềm và chỉ cho họ cách tận dụng tối đa nó. Họ thêm các phần thưởng khuyến khích cho việc hoàn thành nhiệm vụ và những cấp độ mới chỉ có thể mở khoá khi hoàn thành các nhiệm vụ khác. Adobe ghi nhận tỷ lệ chuyển từ dùng thử sang mua tăng gấp 4 lần nhờ nỗ lực này.</p>
+
+<p>Bằng cách thêm vào yếu tố thử thách và niềm vui dễ chịu, đồng thời mang lại những phần thưởng có ý nghĩa, gamification có thể là một công cụ activation mạnh mẽ, nhưng nó cũng có thể phản tác dụng. Nếu phần thưởng không có giá trị, hoặc giá trị ít liên quan tới giá trị cốt lõi mà người dùng trải nghiệm (tức là không đạt được <strong>product/incentive fit</strong> — sự phù hợp giữa sản phẩm và phần thưởng), thì chiến thuật này có thể bị coi là thao túng trắng trợn, hoặc đơn giản là kỳ quặc. Đó chính là điều đã xảy ra với một nỗ lực gamification mà nhà bán lẻ giày trực tuyến Zappos triển khai cho chương trình VIP của họ. Công ty đang cố tạo ra một cấp độ mới gồm những người mua sắm thường xuyên hơn; họ thử game hoá trải nghiệm mua sắm bằng cách trao huy hiệu (badge) cho những việc như đánh dấu yêu thích một mẫu giày hay mua nhiều đôi, nhưng các huy hiệu này không mang lại giá trị gì — không có mức giảm giá cao hơn hay lợi ích nào khác — và khiến khách hàng bối rối, dẫn tới việc Zappos cuối cùng phải đóng cửa chương trình.</p>
+
+<p>Brian Wong, nhà sáng lập Kiip — công ty giúp các ứng dụng di động trao thưởng cho người dùng — cho rằng gamification nên được coi như một bộ công cụ gồm nhiều lựa chọn, thay vì một bộ chiến thuật định sẵn phù hợp với mọi doanh nghiệp. Những gì bạn chọn triển khai có thể từ tinh tế cho tới lộ liễu hơn; như với mọi thứ khác, bạn phải thử nghiệm xem điều gì tốt nhất cho sản phẩm và khách hàng của mình. Ông đề xuất tập trung vào ba khía cạnh chính của bất kỳ nỗ lực gamification nào:</p>
+<ul>
+<li>Phần thưởng có ý nghĩa;</li>
+<li>Tạo sự bất ngờ và thích thú (surprise and delight) bằng cách thay đổi cách phần thưởng được kiếm và được trao;</li>
+<li>Mang lại một yếu tố thoả mãn tức thì (instant gratification).</li>
+</ul>
+
+<p>Ngoài việc đảm bảo phần thưởng có liên quan rõ ràng và thực sự có giá trị với người dùng, có rất ít quy tắc cứng nhắc về việc nên trao đặc quyền gì. LinkedIn game hoá theo cách nhẹ nhàng, bao gồm một thanh tiến độ trên trang hồ sơ cho người dùng thấy hồ sơ của họ hoàn chỉnh tới đâu, khéo léo thúc họ điền thêm thông tin. Điều này mang lại phần thưởng là sự thoả mãn tức thì khi có một hồ sơ hoàn chỉnh, và nhận được sự tán thưởng ngầm từ những người xem hồ sơ.</p>
+
+<p>Khan Academy, một website giáo dục trực tuyến, chọn cách tiếp cận lộ liễu hơn: trao điểm và giải thưởng khi người dùng học thêm khoá học, tạo sự bất ngờ và thích thú bằng phần thưởng khi người dùng đạt những cột mốc mới. Tuy nhiên, công ty cẩn trọng không biến những thứ này thành trung tâm của trải nghiệm người dùng, vì họ hiểu rằng những phần thưởng rõ ràng như thế có thể làm xói mòn phần thưởng nội tại thực sự của việc tiếp thu kỹ năng mà việc học mang lại.</p>
+
+<p>Ở đầu rất lộ liễu của phổ là các chương trình khách hàng thân thiết (loyalty program) được dùng bởi đủ loại doanh nghiệp, từ Starbucks tới thẻ tín dụng và nhà hàng. Gabe Zichermann, một chuyên gia hàng đầu về gamification, đã xác định rằng những phần thưởng hiệu quả nhất trong bối cảnh game hoá có bốn dạng: <strong>địa vị (status), quyền tiếp cận (access), quyền lực (power) và đồ vật (stuff)</strong> — "stuff" ở đây là các khuyến khích tài chính hoặc quà tặng vật chất. Các thẻ tín dụng, chẳng hạn American Express Membership Rewards, triển khai tất cả các yếu tố này: từ những cấp độ địa vị mới đạt được thông qua chi tiêu, quyền lực, quyền tiếp cận các sự kiện đặc biệt và cơ hội du lịch, và dĩ nhiên cả đồ miễn phí đổi được bằng điểm tích luỹ. Tương tự, chương trình Starbucks Rewards có hơn 12 triệu thành viên dùng thẻ quà tặng Starbucks hoặc ứng dụng di động của công ty để kiếm "sao" (star) mỗi lần mua một cốc cà phê. Những ngôi sao đó được đổi thành thêm cà phê miễn phí và các sản phẩm khác của Starbucks. Càng kiếm được nhiều sao, họ càng đổi được phần thưởng lớn hơn, đồng thời được thăng hạng, tích luỹ thêm địa vị như một thành viên trung thành của Starbucks. Chương trình thành công đến mức công ty hiện nắm giữ hơn 1 tỷ đô-la tiền mặt của khách hàng từ các thẻ quà tặng nạp sẵn và ứng dụng.</p>
+
+<hr class="divider">
+
+<h2>Những điều cần biết về trigger (Ins and Outs of Triggers)</h2>
+
+<p>Gamification không hiệu quả trong mọi tình huống, nhưng trigger (yếu tố kích hoạt, lời nhắc) thì có mặt ở khắp nơi. Và thậm chí hơn cả gamification, việc dùng trigger để thúc đẩy activation đòi hỏi phải cân nhắc cẩn thận mới làm đúng được. <strong>Trigger</strong> là bất kỳ dạng lời nhắc nào khơi gợi phản hồi từ con người; những loại phổ biến là thông báo qua email, push notification (thông báo đẩy) trên di động, và — ít xâm phạm hơn — các call to action trên landing page. Không thể phủ nhận trigger là một trong những chiến thuật mạnh mẽ nhất để tăng mức sử dụng sản phẩm. Nhưng cứ mỗi lợi ích lại đi kèm vô số cạm bẫy tiềm ẩn. Ngày nay chúng ta là mục tiêu của quá nhiều trigger — từ thông báo Facebook rằng một người bạn đã thích một tấm ảnh, tới email LinkedIn về một lời mời kết nối mới, và cập nhật của Amazon về tình trạng giao một kiện hàng — đến mức rất dễ vượt qua ranh giới từ hữu ích sang phiền phức. Có ai chưa từng phát điên vì sự tuyệt vọng của một chuỗi email nhỏ giọt liên tục gào lên "Quay lại đi!!", "Bạn có chắc là không muốn quay lại không?", "Chúng tôi thực sự rất mong được gặp lại bạn!!!" Thường thì chúng đến từ một công ty có sản phẩm mà ta đã gạt bỏ từ lâu, khiến chúng càng gây khó chịu hơn — đồng thời khiến công ty trông thật tuyệt vọng. Vì thế bạn nên nhẹ tay với trigger, thử nghiệm hết sức cẩn trọng.</p>
+
+<p>Sức mạnh của trigger đến từ hai yếu tố then chốt: chúng thúc đẩy người dùng thực hiện hành động bạn mong muốn mạnh đến đâu, và người dùng có dễ dàng thực hiện hành động đó vào thời điểm nhận được trigger hay không. BJ Fogg, nhà nghiên cứu tâm lý học tại Stanford, đã phát triển mô hình hữu ích dưới đây để suy nghĩ về cách làm cho trigger hiệu quả. Đường cong biểu thị ngưỡng quyết định người dùng sẽ thực hiện hay không thực hiện một hành động cụ thể, điều này phụ thuộc chủ yếu vào sự kết hợp giữa mức độ <strong>động lực (motivation)</strong> của cô ấy và cái mà Fogg gọi là <strong>khả năng (ability)</strong> thực hiện hành động đó — về cơ bản nghĩa là việc thực hiện nó thuận tiện đến mức nào.</p>
+
+<div class="figure-note"><div class="figure-title">Hình: Fogg Behavior Model (Mô hình hành vi Fogg)</div>Biểu đồ với một trục là động lực (motivation) và trục kia là khả năng/mức độ dễ thực hiện (ability). Một đường cong chia biểu đồ làm hai vùng: phía trên đường cong (động lực và khả năng kết hợp đủ cao), trigger sẽ thành công và người dùng hành động; phía dưới đường cong, trigger thất bại. Động lực càng thấp thì hành động càng phải dễ, và ngược lại.</div>
+
+<p>Nir Eyal, tác giả cuốn <em>Hooked: How to Build Habit-Forming Products</em> (Hooked: Gây nghiện — Cách tạo ra sản phẩm hình thành thói quen), đã dùng tình huống nhận một cuộc điện thoại để minh hoạ rất dễ hiểu sự tương tác giữa các yếu tố này. Việc bạn có nghe máy hay không phụ thuộc vào việc điện thoại có ở gần và bạn có rảnh để nghe không — tức khả năng của bạn — cũng như vào các yếu tố động lực như bạn có biết tên người gọi không, có muốn nói chuyện với người đó không, hay có lẽ bạn cần một thông tin nào đó mà họ đang nắm giữ. Trigger trong trường hợp này rõ ràng là tiếng chuông điện thoại. Nếu bạn nghe thấy chuông reo khi đang có động lực và đang rảnh, bạn sẽ nghe máy.</p>
+
+<p>Vì trigger có thể rất xâm phạm, bạn nên dùng chúng một cách thận trọng và thử nghiệm theo từng bước có chừng mực. Phức tạp hơn nữa, bạn còn phải tuân theo một số quy tắc do nền tảng mà bạn muốn gửi trigger quy định. Ví dụ, quy tắc push notification trên điện thoại Apple khác với điện thoại chạy Android; trong khi người dùng Apple cần chủ động đồng ý (opt in) để nhận thông báo, người dùng Android mặc định được opt in để nhận thông báo. Luật bảo vệ người tiêu dùng cũng đặt ra quy định cho việc gửi email, chẳng hạn luật CAN-SPAM ở Hoa Kỳ.</p>
+
+<p>Và cuối cùng, với các thông báo cần opt-in, tác động của trigger sẽ khác nhau rất nhiều tuỳ thuộc vào bao nhiêu người dùng đồng ý nhận chúng. Mức độ đồng ý opt-in có thể dao động rất lớn giữa các sản phẩm và các nhóm sản phẩm. Ví dụ, theo Kahuna, một công ty nhắn tin di động, tỷ lệ opt-in với thông báo di động dao động từ 80% ở mức cao, với các dịch vụ như đi chung xe (ride sharing), tới 39% ở mức thấp đối với các sản phẩm tin tức và truyền thông.</p>
+
+<div class="figure-note"><div class="figure-title">Hình: Tỷ lệ opt-in push notification trên iOS theo ngành ứng dụng (iOS Push Opt-in Rates by App Industry)</div>Biểu đồ so sánh tỷ lệ người dùng iOS đồng ý nhận push notification giữa các ngành ứng dụng, theo dữ liệu của Kahuna. Mức cao nhất khoảng 80% thuộc về các dịch vụ như ride sharing; mức thấp nhất khoảng 39% thuộc về nhóm tin tức và truyền thông (news &amp; media).</div>
+
+<p>Một trong những sai lầm lớn nhất mà các công ty mắc phải là đề nghị khách truy cập opt in nhận trigger như thông báo và email quá sớm, thường là như một bước bắt buộc đầu tiên để thiết lập hoặc truy cập sản phẩm. Điều này có thể khiến mọi người sợ hãi bỏ đi, vì họ chưa hề biết, hoặc chỉ mới lờ mờ hiểu, vì sao mình lại muốn nhận những tin nhắn này. Nhiều công ty cũng lạm dụng trigger để "thổi phồng" số liệu sử dụng sản phẩm — một động thái có thể khiến số liệu activation ngắn hạn trông đẹp mắt, nhưng chẳng giúp gì cho việc tạo ra mức sử dụng dài hạn (thực tế thường còn có tác động tiêu cực khi mọi người phớt lờ, tắt thông báo hoặc xoá ứng dụng).</p>
+
+<div class="callout"><div class="callout-title">Nguyên tắc vàng khi dùng trigger</div>
+<p>Lý do để bạn liên lạc với người dùng phải là để báo cho họ về một cơ hội mang lại giá trị rõ ràng cho chính họ.</p>
+</div>
+
+<p>Một nguyên tắc kinh nghiệm tuyệt vời khi triển khai trigger là lý do bạn liên lạc với người dùng phải là để báo cho họ về một cơ hội có giá trị rõ ràng đối với họ. Ví dụ, nhóm grocery app có thể gửi thông báo khi một món hàng mà người dùng đã lưu trong shopping list được giảm giá, hoặc khi có ưu đãi đặc biệt miễn phí giao hàng, hoặc khi chuỗi cửa hàng đang chạy chương trình khuyến mãi dịp lễ Tạ ơn (Thanksgiving). Những loại trigger này sẽ hợp lý với người dùng vì chúng liên quan tới giá trị cốt lõi của ứng dụng mua sắm. Tuy nhiên, việc gửi thông báo hằng tuần về các đợt giảm giá mới hay tính năng sản phẩm không thực sự liên quan tới khách hàng có thể nhanh chóng khiến họ bực mình và khiến nhiều người tắt thông báo hoặc xoá hẳn ứng dụng khỏi điện thoại.</p>
+
+<p>Khi thử nghiệm các trigger thông báo khác nhau, điều quan trọng là giữ một số người dùng trong cái gọi là <strong>holdout group</strong> (nhóm đối chứng giữ lại), nhóm này không chịu tác động của bất kỳ thử nghiệm nào. Điều này đảm bảo bạn có thể so sánh không chỉ hiệu quả của các trigger mới, mà cả hiệu quả của việc không dùng trigger nào.</p>
+
+<p>Một số loại trigger thông báo phổ biến để thử nghiệm là:</p>
+<ul>
+<li><strong>Tạo tài khoản (Account creation)</strong> — khuyến khích người dùng đã tải ứng dụng hoặc đã ghé website bán lẻ hoàn tất tài khoản.</li>
+<li><strong>Thông điệp mua hàng (Purchase messages)</strong> — khuyến khích người dùng mua hàng bằng một ưu đãi giảm giá ngắn hạn.</li>
+<li><strong>Chiến dịch tái kích hoạt (Reactivation campaign)</strong> — khuyến khích người dùng đã lâu không ghé website hay ứng dụng của bạn quay lại và tương tác trở lại.</li>
+<li><strong>Thông báo tính năng mới (New feature announcement)</strong> — chia sẻ tin tức về những bản cập nhật của sản phẩm.</li>
+<li><strong>Ưu đãi cho người dùng hàng đầu (Top user incentives)</strong> — với những người dùng sản phẩm nhiều (heavy user), cho họ biết họ đặc biệt và khuyến khích sự gắn bó cũng như mức sử dụng cao hơn.</li>
+<li><strong>Thay đổi hoạt động hoặc trạng thái (Activity or status change)</strong> — chẳng hạn một người bạn thực hiện một hành động, hoặc một món trong giỏ hàng thay đổi giá.</li>
+</ul>
+
+<p>Dĩ nhiên, bạn cũng có thể tự sáng tạo những loại trigger của riêng mình. Khi nghĩ ý tưởng, sẽ hữu ích nếu biết về cách phân loại trigger mà BJ Fogg đã đưa ra. Ông chia chúng thành ba loại cơ bản, dựa trên mức độ động lực và khả năng của người dùng:</p>
+
+<table>
+<thead><tr><th>Loại trigger (Fogg)</th><th>Động lực</th><th>Khả năng</th><th>Vai trò</th></tr></thead>
+<tbody>
+<tr><td><strong>Facilitator</strong> (trigger hỗ trợ)</td><td>Cao</td><td>Thấp</td><td>Giúp người có động lực cao nhưng khả năng thấp thực hiện hành động</td></tr>
+<tr><td><strong>Signal</strong> (trigger tín hiệu)</td><td>Cao</td><td>Cao</td><td>Giữ người có động lực và khả năng cao đi đúng hướng, khuyến khích hành động lặp lại</td></tr>
+<tr><td><strong>Spark</strong> (trigger tia lửa)</td><td>Thấp</td><td>Cao</td><td>Thúc đẩy người có khả năng cao nhưng động lực thấp hành động</td></tr>
+</tbody>
+</table>
+
+<p>Nhiều email và thông báo di động thuộc loại "spark", nhưng đó không nên là loại duy nhất được cân nhắc.</p>
+
+<p>Ví dụ, nhóm grocery app có thể thiết kế một <strong>facilitator trigger</strong> bật lên sau khi người dùng đã ở trang checkout một khoảng thời gian nhất định mà chưa hoàn tất việc mua, hỏi xem họ có muốn dùng thẻ tín dụng đã dùng trước đó cho lần mua này không. Họ cũng có thể thử nghiệm một <strong>signal trigger</strong>, có thể là một thông điệp trên màn hình báo cho người dùng biết anh ấy đã tiết kiệm được bao nhiêu nhờ thực hiện một loạt lần mua. Một <strong>spark trigger</strong> mà họ có thể thử là đưa ra mức giảm giá đặc biệt cao cho một món yêu thích của người mua đã đăng nhập nhưng chưa bỏ món nào vào giỏ hàng sau một khoảng thời gian nhất định, nhằm "châm ngòi" cho lần mua đầu tiên quan trọng ấy.</p>
+
+<h3>Sáu nguyên tắc thuyết phục của Cialdini</h3>
+
+<p>Khi chế tác các trigger để thử nghiệm, bộ sáu nguyên tắc thuyết phục mà Robert Cialdini trình bày trong cuốn <em>Influence</em> cũng vô cùng quý giá. Chúng tôi đã nhắc tới một nguyên tắc trước đó, khi bàn về insight của ông rằng một khi con người thực hiện một hành động dù thuộc loại nào, họ sẽ có xu hướng thực hiện lại hành động đó hơn. Đây là bộ đầy đủ:</p>
+<ul>
+<li><strong>Có đi có lại (Reciprocity)</strong> — con người có xu hướng làm điều gì đó để đáp lại một ân huệ, bất kể ân huệ đã nhận là gì và yêu cầu hiện tại đặt ra cho họ là gì.</li>
+<li><strong>Cam kết và nhất quán (Commitment and consistency)</strong> — người đã thực hiện một hành động có khả năng sẽ thực hiện hành động khác, bất kể quy mô hay sự khác biệt của hành động.</li>
+<li><strong>Bằng chứng xã hội (Social proof)</strong> — trong trạng thái không chắc chắn, con người nhìn vào hành động của người khác để giúp mình ra quyết định.</li>
+<li><strong>Uy quyền (Authority)</strong> — con người nhìn vào những người ở vị trí có thẩm quyền để quyết định nên hành động thế nào.</li>
+<li><strong>Thiện cảm (Liking)</strong> — con người sẵn lòng giao dịch với những người và công ty họ yêu thích hơn là với những người họ không thích hoặc thờ ơ.</li>
+<li><strong>Khan hiếm (Scarcity)</strong> — con người sẽ hành động khi lo sợ bỏ lỡ cơ hội trong tương lai.</li>
+</ul>
+
+<p>Một trigger có thể dựa trên nguyên tắc <strong>có đi có lại</strong> bằng cách tặng người dùng một tài nguyên miễn phí, chẳng hạn một whitepaper có thể tải về, hoặc miễn phí vận chuyển. Website Grader của HubSpot là một ví dụ tuyệt vời. Một ví dụ về việc dùng nguyên tắc <strong>nhất quán và cam kết</strong> là cách đội ngũ chiến dịch tranh cử tổng thống của Obama chia biểu mẫu đề nghị quyên góp trên website thành một loạt bước nhỏ hơn thay vì để tất cả xuất hiện trên một trang. Đã thực hiện bước nhỏ đầu tiên, người dùng có xu hướng thực hiện các bước còn lại hơn, điều này giúp tỷ lệ người phản hồi bằng cách quyên góp tăng 5%, và mang về thêm hàng triệu đô-la cho quỹ vận động.</p>
+
+<p>Trigger có thể kết hợp nguyên tắc <strong>uy quyền</strong> bằng cách cho thấy những người hoặc công ty có sức ảnh hưởng đã thực hiện hành động mà trigger đang thúc giục người dùng thực hiện — dĩ nhiên đó cũng chính là lý do đằng sau việc dùng người nổi tiếng để quảng bá (celebrity endorsement). Đưa vào logo của những công ty được kính trọng đã dùng dịch vụ, hoặc lời chứng thực từ những cá nhân được tôn trọng, cũng có thể đóng vai trò trigger, bằng cách trấn an khách truy cập rằng những người và công ty họ biết và kính trọng đã đưa ra quyết định tương tự.</p>
+
+<p>Rất nhiều trigger tận dụng nguyên tắc <strong>thiện cảm</strong>, chẳng hạn những tin nhắn Airbnb gửi kèm tên người bạn đã giới thiệu bạn tới dịch vụ, hoặc Nasty Gal, nơi nhà sáng lập Sophia Amoruso theo dõi xem khách hàng phản hồi tốt nhất với người mẫu nào (tức là người mẫu nào dường như bán được nhiều hàng nhất) rồi ghép họ với những món hàng cần được đẩy doanh số.</p>
+
+<p>Hẳn tất cả chúng ta đều từng nhận những thông báo dựa trên nguyên tắc <strong>khan hiếm</strong>, cảnh báo rằng một đợt giảm giá sắp kết thúc, hoặc chỉ còn vài vé cho buổi diễn hay buổi hoà nhạc ta đang định đi, hoặc chỉ còn vài ghế trên chuyến bay ta đang định đặt. Booking.com tận dụng chiến thuật này rất tốt, cho mọi người đang tìm kiếm thấy số người đang xem phòng khách sạn trong cùng khu vực tìm kiếm và số phòng còn lại trên trang. Amazon cũng vậy, cho người xem biết còn bao nhiêu sản phẩm khi hàng tồn kho xuống thấp, nhằm thúc họ mua ngay.</p>
+
+<p>Loại trigger cuối cùng (và mạnh mẽ nhất) là <strong>trigger nội tại (internal trigger)</strong>, xảy ra một cách vô thức bên trong khách hàng của bạn; chúng là cốt lõi của thói quen và thúc đẩy việc sử dụng lâu dài. Ít ai trong chúng ta cần bất kỳ trigger bên ngoài nào để vào Facebook hay Instagram; giờ đây ta tự làm điều đó theo ý muốn của mình. Điều tương tự cũng đúng với nhà bán lẻ quần áo yêu thích mà ta thường xuyên vào website để xem có đợt giảm giá hay hàng mới không, nguồn tin tức ta đọc mỗi sáng, hay cửa hàng tiện lợi ta luôn ghé vào mua cà phê trên đường đi làm. Dù sản phẩm của bạn là gì, những thói quen này chính là nền tảng của mối quan hệ bền chặt với khách hàng. Vì vậy, chúng tôi sẽ quay lại với chúng cùng một số sắc thái khác ở các chương sau.</p>
+
+<p>Điểm mấu chốt là: hãy thử nghiệm với trigger, vì chúng có thể hiệu quả phi thường, nhưng hãy làm vậy với sự thấu hiểu thật chín chắn về cách chúng thực sự có thể phục vụ người dùng của bạn. Nếu không, thay vì kích hoạt người dùng và bắt đầu xây dựng mối quan hệ tốt đẹp với họ, gần như chắc chắn bạn sẽ đẩy họ ra xa.</p>
+
+<p>Và giờ, nhân nói về việc xây dựng mối quan hệ với khách hàng, hãy đi xa hơn trên hành trình trải nghiệm người dùng để xem xét các growth team đã dùng quy trình growth hacking như thế nào để đạt được những thành công lớn về retention (giữ chân người dùng).</p>
+
+<hr class="divider">
+
+<h2>Điểm chính của chương</h2>
+<ul>
+<li>Cải thiện activation là tăng tỷ lệ người dùng mới đạt tới aha moment; không có công thức chung, mọi thử nghiệm phải xuất phát từ dữ liệu của chính bạn.</li>
+<li>Ba bước: lập bản đồ hành trình tới aha moment → funnel report phân theo kênh → khảo sát/phỏng vấn cả người rời đi lẫn người đi tiếp.</li>
+<li>Câu hỏi "Điều duy nhất suýt khiến bạn không hoàn tất đơn hàng là gì?" hỏi người đã mua thường mang lại insight giá trị.</li>
+<li>Desire – Friction = Conversion Rate; giảm friction (single sign-on, flip the funnel) thường dễ hơn tăng mong muốn — nhưng luôn phải test (Kissmetrics +59,4% với Google sign-up, Inman +24,8% khi bỏ single sign-on).</li>
+<li>Positive friction (learn flow, questionnaire, gamification) tạo cam kết, flow và stored value — nếu phần thưởng thực sự có giá trị.</li>
+<li>Trigger phải mang lại giá trị rõ ràng cho người dùng; dùng mô hình Fogg, ba loại trigger (facilitator, signal, spark), sáu nguyên tắc của Cialdini và luôn giữ holdout group.</li>
+</ul>
+
+<nav class="chapnav">
+  <a href="/hacking-growth/hacking-acquisition"><span class="lbl">Chương trước</span>Chương 5: Hacking Acquisition — Thu Hút Khách Hàng</a>
+  <a href="/hacking-growth/hacking-retention"><span class="lbl">Chương sau</span>Chương 7: Hacking Retention — Giữ Chân Người Dùng</a>
+</nav>
+
+</body>
+</html>

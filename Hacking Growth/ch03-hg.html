@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 3: Xác Định Đòn Bẩy Tăng Trưởng — Hacking Growth</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+/* Thành phần riêng của sách — chỉ dùng token có sẵn trong theme.css */
+.callout{background:#fff;border:1px solid var(--color-dew);border-left:4px solid var(--color-sprout);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.callout .callout-title{font-weight:700;color:var(--color-sprout-dark);margin-bottom:6px}
+.callout p:last-child,.callout ul:last-child,.callout ol:last-child{margin-bottom:0}
+.case{background:var(--color-dew);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.case .case-title{font-weight:700;margin-bottom:6px}
+.case p:last-child,.case ul:last-child{margin-bottom:0}
+.figure-note{border:1px dashed var(--color-mist);border-radius:var(--radius-chapter-row);padding:14px 18px;margin:22px 0;color:var(--color-ash);font-size:.95rem}
+.figure-note .figure-title{font-weight:700;color:var(--color-slate-ink);margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<p class="book-topline"><a href="/hacking-growth">← Về mục lục</a></p>
+
+<div class="book-label">Hacking Growth · Sean Ellis &amp; Morgan Brown · Phần I · Chương 3</div>
+<h1>Xác Định Đòn Bẩy Tăng Trưởng</h1>
+<p class="chapter-subtitle">Xây dựng phương trình tăng trưởng, chọn North Star metric và thiết lập dữ liệu, báo cáo để tập trung thử nghiệm vào những đòn bẩy quan trọng nhất.</p>
+
+<p>Làm cho sản phẩm đủ hấp dẫn để vượt qua bài kiểm tra must-have (sản phẩm "không thể thiếu") là điều kiện tiên quyết cho tăng trưởng nhanh và bền vững, nhưng bản thân nó thì chưa đủ. Ngay cả những sản phẩm thực sự tuyệt vời, được một nhóm early adopter (người dùng tiên phong) cốt lõi yêu thích, gần như chắc chắn vẫn sẽ thất bại nếu không có một nỗ lực tập trung, bài bản để thúc đẩy tăng trưởng một cách mạnh mẽ. Phần lớn những bài báo viết về các sản phẩm thất bại thường nói về những sản phẩm từng tự xưng là "điều lớn lao tiếp theo", nhưng nhìn lại thì rõ ràng chúng đã không mang đến được một giá trị cốt lõi đủ hấp dẫn cho một thị trường đủ lớn, vượt ra ngoài nhóm early adopter — như Google Glass đã nhắc đến ở phần trước, hay chiếc xe Segway từng được thổi phồng rầm rộ. Ít được nói tới hơn là những thất bại khó hiểu hơn nhiều: những sản phẩm thực sự mang lại giá trị cốt lõi rất hấp dẫn, có một thị trường tiềm năng lớn mà chưa bị các ông lớn hiện hữu thống trị. Ở đây, vấn đề thường nằm ở chỗ thiếu một chiến lược thúc đẩy tăng trưởng được thiết kế và thực thi tốt.</p>
+
+<div class="case">
+<div class="case-title">Case: Everpix — sản phẩm được yêu thích nhưng vẫn sụp đổ</div>
+<p>Hãy xem trường hợp của Everpix, một trong những ứng dụng ảnh được đánh giá cao nhất trong thời gian gần đây. Được thiết kế cho những người dùng đã quá mệt mỏi với những phiền toái khi quản lý bộ sưu tập ảnh khổng lồ trên thiết bị của mình, dịch vụ này biến quy trình đó thành việc không tốn chút công sức nào. Được thiết kế xuất sắc và được giới phê bình khen ngợi, ứng dụng này cực kỳ dễ làm quen và có điểm đánh giá trung bình 4,5 sao từ người dùng. TechCrunch đã hết lời ca ngợi: "Điều tuyệt vời nhất ở Everpix có lẽ là bản chất 'cài đặt rồi quên đi' của nó. Sau một lần cài đặt và cấu hình duy nhất, bạn không phải làm gì thêm nữa." Lượng người dùng ban đầu gồm 55.000 người cũng rất tích cực; khoảng một nửa trong số họ quay lại ứng dụng ít nhất một lần mỗi tuần.</p>
+<p>Các nhà sáng lập đã chọn mô hình kinh doanh freemium (miễn phí bản cơ bản, thu phí bản nâng cao) — phiên bản cơ bản của ứng dụng là miễn phí, với tuỳ chọn nâng cấp lên phiên bản pro trả phí với giá thuê bao 49 đô la mỗi năm, và tỷ lệ chuyển đổi sang bản trả phí đạt mức phi thường 12,4%, cao hơn rất nhiều so với tỷ lệ chuyển đổi của phần lớn các sản phẩm freemium, vốn chỉ dao động quanh mức 1%. Các nhà sáng lập đã làm đúng rất nhiều thứ. Nhưng họ mắc một sai lầm chí mạng: họ đã không tập trung tìm cách tận dụng sự nhiệt tình của nhóm early adopter để thúc đẩy tăng trưởng nhanh hơn nhiều.</p>
+<p>Dù sự nhiệt tình dành cho sản phẩm và tỷ lệ chuyển đổi cao có vẻ là dấu hiệu chắc chắn cho thấy Everpix đang trên đường đến thành công lớn, thực tế startup này là một quả bom hẹn giờ. Các nhà sáng lập cần tăng mạnh số lượng người đăng ký trả phí, và họ cần làm điều đó thật nhanh. Một năm rưỡi sau khi ra mắt, tổng chi phí vận hành của công ty lên tới 480.674 đô la, trong khi doanh thu từ thuê bao chỉ nhỉnh hơn 250.000 đô la một chút. Và các nhà sáng lập đã tiêu gần hết 1,8 triệu đô la vốn hạt giống (seed capital) huy động được vào việc xây dựng các tính năng sản phẩm. Kho bạc đã cạn, và với một hoá đơn ước tính 35.000 đô la từ Amazon Web Services sắp đến hạn, các nhà sáng lập không còn thời gian để làm gì khác ngoài cố gắng gọi thêm vốn — và khi điều đó thất bại, họ đóng cửa.</p>
+<p>Họ đã từng cân nhắc áp dụng một vài growth hack để thúc đẩy mức độ sử dụng. Chẳng hạn, họ từng nghĩ đến việc yêu cầu những người nhận ảnh từ người dùng cũng phải đăng ký ứng dụng thì mới tải được ảnh về. Nhưng họ đã quyết định không làm vậy vì sợ điều đó sẽ gây khó chịu cho mọi người. Hãy nhớ rằng growth hacking không chỉ là việc chọn món từ một thực đơn các "mẹo"; đúng hơn, đó là một quy trình thử nghiệm liên tục để đảm bảo những mẹo đó thực sự đem lại kết quả mong muốn. Nếu thực sự thực hành growth hacking, họ đã phải chạy một thử nghiệm để xác định xem giả định của mình có đúng hay không. Thay vào đó, họ tiếp tục tập trung cải thiện sản phẩm; ví dụ, bổ sung một tính năng gửi email cho người dùng với những bức ảnh họ đã chụp vào đúng ngày này năm trước. Tính năng này làm tăng đáng kể số người dùng bắt đầu truy cập ứng dụng hằng ngày. Nhưng với mục tiêu tạo ra nhiều thu nhập hơn, việc tăng lượng sử dụng hằng ngày không phải là chỉ số họ cần tập trung vào. Yêu cầu cấp bách của họ là tăng số người dùng đăng ký trả phí, chứ không phải làm cho những người dùng sẵn có trở nên tích cực hơn.</p>
+<p>Họ từng hy vọng thoát khỏi cơn khủng hoảng tiền mặt bằng cách gọi thêm vốn. Nhưng không có các chỉ số tăng trưởng mạnh hơn, hết buổi pitch này đến buổi pitch khác đều không thành công. Khi cuối cùng cũng xoay xở được một khoản vay 500.000 đô la, họ thuê một chuyên gia marketing truyền thống, người đã nghĩ ra một tagline mới — "Solving the Photo Mess" (Giải quyết mớ hỗn độn ảnh) — với hy vọng nó sẽ châm ngòi cho tăng trưởng, nhưng nó đã không có tác dụng.</p>
+</div>
+
+<p>Bi kịch của Everpix cho thấy tầm quan trọng của việc tập trung không chỉ vào tăng trưởng, mà vào <strong>đúng đòn bẩy tăng trưởng vào đúng thời điểm</strong>. Tỷ lệ chuyển đổi và phản hồi tích cực là những chỉ báo rõ ràng rằng họ đã có một sản phẩm tuyệt vời và một nền tảng người dùng tích cực vững chắc; điều các nhà sáng lập Everpix cần làm là chuyển sự chú ý từ việc làm cho sản phẩm dễ chịu hơn sang làm cho nó sinh lời hơn — tức là dồn tài năng thiết kế và kỹ thuật đáng kể của họ vào sứ mệnh biến nhiều khách hàng hơn thành khách hàng trả tiền. Nếu họ làm vậy, rất có thể nó đã trở thành một doanh nghiệp béo bở.</p>
+
+<hr class="divider">
+
+<h2>Hack chiến lược tăng trưởng của bạn (Hacking Your Growth Strategy)</h2>
+
+<p>Tạo ra một aha moment (khoảnh khắc "à, ra thế!" khi người dùng cảm nhận được giá trị cốt lõi) và đưa nhiều người hơn đến khoảnh khắc đó là điểm khởi đầu của hacking growth. Bước tiếp theo là xác định chiến lược tăng trưởng của bạn. Bạn phải hiểu chính xác mình sẽ thúc đẩy tăng trưởng bằng cách nào — các đòn bẩy tăng trưởng (growth lever) của bạn là gì và chúng có phải là những đòn bẩy đúng để đạt được kết quả mong muốn hay không — trước khi chuyển sang thử nghiệm các ý tưởng tăng trưởng với nhịp độ cao. Làm được điều này sẽ tạo ra khác biệt giữa tăng trưởng mạnh mẽ, bền vững, mang lại giá trị doanh thu thực sự và thứ tăng trưởng ảo tưởng, sớm hụt hơi.</p>
+
+<p>Bạn phải hết sức khoa học khi xác định loại tăng trưởng mình cần và những đòn bẩy sẽ thúc đẩy nó. Đặc biệt trong giai đoạn tăng trưởng ban đầu, bạn phải đặt ra một lộ trình thử nghiệm có kỷ luật cao, tập trung mạnh mẽ vào những đòn bẩy quan trọng nhất để đạt được mục tiêu. Tốc độ thử nghiệm tự nó không phải là mục tiêu; thử nghiệm tràn lan, thiếu định hướng là cách chắc chắn để lãng phí thời gian và công sức — và điều đó đúng ngay cả khi bạn thử nghiệm với nhịp độ cao. Growth hacking không phải là ném ý tưởng vào tường thật nhanh để xem cái nào dính lại; nó là việc áp dụng thử nghiệm nhanh để tìm ra, rồi tối ưu hoá, những vùng cơ hội hứa hẹn nhất.</p>
+
+<p>Trong giai đoạn tăng trưởng ban đầu, bạn cần xây dựng một chiến lược để chạy những thử nghiệm có tác động lớn nhất đến tăng trưởng trong thời gian ngắn nhất. Nỗ lực càng tập trung ngay từ đầu thì các thử nghiệm của bạn càng có chủ đích, và bạn càng đạt được nhiều tác động hơn. Trong khi các công ty lớn có thể triển khai hết thử nghiệm này đến thử nghiệm khác trên những lát cắt rất nhỏ của lượng người dùng khổng lồ, thì với các công ty nhỏ hơn, mỗi thử nghiệm đều có một chi phí cơ hội đáng kể, vì vậy bạn phải nhắm tới tác động lớn cho mỗi lần thử nghiệm. Dĩ nhiên bạn không thể biết trước liệu mình có đạt được tác động đó hay không, nhưng bạn nên có một lập luận vững chắc vì sao thử nghiệm được đề xuất là thử nghiệm tốt nhất nên chạy tiếp theo.</p>
+
+<p>Ngoài tiềm năng mang lại những chiến thắng lớn hơn, các thử nghiệm có tác động cao còn cho ra kết quả mang tính kết luận nhanh hơn. Điều này hơi khó hình dung một chút. Andy Johns, cựu thành viên growth team tại Facebook và Twitter, đã tạo ra ví dụ dưới đây để minh hoạ điểm này. Ông liệt kê kết quả của ba thử nghiệm khác nhau, tất cả đều nhằm cải thiện tỷ lệ chuyển đổi từ khách truy cập mới thành người dùng của một sản phẩm, với tỷ lệ xuất phát là 3%.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Tác động của thử nghiệm ảnh hưởng đến tốc độ (Experiment Impact Affects Speed)</div>
+Biểu đồ của Andy Johns so sánh ba thử nghiệm (A, B, C) cùng nhằm nâng tỷ lệ chuyển đổi khách truy cập mới thành người dùng từ mức nền 3%. Điểm mấu chốt: mức cải thiện (lift) càng nhỏ thì số lượng khách truy cập cần cho mỗi biến thể — và do đó số ngày chạy thử nghiệm — để đạt ý nghĩa thống kê càng lớn. Với thử nghiệm A (lift chỉ 5%), cần tới khoảng 72.300 khách truy cập mỗi biến thể, tương đương khoảng 72 ngày chờ đợi; các thử nghiệm có lift lớn hơn sẽ đi đến kết luận nhanh hơn nhiều.
+</div>
+
+<p>Giả sử thử nghiệm A đang kiểm tra một thay đổi nhỏ, chẳng hạn như màu của nút đăng ký. Khi kết quả bắt đầu đổ về, rõ ràng là mức tăng số khách truy cập mới đăng ký là rất nhỏ — chỉ thu được thêm 5% lượt đăng ký so với màu nút ban đầu. Bên cạnh giả định hiển nhiên rằng việc đổi màu nút đăng ký có thể không phải là yếu tố then chốt đang cản trở người dùng mới đăng ký, đây còn là dấu hiệu cho thấy bạn sẽ phải để thử nghiệm chạy khá lâu mới có đủ dữ liệu để rút ra một kết luận chắc chắn. Như bạn có thể thấy từ biểu đồ trên, để đạt kết quả có ý nghĩa thống kê (statistically significant) cho thử nghiệm này, bạn sẽ cần tới 72.300 khách truy cập cho mỗi biến thể — nói cách khác, bạn sẽ phải chờ 72 ngày mới có kết quả mang tính kết luận. Như Johns nói trong một cuộc phỏng vấn với First Round Review: "Đó là cả một đời người khi bạn là một startup!" Trong trường hợp như thế này, điều một startup thực sự nên làm là nhanh chóng từ bỏ thử nghiệm và chuyển sang thử nghiệm tiếp theo, có tiềm năng tác động cao hơn.</p>
+
+<p>Chạy thật nhiều thử nghiệm với những thay đổi nhỏ, như màu nút, không phải là cách để bắt đầu thực hành quy trình growth hacking. Thay vào đó, các team nhỏ phải tập trung trước tiên vào những thử nghiệm hứa hẹn tiềm năng tác động cao nhất. Johns nhấn mạnh rất mạnh điểm này:</p>
+
+<blockquote><p>"Nghiêm túc đấy. Hãy làm thật mạnh tay. Đừng chỉ di chuyển một cái nút trên trang. Bạn có thể chạy thử nghiệm đó, nhưng vì lưu lượng truy cập của bạn nhỏ, và vì mức cải thiện nhỏ, bạn có thể phải chạy thử nghiệm đó hàng tháng hoặc hàng năm. Hãy tạo ra những mức tăng đột phá nếu bạn là một startup non trẻ." — Andy Johns</p></blockquote>
+
+<p>Sau đó, khi lượng người dùng hoặc khách hàng của bạn tăng lên, bạn có thể đủ sức thử nghiệm đồng thời ở nhiều lĩnh vực ngách hơn. Khi số lượng khách hàng tăng, việc chuyển sang chạy khối lượng lớn hơn các thử nghiệm, kể cả với những thay đổi nhỏ nhất, có thể tạo ra những chiến thắng lớn.</p>
+
+<p>Vậy làm thế nào để bạn biết cách tập trung nỗ lực một cách chiến lược vào những thử nghiệm có khả năng tạo ra tác động lớn nhất? Đó chính xác là điều chúng ta sẽ bàn trong chương này.</p>
+
+<hr class="divider">
+
+<h2>Những chỉ số thực sự quan trọng (The Metrics That Matter)</h2>
+
+<p>Bước đầu tiên trong việc xác định chiến lược tăng trưởng và tìm ra nơi cần tập trung là hiểu rõ những chỉ số (metric) nào quan trọng nhất đối với sự tăng trưởng của sản phẩm. Cách tốt nhất để làm điều này là xây dựng thứ mà Johns gọi là <strong>phương trình tăng trưởng cơ bản (fundamental growth equation)</strong> của công ty. Đây là một công thức đơn giản thể hiện tất cả những yếu tố then chốt sẽ kết hợp với nhau để thúc đẩy tăng trưởng của bạn; nói cách khác, đó là tập hợp các đòn bẩy tăng trưởng cốt lõi của bạn. Phương trình này khác nhau đối với mỗi sản phẩm hay doanh nghiệp. Dưới đây là ví dụ cho công ty mà Morgan điều hành, Inman News, một doanh nghiệp kinh doanh theo mô hình thuê bao:</p>
+
+<div class="callout">
+<div class="callout-title">Phương trình tăng trưởng của Inman News</div>
+<p>(Lưu lượng truy cập website × Tỷ lệ chuyển đổi đăng ký email × Tỷ lệ người dùng tích cực × Tỷ lệ chuyển đổi thành người đăng ký trả phí) + Số người đăng ký được giữ chân (retained) + Số người đăng ký được "hồi sinh" (resurrected) = <strong>Tăng trưởng doanh thu từ người đăng ký</strong></p>
+<p><em>(Website traffic × Email conversion rate × Active user rate × Conversion to paid subscriber) + Retained subscribers + Resurrected subscribers = Subscriber revenue growth)</em></p>
+</div>
+
+<p>Với eBay, công thức là:</p>
+
+<div class="callout">
+<div class="callout-title">Phương trình tăng trưởng của eBay</div>
+<p>Số người bán đăng sản phẩm × Số sản phẩm được đăng × Số người mua × Số giao dịch thành công = <strong>Tăng trưởng tổng giá trị hàng hoá giao dịch (Gross Merchandise Volume)</strong></p>
+<p><em>(Number of sellers listing items × Number of listed items × Number of buyers × Number of successful transactions = Gross merchandise volume growth)</em></p>
+</div>
+
+<p>Johns thậm chí còn xây dựng phương trình này cho Amazon để minh hoạ giá trị của những công thức như vậy:</p>
+
+<div class="callout">
+<div class="callout-title">Phương trình tăng trưởng của Amazon (theo Andy Johns)</div>
+<p>Mở rộng ngành hàng (vertical expansion) × Lượng sản phẩm trong mỗi ngành hàng × Lưu lượng truy cập trên mỗi trang sản phẩm × Tỷ lệ chuyển đổi thành mua hàng × Giá trị mua hàng trung bình × Hành vi mua lặp lại = <strong>Tăng trưởng doanh thu</strong></p>
+<p><em>(Vertical expansion × Product inventory per vertical × Traffic per product page × Conversion to purchase × Average purchase value × Repeat purchase behavior = Revenue growth)</em></p>
+</div>
+
+<p>Mặc dù mọi sản phẩm đều có chung những động lực tăng trưởng phổ biến, như thu hút người dùng mới (acquisition), tăng tỷ lệ kích hoạt (activation) và giữ chân tốt hơn (retention), mỗi sản phẩm hay doanh nghiệp lại có một tổ hợp yếu tố cụ thể hơn, mang tính đặc thù riêng. Với Uber chẳng hạn, một yếu tố then chốt là số lượng tài xế, bởi vì phải có đủ tài xế ở bất kỳ địa điểm nào để đảm bảo aha moment — một chiếc xe xuất hiện thật nhanh. Số lượng hành khách cũng cực kỳ quan trọng, không chỉ để tạo ra doanh thu mà còn để đảm bảo có đủ nhu cầu cho tài xế, sao cho những người đã đăng ký làm tài xế tiếp tục chạy xe. Đó là lý do growth team tại Uber được giao nhiệm vụ cụ thể là cải thiện hai chỉ số cốt lõi này. Với Yelp, các yếu tố cốt lõi là số lượng doanh nghiệp được đánh giá và số lượng đánh giá cho mỗi doanh nghiệp. Với Facebook, số lượng nội dung được người dùng chia sẻ và thời gian dành cho việc lướt News Feed là những yếu tố then chốt, bởi nội dung mới được chia sẻ sẽ lấp đầy News Feed, dẫn đến nhiều thời gian lướt xem hơn — điều này đến lượt nó lại sống còn trong việc thu hút các nhà quảng cáo và tính cho họ một mức phí cao béo bở. Vì vậy, mặc dù các chỉ số cơ bản được theo dõi qua marketing truyền thống và các dashboard dữ liệu đóng gói sẵn — như số lượng khách truy cập web, số lượt xem trang, số người dùng mới và quay lại, số người đăng ký mới, thời gian họ ở lại trên website của bạn — đều có giá trị, điều quan trọng hơn là xác định được những chỉ số cụ thể, đặc thù cho sản phẩm hay doanh nghiệp mà bạn đang cố gắng phát triển.</p>
+
+<p>Cách để xác định các chỉ số thiết yếu là tìm ra những hành động tương quan trực tiếp nhất với việc người dùng trải nghiệm giá trị cốt lõi của sản phẩm — chẳng hạn, với Facebook, đó là người dùng mời bao nhiêu người tham gia vòng bạn bè của họ, họ truy cập trang thường xuyên đến mức nào, họ đăng bao nhiêu bài và bình luận, và họ dành bao nhiêu thời gian trên trang. Ở mức tối thiểu, bạn cần theo dõi chỉ số cho từng bước mà người dùng phải thực hiện để đi đến aha moment, cũng như tần suất họ thực hiện những bước đó. Lấy Uber làm ví dụ: chỉ số thiết yếu với hành khách là số chuyến đi hoàn thành. Vì vậy, ngoài số người mới tải ứng dụng, công ty sẽ muốn theo dõi số chuyến được đặt, số hành khách quay lại và đặt lại, và tần suất họ đặt chuyến mới.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Dashboard của Google Analytics</div>
+Ảnh chụp màn hình dashboard mặc định của Google Analytics. Chú thích: các chỉ số xuất hiện trong dashboard mặc định của Google chưa chắc đã là những chỉ số quan trọng nhất cho tăng trưởng của bạn.
+</div>
+
+<p>Các phương trình trên có vẻ đơn giản quá mức. Rõ ràng còn rất nhiều yếu tố khác góp phần vận hành một doanh nghiệp, như đầu tư R&amp;D, chi phí nguyên vật liệu, chi phí vận chuyển, quản lý tồn kho, v.v. Nhưng chính sự đơn giản tối giản của phương trình tăng trưởng mới là điểm mấu chốt. Khối lượng dữ liệu khổng lồ về hành vi khách hàng hiện có sẵn, ngay cả với chương trình phân tích cơ bản nhất, cũng đủ khiến người ta choáng ngợp, với hết màn hình này đến màn hình khác chứa đầy chi tiết. Google Analytics, chẳng hạn, cung cấp hàng trăm biểu đồ và điểm dữ liệu — dù rất mạnh mẽ, chúng có thể gây rối nếu không được dùng để phục vụ việc theo dõi những chỉ số quan trọng nhất, đặc thù cho sự tăng trưởng của bạn. Giản lược sự phức tạp trong hoạt động kinh doanh xuống thành một công thức cơ bản giúp ích vô cùng lớn trong việc cho phép growth team tập trung vào đúng tín hiệu giữa biển nhiễu dữ liệu mênh mông này.</p>
+
+<p>Làm được điều này có thể khá khó. Đôi khi những chỉ số mà trực giác cho là đòn bẩy then chốt với bạn — kể cả những chỉ số từng trở thành chỉ số "thời thượng" trong một giai đoạn, như daily active users (DAU — số người dùng hoạt động hằng ngày) — trên thực tế lại có rất ít tác động đến tăng trưởng thực sự và bền vững. Josh Elman giải thích rằng nếu bạn là một dịch vụ du lịch như Airbnb chẳng hạn, thì daily active users — dù có thể trông đẹp trên giấy — là một chỉ số vô nghĩa với bạn. Tại sao? Dù người ta có yêu thích dịch vụ đến đâu, cũng không ai đi tìm kiếm và đặt phòng cho kỳ nghỉ mỗi ngày. Ngay cả những người dùng tích cực nhất của Airbnb có lẽ cũng chỉ đặt chỗ ở khoảng ba hay bốn lần mỗi năm. Ngay cả với một trang đánh giá như Yelp, việc sử dụng hằng ngày cũng khó xảy ra. Tìm kiếm trên trang có lẽ một hoặc hai lần mỗi tuần đã có thể được coi là sử dụng thường xuyên và mạnh. Những sản phẩm này đơn giản là có một "trần" cố hữu về tần suất mà một khách hàng cần đến dịch vụ của họ. Dù bạn bán nệm hay khoản vay thế chấp, kinh doanh nhà hàng cao cấp hay dịch vụ doanh nghiệp, "sử dụng thường xuyên" mang một ý nghĩa khác, đặc thù cho sản phẩm của bạn.</p>
+
+<p>Thế nhưng với một số doanh nghiệp, như Facebook chẳng hạn, daily active users lại là một chỉ số cực kỳ quan trọng vì (a) như có thể bạn đã biết từ trải nghiệm của chính mình, hầu như không có giới hạn (hoặc ít nhất là một giới hạn cao đến mức đáng báo động) về số lần một người có thể vào Facebook trong một ngày; và (b) mô hình doanh thu dựa trên quảng cáo của nó được xây dựng trên tiền đề có thật nhiều người dùng dành thời gian đáng kể trên trang. Nói cách khác, một chỉ số vô nghĩa với công ty này có thể lại là đòn bẩy tăng trưởng cốt lõi của công ty khác. Ví dụ, Josh Elman cũng từng làm việc tại LinkedIn trong những ngày đầu; ông nhấn mạnh rằng tổng số lượt đăng ký (total sign-ups) từng là một chỉ số then chốt đối với mạng xã hội nghề nghiệp này. Với nhiều công ty, tổng số lượt đăng ký có thể gây hiểu nhầm, vì nếu những người đăng ký không thực sự hoạt động thì họ chẳng có giá trị thật nào. Nhưng với LinkedIn, lượng lớn những người chỉ đơn giản điền hồ sơ công việc của mình, ngay cả khi họ hầu như chẳng bao giờ ghé lại trang, chính là nền tảng căn bản tạo nên giá trị của trang. Đó là vì doanh thu của LinkedIn đến từ tin tuyển dụng và các gói thuê bao premium do nhà tuyển dụng trả tiền để có thêm tính năng nâng cao nhằm tìm và kết nối với những ứng viên tiềm năng — và cách tốt nhất để "câu" thêm nhà tuyển dụng, từ đó tạo thêm tăng trưởng doanh thu, là đảm bảo có đủ người đã đăng sơ yếu lý lịch số của họ. Ngoài ra, càng nhiều hồ sơ trên trang thì càng có nhiều lưu lượng từ Google của những người đang tìm kiếm các mối quan hệ nghề nghiệp, đưa thêm nhiều người nữa đến aha moment — tạo được một kết nối quan trọng hoặc tìm được một người tiềm năng để tuyển dụng.</p>
+
+<p>Ngược lại, với eBay, một trong những chỉ số quan trọng nhất không phải là số người dùng hằng ngày hay người dùng mới mà là số lượng mặt hàng được đăng bán. Đó là vì càng có nhiều mặt hàng trên trang, càng nhiều người mua tiềm năng sẽ trải nghiệm aha moment — nhìn thấy đúng thứ họ muốn đấu giá; và đến lượt nó, càng nhiều người bán sẽ trải nghiệm aha của việc bán được hàng. Trang web mang lại càng nhiều những khoảnh khắc như vậy cho mọi người, người dùng càng có khả năng quay lại thường xuyên, và càng nhiều hàng hoá được bán ra. Vì vậy, dù eBay rõ ràng muốn tăng số người mua tiềm năng đến trang của mình, việc khiến người bán đăng thật nhiều mặt hàng được cho là ít nhất cũng quan trọng ngang bằng, nếu không muốn nói là quan trọng hơn, và do đó nên là nơi tập trung phần lớn các thử nghiệm tăng trưởng của họ. Và quả thật, eBay đã xác định rằng số lượng hàng hoá bán ra là một chỉ số quan trọng đến mức họ chọn tổng giá trị hàng hoá giao dịch (gross merchandise volume — GMV) là chỉ số quan trọng nhất cần theo dõi, hay thứ mà cộng đồng growth hacking thường gọi là <strong>North Star metric</strong> (chỉ số Sao Bắc Đẩu).</p>
+
+<hr class="divider">
+
+<h2>Chọn một North Star (Choosing a North Star)</h2>
+
+<p>Để mài giũa phương trình tăng trưởng và thu hẹp trọng tâm, tốt nhất là chọn <strong>một</strong> chỉ số then chốt thể hiện thành công tối hậu, mà mọi hoạt động tăng trưởng đều hướng tới. Điều này giúp ích rất nhiều trong việc giữ cho các team tập trung vào cách sử dụng thời gian hiệu quả nhất và tránh lãng phí nguồn lực — thứ thường là hệ quả của những cách tiếp cận thử nghiệm tăng trưởng tuỳ tiện, tràn lan.</p>
+
+<p>Một số người trong cộng đồng growth gọi chỉ số then chốt duy nhất này là One Metric That Matters (Chỉ số duy nhất quan trọng), trong khi những người khác gọi nó là North Star. Chúng tôi thích cái tên thứ hai hơn, vì nó nhấn mạnh rằng chỉ số này trở thành ngọn hải đăng dẫn đường, giúp team luôn hướng mắt về mục tiêu tối hậu của quy trình growth hacking, thay vì quá chú tâm vào một growth hack ngắn hạn mà họ say mê quá mức — một hack có thể cực kỳ thông minh, hoặc thậm chí tạo ra một cú hích tăng trưởng tạm thời hay ảo tưởng, nhưng thực chất không đóng góp gì cho tăng trưởng dài hạn và bền vững.</p>
+
+<div class="callout">
+<div class="callout-title">Nguyên tắc chọn North Star</div>
+<p>North Star nên là chỉ số phản ánh chính xác nhất giá trị cốt lõi mà bạn tạo ra cho khách hàng. Để xác định nó, hãy tự hỏi: <em>Trong các biến số của phương trình tăng trưởng, biến số nào thể hiện rõ nhất việc mang lại trải nghiệm must-have mà bạn đã xác định cho sản phẩm của mình?</em></p>
+</div>
+
+<p>Xét lại eBay, tổng giá trị hàng hoá giao dịch là một thước đo tiên báo tuyệt vời cho sự hài lòng của khách hàng, cả người mua lẫn người bán. Càng nhiều mặt hàng được bán, càng nhiều người mua đã có được aha khi tìm thấy thứ họ muốn đấu giá, và càng nhiều người bán đã tìm được người mua cho hàng hoá của mình.</p>
+
+<p>Hãy xem xét thêm vài trường hợp khác. Với WhatsApp, aha moment là khả năng gửi tin nhắn không giới hạn cho bạn bè và gia đình, bất kể họ ở đâu trên thế giới, mà không phải lo lắng chút nào về chi phí. Vì vậy, North Star của WhatsApp là số lượng tin nhắn được gửi, thay vì, chẳng hạn, daily active users — bởi ngay cả khi một người dùng hoạt động trên ứng dụng mỗi ngày nhưng chỉ gửi một tin nhắn, thì nhiều khả năng WhatsApp không phải là lựa chọn ưu tiên của họ để liên lạc với mạng lưới của mình. Do đó, daily active users không thể hiện việc mang lại giá trị cốt lõi cho khách hàng. Với Airbnb, North Star là số đêm được đặt (nights booked). Dù team làm gì đi nữa — từ thu hút thêm người đăng ký email đến tăng số người dùng đăng ký — nếu điều đó không cải thiện số đêm thực sự được đặt, thì nó không làm tăng số aha moment mà người dùng trải nghiệm: với khách, đó là được ở một nơi họ hài lòng; với chủ nhà đăng phòng, đó là kiếm được tiền từ ngôi nhà của mình.</p>
+
+<hr class="divider">
+
+<h2>Đặt ra tầm nhìn mới (Setting New Sights)</h2>
+
+<p>North Star có thể thay đổi theo thời gian khi công ty phát triển và các mục tiêu ban đầu đã đạt được. Khi Facebook học được cách thu hút người dùng tương tác tích cực hơn, chỉ số ban đầu của họ là monthly active users (người dùng hoạt động hằng tháng) trở nên lỗi thời và daily active users trở thành thước đo tốt hơn. Tại Zillow, "the Play" chính là North Star của họ, và mỗi năm một Play mới được chọn ra, tuỳ theo nhu cầu thay đổi của doanh nghiệp.</p>
+
+<p>Khi các công ty lớn lên, họ cũng lập thêm nhiều product team và growth team, mỗi team có North Star riêng, ngay cả khi công ty vẫn có thể duy trì một chỉ số quan trọng bao trùm duy nhất. Hãy nhớ lại rằng LinkedIn hiện tập trung vào các sáng kiến trong năm lĩnh vực: tăng trưởng mạng lưới; tối ưu hoá công cụ tìm kiếm/marketing qua công cụ tìm kiếm (SEO/SEM); onboarding (hướng dẫn người dùng mới); tăng trưởng quốc tế; và engagement (mức độ tương tác) — với một team riêng cho mỗi lĩnh vực. Với Facebook, trong khi chiến lược ban đầu là dồn mọi nỗ lực vào việc giúp người dùng mới nhanh chóng kết bạn với ít nhất bảy người bạn trong mười ngày, chiến lược đó đã tiến hoá khi công ty lớn mạnh và các ưu tiên thay đổi, bao gồm việc tăng số lượng nhà quảng cáo sử dụng trang và mở rộng cơ sở người dùng quốc tế thông qua các sáng kiến như công cụ dịch thuật và Facebook Lite.</p>
+
+<hr class="divider">
+
+<h2>Soi sáng những canh bạc tốt nhất (Illuminating the Best Bets)</h2>
+
+<p>Trong bộ phim <em>An American Werewolf in London</em> (Người sói Mỹ ở London), hai chàng trai trẻ người Mỹ đang đi phượt bằng ba lô qua vùng nông thôn nước Anh được một người đàn ông họ gặp trong một quán rượu địa phương (mang cái tên đầy màu sắc The Slaughtered Lamb — Con Cừu Bị Giết Thịt) cảnh báo: "Hãy đi theo con đường, tránh xa vùng đồng hoang, và coi chừng trăng tròn." Không lâu sau khi lên đường, hai người bạn mải mê trò chuyện đến mức đi lạc vào vùng đồng hoang (moor — một vùng đất cỏ hoang dại) đúng vào đêm trăng tròn, và dĩ nhiên, một trong hai người sớm bị một con người sói tấn công. Trong phim, những tình huống hài hước (dù mang chút hương vị rùng rợn) nối tiếp nhau diễn ra. Còn khi ra mắt sản phẩm, hậu quả của việc đi chệch hướng thì chẳng buồn cười chút nào.</p>
+
+<p>Khi bạn đang hừng hực theo đuổi tăng trưởng, rất dễ để thấy mình lạc giữa đồng hoang, điên cuồng làm việc để cải thiện một chỉ số mà rốt cuộc chẳng quan trọng. Chọn đúng North Star giúp định hướng lại các nỗ lực tăng trưởng về những giải pháp tối ưu hơn, vì nó giúp soi sáng thời điểm mà trọng tâm thử nghiệm của bạn không tạo ra kết quả bạn cần.</p>
+
+<p>Quyết định từ bỏ một hướng hành động hay một thử nghiệm có thể rất khó khăn, đặc biệt nếu các thành viên trong team đã gắn bó sâu sắc với một hướng đi mà họ đã đề xuất và cổ vũ. Khi bạn đã cam kết với một ý tưởng, áp lực và cảm xúc rất dễ làm lệch lạc phán đoán. Như người đứng đầu growth team đầu tiên của Facebook, Chamath Palihapitiya, đã cảnh báo đầy sáng suốt trong một buổi nói chuyện:</p>
+
+<blockquote><p>"Nếu bạn không thể cực kỳ lạnh lùng như một bác sĩ lâm sàng và hoàn toàn tách rời cảm xúc khỏi thứ mình đang xây dựng, bạn sẽ mắc những sai lầm khổng lồ và mọi thứ sẽ không tăng trưởng, vì bạn không hiểu chuyện gì đã xảy ra." — Chamath Palihapitiya</p></blockquote>
+
+<p>Để làm rõ việc tận tâm cải thiện North Star metric giúp đưa ra những quyết định khó khăn về cách sử dụng thời gian và nguồn lực như thế nào, hãy xem cách các nhà sáng lập Airbnb quyết định tiến hành một thử nghiệm mà họ nghĩ có thể tạo ra nhiều đêm được đặt hơn — North Star của họ.</p>
+
+<div class="case">
+<div class="case-title">Case: Airbnb và những bức ảnh ở New York</div>
+<p>Để bắt đầu, họ xem xét dữ liệu để xác định những thị trường có lượng đặt phòng tụt lại phía sau, và họ ngạc nhiên phát hiện ra New York City đang hoạt động dưới kỳ vọng. Rõ ràng New York là một điểm đến du lịch lớn, nên họ đào sâu vào vấn đề, cùng với nhà đầu tư sớm Paul Graham của Y Combinator, để phân tích vì sao lượng đặt phòng không mạnh hơn. Khi xem lại các căn hộ được đăng trong thành phố, đồng sáng lập Joe Gebbia nhớ lại rằng "những bức ảnh thật sự tệ. Mọi người dùng camera điện thoại và chụp những tấm hình chất lượng kiểu Craigslist. Bất ngờ chưa! Không ai đặt phòng vì bạn không thể thấy được thứ mình đang trả tiền cho nó."</p>
+<p>Graham khuyên hai người thử nghiệm một cách hack để cải thiện lượng đặt phòng, một cách làm "low tech, high effort" (ít công nghệ, tốn nhiều công sức) — nhưng có thể thực hiện nhanh chóng và cuối cùng lại hiệu quả đến khó tin. Các đồng sáng lập và Graham kết thúc buổi họp và đặt vé máy bay đi New York. Gebbia và người đồng sáng lập Brian Chesky thuê một chiếc máy ảnh trị giá 5.000 đô la và đi gõ cửa từng nhà, chụp ảnh chuyên nghiệp cho càng nhiều căn hộ đăng trên trang trong thành phố càng tốt. Sau đó họ so sánh lượng đặt phòng của những căn có ảnh đã được cải thiện với phần còn lại của các căn ở New York, và phát hiện ra rằng những bức ảnh mới giúp tăng lượng đặt phòng gấp hai đến ba lần, ngay lập tức nhân đôi doanh thu họ thu được từ New York.</p>
+<p>Với giả thuyết rằng chất lượng ảnh ảnh hưởng đến lượng đặt phòng đã được chứng minh, họ nhanh chóng mở rộng nỗ lực chụp ảnh chất lượng cao sang các thành phố lớn khác cũng đang hoạt động kém: Paris, London, Vancouver và Miami. Mức tăng vẫn duy trì ổn định, và để đảm bảo số lượt đặt phòng cao nhất, Airbnb quyết định lập một chương trình nhiếp ảnh cho phép chủ nhà đặt lịch để một nhiếp ảnh gia chuyên nghiệp đến chụp ảnh chỗ ở của họ. Ra mắt vào mùa hè năm 2010 với 20 nhiếp ảnh gia, chương trình đã phát triển lên hơn 2.000 nhiếp ảnh gia tự do, chụp ảnh cho 13.000 chỗ ở trên 6 châu lục vào năm 2012. Nó có rẻ không? Không, nhưng những chỗ ở được cải thiện đã mang lại tỷ lệ đặt phòng tốt hơn gấp hai lần rưỡi, và kết quả này giữ vững trên khắp thế giới.</p>
+</div>
+
+<p>Gebbia và Chesky lẽ ra đã có thể cố đẩy lượng đặt phòng lên bằng cách tập trung vào việc tăng mạnh số người tìm kiếm chỗ ở tại New York. Họ có thể đã gửi thêm email quảng cáo giới thiệu các điểm đến nổi tiếng ở New York, hoặc trả tiền cho quảng cáo tìm kiếm (search ads) xuất hiện khi mọi người Google các điểm đến. Có thể điều đó sẽ làm tăng lưu lượng truy cập trang phần nào, nhưng số lượt đặt phòng vẫn sẽ bị giới hạn bởi sự thiếu hấp dẫn của những bức ảnh. Bằng cách giữ vững trọng tâm vào việc cải thiện mục tiêu tối hậu là tăng số đêm được đặt, họ không chỉ cải thiện tỷ lệ đặt phòng mà còn khiến bất kỳ mức tăng lưu lượng truy cập nào trong tương lai mà họ kéo về trang trở nên sinh lời hơn.</p>
+
+<p>Cũng giống như rất dễ đánh mất North Star và thấy mình lạc vào đồng hoang khi chạy theo những chỉ số phù phiếm (vanity metric) hay không liên quan, thì cũng dễ không kém để bị lạc trong mớ phân tích dữ liệu rối rắm và đánh mất cảm giác cấp bách cần bắt tay vào thử nghiệm các cách thực sự thúc đẩy tăng trưởng. Alex Schultz lưu ý rằng nhiệm vụ ban đầu của team tại Facebook là cải thiện một chỉ số then chốt — mà Mark Zuckerberg quyết định là monthly active users — đã giúp growth team thoát khỏi tình trạng "analysis paralysis" (tê liệt vì phân tích). Phân tích dữ liệu ngày càng nhiều có thể là một cái bẫy đặc biệt hấp dẫn; vì đào sâu vào dữ liệu mang tính khoa học, chúng ta có thể tự thuyết phục mình rằng mình chỉ đang làm việc chặt chẽ và không muốn thử nghiệm khi chưa có đủ bằng chứng về khả năng thành công. Một trong những câu trích dẫn yêu thích của Schultz mỗi khi ông nói về quy trình tăng trưởng là của vị chỉ huy Hoa Kỳ trong Thế chiến II, Tướng George Patton:</p>
+
+<blockquote><p>"Một kế hoạch tốt được thực thi quyết liệt ngay bây giờ còn tốt hơn một kế hoạch hoàn hảo vào ngày mai." — Tướng George Patton</p></blockquote>
+
+<p>Sự rõ ràng của mục tiêu North Star giúp giữ cho việc phân tích dữ liệu được tập trung chặt chẽ, để bạn có thể khởi động thử nghiệm có tác động cao của mình nhanh nhất có thể.</p>
+
+<hr class="divider">
+
+<h2>Yêu cầu bắt buộc về dữ liệu (The Data Imperative)</h2>
+
+<p>Để xác định phương trình tăng trưởng và thiết lập North Star metric, dĩ nhiên điều kiện tiên quyết là khả năng vừa thu thập dữ liệu về hành vi khách hàng, vừa đo lường hiệu quả sản phẩm và kết quả các thử nghiệm. Chỉ khi đó bạn mới biết được liệu các giả định của mình về cả hai điều này có khớp với thực tế cách mọi người đang sử dụng sản phẩm hay không. Jack Dorsey, nhà sáng lập Twitter, gọi việc thiết lập hệ thống theo dõi dữ liệu để làm được điều đó là "instrumentation" (trang bị hệ thống đo lường). Giống như một chiếc máy bay không thể bay nếu không có các thiết bị đo cung cấp thông tin về độ cao, áp suất không khí và tốc độ gió được theo dõi liên tục, nếu không có đúng dữ liệu trong tầm tay, growth team của bạn sẽ bay mù.</p>
+
+<p>Cũng như bạn phải xác định tập hợp chỉ số cụ thể quan trọng nhất đối với tăng trưởng dựa trên phương trình tăng trưởng riêng của mình, bạn nên dành thời gian gom các nguồn dữ liệu lại và điều chỉnh năng lực phân tích sao cho có thể phân tích tinh tế hơn về thông tin và hành vi của khách hàng/người dùng. Một lần nữa, điều này thường đòi hỏi nhiều hơn những gì các ứng dụng dữ liệu tiêu chuẩn, có sẵn như Google Analytics cho phép bạn làm. Dù những công cụ đó có vai trò của chúng, khi bạn bắt đầu cú đẩy tăng trưởng mạnh mẽ, điều quan trọng là có thể theo dõi mỗi người dùng từ lần truy cập đầu tiên cho tới tất cả các tương tác của người đó với sản phẩm — từ cách họ khám phá ra sản phẩm, đến khi trải nghiệm aha moment, cho đến lúc họ ngừng sử dụng.</p>
+
+<p>Hầu hết các startup lẫn các công ty lâu đời đều dùng nhiều chương trình phần mềm khác nhau để thu thập, lưu trữ và phân tích dữ liệu khách hàng. Họ sẽ có một chương trình Web analytics để theo dõi hành vi người dùng trên website và bên trong sản phẩm (nếu sản phẩm chạy trên web), cũng như một chương trình quản lý quan hệ khách hàng (CRM) để đo lường mức độ tương tác với email và thông báo trên di động, và một hệ thống theo dõi thanh toán, cùng nhiều thứ khác.</p>
+
+<p>Như đã bàn ở Chương Hai, việc kết hợp toàn bộ dữ liệu để có thể theo dõi chi tiết khách hàng xuyên suốt funnel trải nghiệm là điều thiết yếu để học được cách biến sản phẩm của bạn thành must-have. Nếu bạn chưa gom toàn bộ dữ liệu ở giai đoạn đó, thì bây giờ bắt buộc phải dành thời gian để làm việc này.</p>
+
+<p>Có một kho dữ liệu hợp nhất như vậy không chỉ giúp chỉ ra những vùng cần thử nghiệm, như đã bàn ở Chương Hai, mà còn cho phép bạn thiết kế những thử nghiệm tốt hơn, tập trung cụ thể vào việc cải thiện những gì bạn đã xác định là đòn bẩy tăng trưởng then chốt. Những growth team giỏi nhất đều dành thời gian để làm đúng việc thu thập và phân tích dữ liệu. Growth team của Facebook cho rằng những insight dữ liệu tốt hơn quan trọng đến mức vào tháng 1 năm 2009, họ đã có một bước đi quyết liệt: dừng toàn bộ các thử nghiệm tăng trưởng và dành trọn một tháng chỉ để cải thiện việc theo dõi, thu thập và hợp nhất dữ liệu. Naomi Gleit, product manager đầu tiên trong growth team của Facebook, nhớ lại rằng "năm 2008, chúng tôi đã bay mù khi nói đến việc tối ưu hoá tăng trưởng." Sau dự án, bức tranh dữ liệu đã đầy đủ và họ có thể thấy từng người dùng trên trang đang làm gì; họ có được cái nhìn toàn diện hơn nhiều về cách mọi người sử dụng Facebook, và về những chỗ đang phát sinh vấn đề trong trải nghiệm sản phẩm. Điều này giúp growth team nghĩ ra nhiều thử nghiệm tập trung hơn hẳn để kiểm tra và thúc đẩy tăng trưởng.</p>
+
+<p>Tin tốt là, trong khi với một công ty lớn — như Facebook vào thời điểm đó, hay Walmart khi họ tiến hành quy trình này — nỗ lực kết hợp toàn bộ dữ liệu là một việc khá vất vả, thì nó có thể được thực hiện dễ dàng hơn ở các công ty hoặc dự án nhỏ hơn, nhờ có sẵn hàng loạt công cụ và dịch vụ giúp việc thu thập dữ liệu và kết hợp dữ liệu từ nhiều nguồn trở nên dễ dàng hơn. Thực tế, chuyên gia marketing Rob Sobers đã phác thảo một phương pháp đơn giản sử dụng các công cụ có sẵn, tạo ra một hệ thống theo dõi dữ liệu mà (tại thời điểm viết sách) chỉ tốn 9 đô la mỗi tháng. (Dù chúng tôi sẽ không đi vào chi tiết cách làm ở đây, bạn có thể tìm thấy đường dẫn đến nó trong phần chú thích cuối sách.)</p>
+
+<hr class="divider">
+
+<h2>Không phải tất cả chỉ là những con số (It's Not All About the Numbers)</h2>
+
+<p>Dù vậy, dữ liệu người dùng vẫn có giới hạn của nó, kể cả dữ liệu chi tiết đến kinh ngạc. Rốt cuộc, ngay cả phân tích tinh vi nhất cũng chỉ thực sự cho bạn biết chắc chắn người dùng đang <em>làm gì</em>, chứ không cho biết <em>tại sao</em> họ hành xử như vậy. Đôi khi các khuôn mẫu hành vi cho phép bạn dễ dàng phỏng đoán lý do. Ví dụ, nếu bạn thấy một lượng đáng kể người dùng bỏ đi khỏi website khi họ cố dùng một tính năng nào đó — chẳng hạn một trình phát video — thường thì bạn có thể dễ dàng xác định một trục trặc trong cách nó vận hành: thứ mà các nhà thiết kế sản phẩm gọi là vấn đề usability (khả năng sử dụng). Có thể trong trường hợp trình phát video, khi đào sâu vào dữ liệu, bạn phát hiện ra điều này xảy ra thường xuyên hơn với những người dùng truy cập sản phẩm qua điện thoại Android, và nhận ra rằng các vấn đề trong cách trình phát video hoạt động trên thiết bị Android đang khiến video mất rất nhiều thời gian để tải. Những vấn đề usability như vậy là "trái chín ở cành thấp" (low-hanging fruit — dễ hái, dễ xử lý). Những vấn đề khác đang cản trở mọi người sử dụng sản phẩm một cách hăng hái có thể khó hiểu hơn nhiều, và việc tìm ra "tại sao" đằng sau những gì đang diễn ra đòi hỏi phải tiến hành một số khảo sát người dùng, phỏng vấn, hoặc cả hai.</p>
+
+<p>Mặc dù việc trò chuyện với người dùng ở giai đoạn phát triển ban đầu khi thử nghiệm prototype (bản mẫu) đã trở nên phổ biến, ở quá nhiều startup và công ty lâu đời, việc này bị bỏ quên khi sản phẩm đã ra mắt. Tiếp tục khai thác nguồn lực sống còn này khi bạn bước vào quy trình thử nghiệm nhịp độ cao là cực kỳ quan trọng, vì những phản hồi thu được sẽ dẫn đường cho rất nhiều thử nghiệm mạnh mẽ nhất mà bạn có thể chạy. Nói cách khác, phần lớn các phân tích định lượng mà bạn thực hiện nên được bổ sung bằng việc thăm dò định tính này.</p>
+
+<hr class="divider">
+
+<h2>Thiết kế báo cáo dễ tiếp cận (Design Accessible Reporting)</h2>
+
+<p>Một điểm cuối cùng về dữ liệu: tầm quan trọng then chốt của việc báo cáo kết quả khám phá dữ liệu (và sau đó là kết quả từ các thử nghiệm bạn sẽ chạy) theo cách đơn giản và dễ tiếp cận nhất có thể. Rốt cuộc, ngay cả khi bạn đã nhìn vào đúng các chỉ số và tính toán đúng các con số, nếu không ai trong team (ngoài các chuyên viên phân tích dữ liệu) hiểu được những phát hiện của bạn, thì chúng khó có thể dẫn đến hành động có ý nghĩa. Những bảng tính khổng lồ về dữ liệu người dùng, các truy vấn cơ sở dữ liệu và những màn hình hiển thị mang tính kỹ thuật cao — vốn có thể cực kỳ giá trị với các chuyên gia phân tích dữ liệu — lại có thể khiến các thành viên khác ngợp, nếu không muốn nói là tê liệt hoàn toàn. Đó là lý do việc dành thời gian tạo ra những báo cáo minh hoạ sinh động tiến độ của bạn liên quan đến các đòn bẩy tăng trưởng và North Star metric — sử dụng thứ thường được gọi là <strong>dashboard</strong> — lại có giá trị đến vậy.</p>
+
+<p>Chúng tôi là fan cuồng nhiệt của dashboard vì (a) chúng giúp hướng sự chú ý của các thành viên vào những xu hướng hoặc chỉ số then chốt; và (b) chúng cho phép bạn chia sẻ phát hiện với toàn công ty, từ đó khuyến khích nhiều người tham gia hơn vào nỗ lực tăng trưởng. Khi Sean mời tất cả mọi người trong công ty tại GrowthHackers (cùng các cố vấn thân tín và thành viên hội đồng quản trị) tham gia vào quá trình đề xuất ý tưởng phát triển cộng đồng, chúng tôi đã nhận được một cơn lũ ý tưởng mới tuyệt vời, nhiều ý tưởng trong số đó đã thành công và thúc đẩy tăng trưởng rất tốt.</p>
+
+<p>Bằng cách giúp dữ liệu dễ tiếp cận hơn trong toàn tổ chức, bạn cũng giữ cho North Star và các chỉ số quan trọng khác luôn hiện diện trong tâm trí của cả công ty, và khuyến khích hành vi dựa trên dữ liệu (data-driven) hơn ở tất cả các team, chứ không chỉ growth team. Khi Willix Halim, cựu phó chủ tịch cấp cao phụ trách tăng trưởng tại Freelancer.com, thực sự thử nghiệm xem việc hiển thị dashboard tại khu vực làm việc tác động thế nào đến hiệu suất của các team, ông phát hiện ra rằng việc liên tục nhìn thấy những con số mà team chịu trách nhiệm giúp tăng đáng kể khả năng của họ trong việc tác động tích cực lên chính những chỉ số đó.</p>
+
+<p>Để thấy rõ báo cáo dễ tiếp cận có giá trị như thế nào, hãy nhìn xem những bảng tính mà growth team thường tạo ra để theo dõi các chỉ số quan trọng có thể phức tạp đến mức nào. Hình dưới đây được chia sẻ bởi Dan Wolchonok, senior product manager tại HubSpot. Nó là một kho thông tin vô giá, nhưng có thể khiến những người không được đào tạo để đọc loại báo cáo này cảm thấy ngợp khi phân tích và hành động dựa trên kiểu trình bày dữ liệu như vậy.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Một báo cáo theo dõi tăng trưởng điển hình (Typical Growth Tracking Report)</div>
+Bảng tính theo dõi tăng trưởng do Dan Wolchonok (HubSpot) chia sẻ — dày đặc các hàng và cột số liệu về những chỉ số quan trọng. Giàu thông tin nhưng khó đọc và khó chuyển thành hành động với những người không chuyên về phân tích dữ liệu.
+</div>
+
+<p>Bây giờ hãy xem việc nhận ra các xu hướng đáng kể dễ dàng như thế nào trong những biểu đồ sau đây do Pinterest tạo ra, được kỹ sư tăng trưởng John Egan của Pinterest giới thiệu trong một bài viết trên blog mang tên chính ông, về 27 chỉ số then chốt mà Pinterest theo dõi.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Các dashboard tăng trưởng của Pinterest (Pinterest Growth Dashboards)</div>
+Ba biểu đồ đường đơn giản:
+<ul>
+<li><strong>Sign ups by referrer type</strong> — lượt đăng ký theo loại nguồn giới thiệu;</li>
+<li><strong>Resurrections by platform</strong> — số người dùng được "hồi sinh" (quay lại sau khi ngừng dùng) theo nền tảng;</li>
+<li><strong>Resurrections by referrer</strong> — số người dùng được "hồi sinh" theo nguồn giới thiệu.</li>
+</ul>
+Các giá trị cụ thể đã được ẩn vì lý do bảo mật, nhưng xu hướng trong từng biểu đồ có thể nhận ra ngay lập tức.
+</div>
+
+<p>Các xu hướng rõ ràng có thể nhận ra ngay lập tức trong từng biểu đồ, dù chúng ta không thể biết chính xác đó là gì, vì Egan đã giấu đi các chi tiết cụ thể trong những phiên bản bạn thấy ở đây vì lý do bảo mật. Việc chia sẻ dữ liệu chắc chắn phải được thực hiện một cách thận trọng, và bạn sẽ cần cẩn thận về việc những báo cáo nào được gửi ra ngoài phạm vi growth team, và chắc chắn là những báo cáo nào được chia sẻ ra ngoài công ty.</p>
+
+<p>Tạo ra những dashboard đơn giản như vậy không phải là, xin thứ lỗi cho cách nói, "khoa học tên lửa". Có vô số công cụ để tạo ra những bản trực quan hoá dữ liệu sắc nét, từ những công cụ đơn giản thiết kế cho các startup nhỏ như Geckoboard và Klipfolio, đến các giải pháp doanh nghiệp như Tableau, Qlik Sense và hàng chục công cụ khác. Dù bạn chọn công cụ nào, các báo cáo của bạn phải sâu sắc và có thể hành động được (actionable). Có quá nhiều báo cáo chẳng là gì ngoài "data puking" (nôn dữ liệu), như cách gọi của chuyên gia Google Analytics Avinash Kaushik. Chỉ đơn thuần phát tán các chỉ số một cách lộn xộn chẳng làm được gì nhiều ngoài gây rối. Thay vào đó, mục tiêu là mang lại sự rõ ràng cho những chỉ số quan trọng nhất.</p>
+
+<p>Để làm được điều đó, dashboard chỉ nên báo cáo những chỉ số quan trọng nhất gắn với các đòn bẩy tăng trưởng của bạn. Sau khi đã thu hẹp báo cáo vào những gì thực sự quan trọng, bước tiếp theo là trình bày thông tin theo cách có thể hành động được. Trước hết, các chỉ số nên được trình bày dưới dạng tỷ lệ thay vì những con số tĩnh. Ví dụ, báo cáo tổng số người dùng đã thu hút được là một con số tĩnh và cho bạn biết rất ít, nhưng số người dùng mới thu hút được mỗi ngày hoặc mỗi tuần thì tốt hơn nhiều, vì có thể so sánh nó với các khoảng thời gian trước đó để xem tốc độ đang tăng hay giảm. Các con số cũng cần đi kèm một chỉ báo cho biết chúng đang ở trên xu hướng, dưới xu hướng hay ngang bằng với hiệu suất trước đây. Điều này có thể thực hiện bằng cách hiển thị phần trăm thay đổi so với kỳ trước, hoặc dùng một chỉ báo như màu sắc để cho team biết khi nào một con số đang vượt lên hoặc tụt lại so với mức mà nó thường đạt được.</p>
+
+<p>Các con số cũng có thể được so sánh với một mục tiêu. Ví dụ, tại Inman, team đo các chỉ số tăng trưởng người đăng ký so với các chỉ tiêu được đặt ra trong mục tiêu hằng quý để xem họ đang đi trước hay chậm hơn tiến độ.</p>
+
+<p>Dashboard nên giúp các thành viên trong team nắm bắt được "sức khoẻ" tăng trưởng của doanh nghiệp, và trả lời các câu hỏi một cách nhanh chóng, rõ ràng bằng thông tin chúng cung cấp. Mặc dù thiết kế trực quan hoá dữ liệu là một kỹ năng tinh vi, một chuyên viên phân tích dữ liệu tài năng làm việc cùng growth lead (trưởng nhóm tăng trưởng) có thể tạo ra một bộ dashboard sâu sắc và có thể hành động được để team theo dõi những chỉ số quan trọng nhất.</p>
+
+<hr class="divider">
+
+<h2>Kết hợp tất cả lại với nhau (Putting It All Together)</h2>
+
+<p>Để minh hoạ cách việc xác định các đòn bẩy tăng trưởng, tiến hành phân tích và báo cáo chuyên sâu, rồi bổ sung bằng việc hỏi trực tiếp khách hàng có thể được dùng để mở khoá rồi tối ưu hoá một cơ hội tăng trưởng, hãy xem xét kỹ hơn cách Josh Elman và growth team tại Twitter phát hiện ra rằng những người theo dõi (follow) ít nhất 30 người dùng khác sẽ trở thành những người hâm mộ nhiệt thành, gắn bó lâu dài.</p>
+
+<div class="case">
+<div class="case-title">Case: Twitter và "con số 30"</div>
+<p>Elman có phát hiện ban đầu nhờ thực hiện thứ được gọi là <strong>cohort analysis</strong> (phân tích nhóm), tức là chia khách hàng hoặc người dùng thành những nhóm riêng biệt theo một đặc điểm chung. Với Twitter, một cách chia cơ bản có thể là theo tháng mà người dùng tham gia dịch vụ. Việc này có thể xác định khá dễ dàng, nhưng với một kho dữ liệu lớn và chi tiết, bạn sẽ có thể tạo ra những cohort tinh tế hơn nhiều, chẳng hạn như những người xem Twitter tối đa năm lần một ngày nhưng không bao giờ tweet, những người chỉ tweet vào cuối tuần, những người có thêm từ mười người theo dõi mới trở lên mỗi tuần, v.v.</p>
+<p>Vào thời điểm đó, vấn đề của Twitter là retention (giữ chân người dùng); rất nhiều người đăng ký nhưng rồi bỏ đi, trong khi cùng lúc đó một nhóm nhỏ hơn nhiều lại trở nên khá tích cực. Vì vậy, Elman và team bắt đầu bằng cách chia người dùng thành các cohort dựa trên số ngày họ truy cập Twitter trong một tháng. Sau đó họ so sánh số lần truy cập của chính những người dùng đó trong tháng tiếp theo. Họ đã có một phát hiện đáng chú ý: những người truy cập ít nhất bảy lần trong một tháng được giữ chân sang tháng tiếp theo với tỷ lệ rất cao, từ 90 đến 100%.</p>
+</div>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Tỷ lệ giữ chân dựa trên số lần sử dụng trong tháng đầu tiên (Retention Rate Based on Times Used in Month One)</div>
+Biểu đồ cho thấy tỷ lệ retention ở tháng tiếp theo tăng dần theo số ngày người dùng truy cập Twitter trong tháng đầu; với những người truy cập từ bảy lần trở lên trong tháng, tỷ lệ được giữ chân sang tháng sau đạt khoảng 90–100%.
+</div>
+
+<p>Sau đó, ông chia người dùng thành ba cohort: <strong>core users</strong> (người dùng cốt lõi), những người truy cập ít nhất bảy lần mỗi tháng; <strong>casual users</strong> (người dùng thỉnh thoảng), những người truy cập ít hơn; và <strong>cold users</strong> (người dùng "nguội"), những người không bao giờ quay lại sau lần truy cập đầu tiên. Điều đó cho phép team xác định rằng chỉ 20% số người truy cập trở thành core users. Vì vậy team lặn sâu hơn vào dữ liệu, tiến hành một phân tích tương quan (correlation analysis) — loại phân tích tìm kiếm bất kỳ điểm tương đồng nào về hành vi trong một nhóm người dùng mà không có ở các nhóm khác. Phân tích những người dùng có tỷ lệ giữ chân cao, quay lại ít nhất bảy lần mỗi tháng, cho thấy những người này thường đang theo dõi một số lượng người dùng khác dao động quanh mức 30; một số theo dõi nhiều hơn hẳn, nhưng 30 dường như là con số "tipping point" (điểm bùng phát) khiến mọi người bị cuốn vào và quay lại nhiều hơn.</p>
+
+<p>Nhưng Elman và team không dừng lại ở đó. Họ biết rằng, như câu thần chú trong kiểm định thống kê vẫn nói, <em>tương quan không đồng nghĩa với nhân quả</em> (correlation does not equal causation). Đến thời điểm đó, họ có thể đã bắt đầu chỉ đơn giản cố gắng tăng số người mà người dùng theo dõi và dừng lại ở đó. Và quả thật điều đó có thể đã tạo ra những kết quả đáng kể. Nhưng nếu bản thân mong muốn theo dõi một lượng lớn người không phải là lý do sâu xa khiến việc theo dõi 30 người làm sản phẩm trở nên "dính" (sticky) thì sao? Vì vậy growth team đào sâu thêm vào dữ liệu và sớm tìm thấy một mối tương quan khác. Việc mọi người có trở thành người dùng tích cực hay không còn liên quan đến việc bao nhiêu trong số 30 người trở lên mà họ đang theo dõi cũng theo dõi lại họ. Nhưng trái với những gì bạn có thể nghĩ, không phải cứ càng nhiều người theo dõi lại một người dùng thì người đó càng có khả năng gắn bó với Twitter; thay vào đó, những người được theo dõi lại bởi chỉ khoảng một phần ba số người họ theo dõi mới là những người trở thành người dùng trung thành.</p>
+
+<p>Nhưng tại sao? Đây là lúc việc thu thập insight bằng cách phỏng vấn người dùng Twitter phát huy tác dụng. Bằng cách gọi điện và phỏng vấn người dùng, team phát hiện ra rằng nếu số người theo dõi lại bạn vượt quá nhiều so với một phần ba số người bạn đang theo dõi, thì Twitter trông gần như chỉ là một mạng xã hội khác. Giá trị khác biệt của sản phẩm không rõ ràng. Nếu ít hơn một phần ba số người bạn theo dõi theo dõi lại bạn, thì Twitter lại trông giống một trang tin tức hơn — mà loại này thì đã có vô số lựa chọn khác. Giá trị độc nhất của Twitter như một nơi để mọi người biết được điều gì đang diễn ra trong thế giới của họ chỉ trở nên rõ ràng khi họ có tỷ lệ từ một phần ba đến hai phần ba.</p>
+
+<p>Team cũng dùng phỏng vấn để tìm hiểu hành vi của một cohort người dùng đặc biệt khác: những người đã rơi vào trạng thái "hôn mê" (comatose), biến mất một thời gian rồi đột nhiên quay lại và trở nên tích cực. Bằng cách thực sự nhấc điện thoại lên và gọi cho những người này, team biết được chính xác điều gì đã xảy ra: khi mới bắt đầu dùng Twitter, họ nghĩ nó chủ yếu là để gửi tweet, như một hình thức phát sóng, đặc biệt là cho mục đích quảng bá. Họ không có hứng thú với việc đó, nên họ bỏ đi. Nhưng rồi một người quen kể cho họ về một ai đó mà người ấy đang theo dõi — có thể là một người nổi tiếng hay một người họ ngưỡng mộ trong sự nghiệp hoặc cộng đồng — và những "người tị nạn Twitter" này nhận ra giá trị của trang như một công cụ để kết nối và học hỏi từ người khác. Kết luận đã rõ ràng: số người mà một người dùng theo dõi và số người theo dõi họ chính là đòn bẩy then chốt mà team cần tập trung vào để thúc đẩy tăng trưởng. Và họ đã dùng thông tin này để tiếp tục tinh chỉnh cách gợi ý những người mà người dùng nên theo dõi.</p>
+
+<p>Như ví dụ từ Twitter cho thấy, xác định phương trình tăng trưởng và các chỉ số then chốt cần cải thiện, cùng với thiết lập hệ thống đo lường (instrumentation), thu thập dữ liệu và báo cáo phù hợp — bao gồm cả phản hồi của khách hàng — để khám phá và theo dõi các đòn bẩy tăng trưởng cốt lõi, là bước khởi đầu thiết yếu và mạnh mẽ để growth hacking thành công. Giờ đây bạn đã sẵn sàng đưa cỗ máy tăng trưởng của mình vào vận hành. Đã đến lúc giới thiệu quy trình từng bước mà chúng tôi đã phát triển để: mài giũa ra bộ ý tưởng tốt nhất để thử nghiệm; hoàn thành các thử nghiệm hiệu quả nhất có thể; điều hành một cuộc họp tăng trưởng (growth meeting) có kỷ luật cao; và liên tục học hỏi, xây dựng dựa trên những phát hiện của mình để đưa cỗ máy tăng trưởng vào guồng quay tốc độ cao.</p>
+
+<hr class="divider">
+
+<h2>Điểm chính của chương</h2>
+<ul>
+<li>Sản phẩm must-have là điều kiện cần nhưng chưa đủ; cần tập trung vào <strong>đúng đòn bẩy tăng trưởng vào đúng thời điểm</strong> (bài học Everpix).</li>
+<li>Startup nên ưu tiên các thử nghiệm có tác động lớn — vừa thắng lớn hơn, vừa có kết quả kết luận nhanh hơn; thay đổi nhỏ như màu nút cần quá nhiều traffic và thời gian.</li>
+<li>Xây dựng <strong>phương trình tăng trưởng cơ bản</strong> riêng cho sản phẩm để xác định những chỉ số thực sự quan trọng, thay vì chạy theo chỉ số mặc định hay "thời thượng" như DAU.</li>
+<li>Chọn một <strong>North Star metric</strong> phản ánh chính xác nhất giá trị cốt lõi mang lại cho khách hàng (GMV của eBay, số tin nhắn của WhatsApp, số đêm được đặt của Airbnb); North Star có thể thay đổi khi công ty lớn lên.</li>
+<li>North Star giúp từ bỏ những hướng đi sai, tránh "analysis paralysis" và tập trung vào thử nghiệm có tác động cao (Airbnb chụp ảnh chuyên nghiệp ở New York).</li>
+<li>Đầu tư vào instrumentation và hợp nhất dữ liệu để theo dõi người dùng xuyên suốt hành trình; bổ sung dữ liệu định lượng bằng khảo sát, phỏng vấn định tính để hiểu "tại sao".</li>
+<li>Dashboard nên đơn giản, tập trung vào chỉ số gắn với đòn bẩy tăng trưởng, trình bày dưới dạng tỷ lệ, có chỉ báo xu hướng và so sánh với mục tiêu.</li>
+<li>Case Twitter: cohort analysis + correlation analysis + phỏng vấn người dùng giúp tìm ra đòn bẩy "theo dõi khoảng 30 người, với một phần ba đến hai phần ba theo dõi lại".</li>
+</ul>
+
+<nav class="chapnav">
+  <a href="/hacking-growth/xac-dinh-san-pham-must-have"><span class="lbl">Chương trước</span>Chương 2: Xác Định Sản Phẩm Có Phải Must-Have</a>
+  <a href="/hacking-growth/thu-nghiem-voi-nhip-do-cao"><span class="lbl">Chương sau</span>Chương 4: Thử Nghiệm Với Nhịp Độ Cao</a>
+</nav>
+
+</body>
+</html>

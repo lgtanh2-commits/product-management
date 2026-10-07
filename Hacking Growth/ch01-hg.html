@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 1: Xây Dựng Growth Team — Hacking Growth</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+/* Thành phần riêng của sách — chỉ dùng token có sẵn trong theme.css */
+.callout{background:#fff;border:1px solid var(--color-dew);border-left:4px solid var(--color-sprout);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.callout .callout-title{font-weight:700;color:var(--color-sprout-dark);margin-bottom:6px}
+.callout p:last-child,.callout ul:last-child,.callout ol:last-child{margin-bottom:0}
+.case{background:var(--color-dew);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.case .case-title{font-weight:700;margin-bottom:6px}
+.case p:last-child,.case ul:last-child{margin-bottom:0}
+.figure-note{border:1px dashed var(--color-mist);border-radius:var(--radius-chapter-row);padding:14px 18px;margin:22px 0;color:var(--color-ash);font-size:.95rem}
+.figure-note .figure-title{font-weight:700;color:var(--color-slate-ink);margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<p class="book-topline"><a href="/hacking-growth">← Về mục lục</a></p>
+
+<div class="book-label">Hacking Growth · Sean Ellis &amp; Morgan Brown · Phần I · Chương 1</div>
+<h1>Xây Dựng Growth Team</h1>
+<p class="chapter-subtitle">Phá bỏ "silo" giữa marketing, product, engineering và data để lập một đội liên chức năng thử nghiệm liên tục vì tăng trưởng.</p>
+
+<div class="case">
+<div class="case-title">Case: BitTorrent — từ ngã ba đường đến 100 triệu lượt cài đặt</div>
+<p>Khi Pramod Sokke gia nhập BitTorrent với vị trí senior director of product management (giám đốc cấp cao phụ trách quản lý sản phẩm) vào năm 2012, start-up từng một thời "nóng hổi" này đang đứng trước ngã ba đường. Tăng trưởng của phần mềm desktop nổi tiếng của họ — cho phép người dùng tìm kiếm và tải file từ khắp nơi trên Web — đã chững lại. Đáng lo hơn, công ty hoàn toàn chưa có phiên bản mobile của sản phẩm — một bất lợi khổng lồ trong thời điểm người dùng đang ồ ạt rời bỏ máy tính để bàn chuyển sang smartphone. Tình hình còn tệ hơn khi YouTube, Netflix và các dịch vụ streaming khác đang "nuốt chửng" thời gian và sự chú ý của người dùng, cả trên điện thoại lẫn các thiết bị khác, khiến BitTorrent bị bỏ lại phía sau. Pramod được đưa về để xây dựng sản phẩm mobile và thổi bùng lại tăng trưởng.</p>
+</div>
+
+<p>Công ty 50 người này được tổ chức theo các "silo" (bộ phận khép kín) truyền thống: marketing, product management, engineering và data science. Đội product và các kỹ sư được chia thành các nhóm con chuyên trách từng sản phẩm khác nhau, như phiên bản desktop cho Mac và Windows, và giờ là đội mobile mới thành lập. Cả đội data lẫn nhóm marketing đều phục vụ chung cho tất cả các nhóm sản phẩm này, và — như thường thấy ở mọi loại hình doanh nghiệp — quy trình phát triển sản phẩm hoàn toàn tách biệt khỏi marketing. Các product manager sẽ thông báo cho bộ phận marketing về các đợt launch hay release sắp tới, rồi mọi nỗ lực marketing sau đó đều do nhóm marketing tự thực hiện — không hề có sự cộng tác nào từ những người thực sự làm ra sản phẩm.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Customer funnel (phễu khách hàng) &amp; bộ phận thường "sở hữu" từng tầng</div>
+Hình minh hoạ phễu khách hàng với các tầng từ trên xuống: tầng trên cùng (awareness — nhận biết, acquisition — thu hút khách hàng) thường thuộc về đội marketing; các tầng phía dưới (activation — kích hoạt, retention — giữ chân, và kiếm tiền từ người dùng) thường do đội product và engineering phụ trách. Hai nhóm hiếm khi giao thoa với nhau.
+</div>
+
+<p>Cũng giống như nhiều công ty khác, đội marketing của BitTorrent chỉ tập trung nỗ lực vào "đỉnh phễu" (top of the funnel, như minh hoạ ở hình trên), tức là nâng cao nhận biết của khách hàng và đưa người dùng đến với sản phẩm thông qua branding, quảng cáo và digital marketing, với mục tiêu thu hút khách hàng mới. Ở hầu hết các công ty phần mềm hoặc công ty Web, công việc tăng tỷ lệ activation (kích hoạt) và retention (giữ chân) của những người đã ghé thăm website hay app không do marketer đảm nhận, mà do các đội product và engineering — những người tập trung xây dựng tính năng để khiến người dùng "phải lòng" sản phẩm. Hai nhóm này hiếm khi cộng tác với nhau; mỗi bên chỉ chăm chăm vào ưu tiên của riêng mình và thường có rất ít, hoặc hoàn toàn không có, tương tác. Đôi khi họ thậm chí không ngồi chung một toà nhà — hoặc thậm chí không ở cùng một quốc gia.</p>
+
+<p>Theo đúng "kịch bản" tổ chức tiêu chuẩn này, khi app mobile của BitTorrent sẵn sàng ra mắt, nhóm marketing đã soạn một kế hoạch launch, mà như thường lệ, bao gồm một loạt hoạt động marketing truyền thống, trọng tâm là mạng xã hội, quan hệ công chúng (PR) và các chiến dịch thu hút khách hàng trả phí (paid acquisition). App thì chắc chắn, kế hoạch thì mạnh, vậy mà tốc độ người dùng chấp nhận sản phẩm (adoption) vẫn ì ạch.</p>
+
+<p>Pramod quyết định đề nghị nhóm marketing tuyển một product marketing manager (PMM) chuyên trách để giúp đẩy mạnh việc thu hút người dùng. Những chuyên gia marketing này thường được mô tả là "tiếng nói của khách hàng" bên trong công ty: họ tìm hiểu sâu nhu cầu và mong muốn của khách hàng, thường thông qua phỏng vấn, khảo sát hoặc focus group (nhóm thảo luận tập trung), và giúp xây dựng thông điệp để các nỗ lực marketing hấp dẫn hơn, đảm bảo truyền tải giá trị của sản phẩm một cách hiệu quả nhất. Ở một số công ty, những chuyên gia này còn có thể được giao đóng góp vào quá trình phát triển sản phẩm, ví dụ như nghiên cứu đối thủ cạnh tranh để tìm ra những tính năng mới đáng cân nhắc, hoặc hỗ trợ kiểm thử sản phẩm.</p>
+
+<p>Một PMM giàu kinh nghiệm, Annabell Satterfield, gia nhập đội marketing của BitTorrent để hỗ trợ thúc đẩy adoption cho sản phẩm mobile mới toanh. Bên cạnh việc tập trung vào các nỗ lực awareness và acquisition mà cô được giao, cô đã đề nghị được làm việc cùng đội product để thúc đẩy tăng trưởng xuyên suốt phần còn lại của phễu, bao gồm các chiến lược giữ chân người dùng (retention) và kiếm tiền (monetization), thay vì chỉ bị giới hạn ở những nỗ lực tại tầng trên cùng của phễu. Trưởng bộ phận marketing đồng ý cho cô làm vậy, nhưng chỉ sau khi cô đã tập trung trước hết vào các chương trình thu hút người dùng và chỉ khi các chương trình đó đã đạt được mục tiêu của đội marketing.</p>
+
+<p>Thế nhưng, khi thực hiện một số nghiên cứu khách hàng — bao gồm cả khảo sát khách hàng lẫn phân tích dữ liệu hành vi người dùng của công ty — nhằm tìm ý tưởng cho các chiến dịch marketing mới, cô phát hiện ra một điều có vẻ đi ngược hẳn với chỉ đạo của sếp mình: rất nhiều cơ hội tăng trưởng tốt nhất dường như lại nằm ở phía dưới phễu. Ví dụ, cô biết rằng nhiều người dùng của app mobile — vốn là một sản phẩm miễn phí — chưa chọn nâng cấp lên phiên bản Pro trả phí, vì vậy cô đã thực hiện một cuộc khảo sát hỏi những người chưa nâng cấp lý do vì sao. Nếu đội có thể khiến nhiều người dùng hơn nâng cấp, cô biết đó sẽ là một nguồn doanh thu lớn, có thể quan trọng ngang bằng — nếu không muốn nói là hơn — việc thu hút thêm người tải app. Khi kết quả đổ về, cô thấy rõ rằng chiến lược tăng trưởng hứa hẹn nhất không phải là chỉ tập trung mở rộng tập khách hàng của công ty, mà còn phải khai thác tối đa những khách hàng họ đang có.</p>
+
+<p>Cô mang những insight vừa khám phá được đến đội product, nghĩ rằng họ có thể cùng nhau tìm cách cải thiện app. Việc này khiến đội product hơi bất ngờ; đây là lần đầu tiên một người làm marketing trong công ty đến gặp họ với những đóng góp như vậy. Nhưng Pramod, người tin vào cách tiếp cận data-driven (dựa trên dữ liệu) trong phát triển sản phẩm, đã rất ấn tượng, và ông nhanh chóng trao cho cô toàn quyền tiếp tục "đào" dữ liệu nghiên cứu người dùng để tìm insight cho sản phẩm, đồng thời tiếp tục truyền đạt những insight đó vượt qua các ranh giới giữa các phòng ban của một công ty khi ấy còn đang bị chia cắt thành từng silo.</p>
+
+<p>Một trong những phát hiện từ khảo sát của Annabell đã khiến đội product sửng sốt, và dẫn đến doanh thu tăng vọt. Đội có rất nhiều giả thuyết về lý do vì sao nhiều người dùng chưa nâng cấp lên bản Pro trả phí, nhưng câu trả lời phổ biến nhất cho câu hỏi tại sao khách hàng chưa mua bản trả phí lại hoàn toàn nằm ngoài dự đoán của họ. Câu trả lời số một là gì? Người dùng hoàn toàn không biết là có phiên bản trả phí. Cả đội không thể tin nổi. Họ cứ nghĩ mình đã quảng bá bản Pro rất mạnh mẽ tới những người đang dùng bản miễn phí, nhưng rõ ràng là họ đã trượt mục tiêu. Ngay cả những người dùng tích cực nhất cũng không hề để ý đến những nỗ lực mời họ nâng cấp. Vì vậy đội đã ưu tiên thêm một nút bấm rất nổi bật trên màn hình chính của app để khuyến khích người dùng nâng cấp, và gần như khó tin, chỉ một thay đổi đơn giản đó đã mang lại mức tăng tức thì <strong>92%</strong> doanh thu mỗi ngày từ các lượt nâng cấp. Nó gần như không tốn chi phí, gần như không tốn thời gian thực hiện (từ lúc thảo luận dữ liệu khảo sát đến lúc triển khai nút bấm chỉ vỏn vẹn vài ngày), và mang lại kết quả tức thì, đáng kể. Và tất cả đều đến từ một ý tưởng mà nhiều khả năng họ sẽ không bao giờ nghĩ ra nếu không có ý kiến và phản hồi từ chính khách hàng.</p>
+
+<p>Một thành công khác đến từ thứ mà Annabell và Pramod gọi là "love hack" (hack tình yêu). Khi xem xét dữ liệu người dùng để tìm ra các yếu tố khiến số lượt tải app tăng hoặc giảm theo từng ngày, Annabell nhận thấy một quy luật rõ ràng. App khi đó chỉ có trên Google Play store, và cô để ý rằng mỗi khi vài review đầu tiên của app trên store là tiêu cực, lượt cài đặt hằng ngày sẽ sụt giảm. Cô thử nghiệm đẩy các review tích cực lên những vị trí đầu tiên đó, và thấy số lượt cài đặt lập tức được cải thiện. Vì vậy cô và Pramod quyết định khuyến khích người dùng viết review ngay sau khi họ đã tải xong torrent đầu tiên — lúc họ đã thấy app dễ dùng đến mức nào. Họ kỳ vọng đây sẽ là khoảnh khắc người dùng hài lòng nhất với app và sẵn lòng viết một review tốt nhất, nếu được đề nghị.</p>
+
+<p>Họ chạy một thử nghiệm để kiểm chứng giả thuyết này, nhờ các kỹ sư lập trình một lời đề nghị bật lên trên màn hình người dùng ngay sau khi torrent đầu tiên được tải xong. Quả nhiên, review tích cực đổ về ào ạt. Dựa trên kết quả ban đầu rất mạnh mẽ đó, họ triển khai lời nhắc này cho toàn bộ người dùng mới, và điều đó dẫn đến mức tăng <strong>900%</strong> số review bốn và năm sao, kéo theo một cú hích lớn về lượt cài đặt. Khi uy tín của cô đã chính thức được khẳng định, chẳng bao lâu sau một kỹ sư đã tìm đến cô và hỏi: "Chị còn ý tưởng nào nữa không? Chúng ta còn làm được gì nữa?"</p>
+
+<p>Kiểu cộng tác này giữa đội marketing và đội product hiếm hoi đến đáng buồn. Thông thường, đội product phụ trách quy trình xây dựng sản phẩm cũng như thực hiện các cập nhật — như cải thiện trải nghiệm đăng ký hay thêm tính năng mới — và đội tự lập ra một lịch trình, thường gọi là roadmap (lộ trình), để thực hiện các cải tiến đó. Những ý tưởng thay đổi không nằm trong roadmap định sẵn thường bị phản đối. Đôi khi là vì thời gian đã quá eo hẹp để thực hiện các cải tiến đã lên kế hoạch, và đôi khi là vì những thay đổi được yêu cầu chưa được suy nghĩ thấu đáo, khó hơn nhiều, tốn thời gian hơn nhiều, và do đó tốn kém hơn nhiều so với những gì người đưa ra yêu cầu hình dung. Cũng có những lúc đội product xác định rằng một yêu cầu không phù hợp với tầm nhìn chiến lược của sản phẩm (hoặc là sự kết hợp của tất cả những yếu tố này và nhiều yếu tố khác).</p>
+
+<p>Ngay cả khi bạn không làm việc cho một công ty công nghệ, có lẽ bạn cũng quen thuộc với kiểu căng thẳng giữa các phòng ban như thế này — có thể là đội marketing gạt đi các đề xuất từ đội sales, hay đội R&amp;D phản đối yêu cầu làm prototype (nguyên mẫu) cho một sản phẩm mới mà marketing đã đề xuất. Đây là một trong những vấn đề chính của việc chia tách trách nhiệm theo từng phòng ban kiểu silo, và đó chủ yếu là lý do vì sao — như bạn sẽ tìm hiểu kỹ hơn ngay sau đây — các growth team nhất thiết phải bao gồm thành viên đến từ nhiều chuyên môn và phòng ban khác nhau. Như đội BitTorrent sớm nhận ra, những ý tưởng tốt nhất thường đến từ kiểu cộng tác liên chức năng (cross-functional) này, và một lần nữa, đó là lý do nó là đặc điểm nền tảng của quy trình growth hacking.</p>
+
+<hr class="divider">
+
+<h2>Cuối Cùng Silo Cũng Bị Phá Vỡ (Silos Breached at Last)</h2>
+
+<p>Được tiếp thêm sức mạnh từ những thành công đang thấy, mọi người trong đội mobile của BitTorrent hăng hái brainstorm thêm nhiều hack khác để thử. Một hack mà họ đã thử nghiệm chỉ có thể được nghĩ ra bởi một "dân kỹ thuật" chính hiệu: tự động dừng app để tiết kiệm pin điện thoại. Đội phát hiện ra cơ hội này thông qua một cuộc khảo sát khác nhắm riêng vào nhóm power user (người dùng cực kỳ tích cực) của app miễn phí — những người dùng app liên tục nhưng vẫn chưa nâng cấp lên bản Pro trả phí. Khảo sát cho thấy nhóm người dùng này có một "pain point" (điểm đau) lớn: pin điện thoại bị hao nhanh do họ dùng app quá nhiều. Vì vậy các kỹ sư nhanh chóng đề xuất xây dựng một tính năng chỉ dành cho bản Pro, tính năng này sẽ tắt các tác vụ truyền file chạy ngầm "ngốn pin" khi app phát hiện pin của người dùng chỉ còn dưới 35%. Họ khéo léo quảng bá tính năng này ngay trong app tới người dùng miễn phí đúng lúc pin điện thoại của họ bắt đầu cạn, lôi kéo họ nâng cấp ngay tại chỗ. Tính năng này được ưa chuộng đến mức mang lại mức tăng <strong>47%</strong> doanh thu.</p>
+
+<p>Chuỗi thắng lợi liên tiếp này không hề bị phần còn lại của công ty bỏ qua. Trước hết, Annabell được chính thức chuyển từ marketing sang đội mobile, báo cáo trực tiếp cho Pramod, và sau đó chức danh của cô được đổi thành Senior Product Manager for Growth. Cùng lúc đó, các kỹ sư đang làm những dự án khác bị cuốn hút bởi cách đội này liên tục tạo ra những chiến thắng lớn, đến mức hai kỹ sư cấp cao ở các đội sản phẩm khác đã rời vị trí của mình chỉ để có cơ hội làm việc trong một đội hiệu suất cao, định hướng tăng trưởng. Annabell giải thích:</p>
+
+<blockquote><p>"Qua trò chuyện với các kỹ sư của chúng tôi, [tôi biết] điều này là bởi vì, bên cạnh việc chúng tôi có vẻ đang rất vui và rất thích làm việc cùng nhau, họ thấy chúng tôi đang 'làm mọi thứ đúng cách', đang 'data-driven'." — Annabell Satterfield</p></blockquote>
+
+<p>Khi đội tiếp tục "hack" con đường tăng trưởng của mình, họ ngày càng dựa nhiều hơn vào phân tích dữ liệu (do một thành viên của nhóm data cung cấp), cả để thiết lập lẫn để đánh giá kết quả các thử nghiệm. Data analyst làm việc cùng các kỹ sư để đảm bảo họ đang tracking (theo dõi) đúng dữ liệu về phản ứng của khách hàng với các thử nghiệm — và cung cấp những báo cáo hữu ích nhất về thông tin đó khi dữ liệu đổ về. Người analyst có chuyên môn để biết khi nào đã có đủ dữ liệu để kết luận một thử nghiệm là thắng hay thua, và cùng đội xem xét kết quả, giúp vạch ra các bước tiếp theo cho những thử nghiệm tiếp nối. Đội phụ thuộc vào phân tích nhiều đến mức cuối cùng người analyst cũng được chuyển sang làm việc toàn thời gian với đội, giống như Annabell trước đó.</p>
+
+<p>Thành công của cách tiếp cận data-driven này đối với tăng trưởng và phát triển sản phẩm đã thúc đẩy ban lãnh đạo BitTorrent đầu tư mạnh hơn vào data science và tăng cường nhân sự cho đội analytics. Đồng thời, tin tức về tốc độ tăng trưởng của đội mobile khiến các đội sản phẩm khác bắt đầu nhờ đến các data analyst thường xuyên hơn, và cộng tác chặt chẽ hơn với họ để phát triển các thử nghiệm và insight của riêng mình.</p>
+
+<p>Đội mobile tiếp tục khám phá thêm hàng chục cải tiến có tác động lớn khác, đưa sản phẩm vọt lên <strong>100 triệu lượt cài đặt</strong> qua hai năm rưỡi growth hacking với tốc độ "liên thanh". Khi sứ mệnh đã hoàn thành, đội được tái cơ cấu và chuyển sang làm các ưu tiên sản phẩm khác của công ty. Thật khó để nói quá về tác động mà đội nhỏ này đã tạo ra cho một công ty vốn trước đó đang chật vật với tăng trưởng. Không chỉ là việc những nỗ lực của họ đã giúp doanh thu của đội tăng <strong>300%</strong> chỉ trong một năm, mà còn — và có lẽ quan trọng hơn — là việc đội đã thay đổi tận gốc văn hoá ở BitTorrent: từ một văn hoá bị bó buộc bởi các silo marketing và product truyền thống, thành một văn hoá cởi mở và cộng tác, trong đó tất cả mọi người, từ marketer, data analyst, đến kỹ sư và lãnh đạo, đều đồng lòng xoay quanh quy trình growth hacking nhịp độ nhanh và mang tính cộng tác. Annabell trìu mến nhớ lại niềm tin vào quy trình tăng trưởng đã lan toả khắp tổ chức như thế nào:</p>
+
+<blockquote><p>"Hai trong số những khoảnh khắc tôi thích nhất là được thấy tech lead cũ của chúng tôi trình bày một growth experiment tại Palooza [tên BitTorrent đặt cho các cuộc hackathon được tổ chức định kỳ], và được gặp một đồng nghiệp kỹ sư cũ muốn cùng tôi đi sâu vào quy trình này. Giờ anh ấy là một 'đại sứ' cho cách tiếp cận này rồi." — Annabell Satterfield</p></blockquote>
+
+<p>Đáng tiếc thay, cách tiếp cận mang tính cộng tác này là ngoại lệ chứ không phải quy luật ở các công ty thuộc mọi loại hình và quy mô. Thói quen quá phổ biến là chia các đơn vị kinh doanh thành những nhóm biệt lập hiếm khi trò chuyện, chia sẻ thông tin, hay — trời ơi — thực sự cộng tác với nhau, đã được thừa nhận rộng rãi là "gót chân Achilles" về mặt tổ chức tại nhiều công ty trong nhiều năm. Như một báo cáo của McKinsey đã chỉ ra, một trong những tác hại nghiêm trọng nhất của silo phòng ban là chúng làm chậm sự đổi mới — thứ thúc đẩy tăng trưởng. Các tác giả giải thích rằng "nghiên cứu cho thấy khả năng cộng tác trong mạng lưới quan trọng đối với năng lực đổi mới hơn là tài năng cá nhân thuần tuý", thế nhưng một khảo sát do McKinsey thực hiện lại cho thấy "chỉ 25% lãnh đạo cấp cao mô tả tổ chức của họ là hiệu quả trong việc chia sẻ tri thức vượt qua các ranh giới, mặc dù gần 80% thừa nhận sự phối hợp như vậy là then chốt cho tăng trưởng."</p>
+
+<p>Tương tự, một nhóm giáo sư của Harvard Business School thực hiện nghiên cứu về giao tiếp giữa các đơn vị kinh doanh cho biết họ đã "sững sờ" trước mức độ tương tác ít ỏi giữa các đơn vị mà họ phát hiện ra. Còn gây sốc hơn nữa: họ báo cáo rằng "hai người ở cùng một SBU [strategic business unit — đơn vị kinh doanh chiến lược], cùng chức năng và cùng văn phòng tương tác với nhau thường xuyên hơn khoảng 1.000 lần so với hai người trong công ty ở khác đơn vị kinh doanh, khác chức năng và khác văn phòng, nhưng ngoài ra thì tương đồng. Nói một cách thực tế, điều này có nghĩa là có rất ít tương tác vượt qua các ranh giới này."</p>
+
+<p>Một chuyên gia về vấn đề silo, Giáo sư Ranjay Gulati thuộc Kellogg School of Management của Đại học Northwestern, lưu ý rằng sự thiếu giao tiếp giữa các phòng ban này cản trở nỗ lực làm cho việc phát triển sản phẩm và marketing trở nên lấy khách hàng làm trọng tâm hơn — một yêu cầu ngày càng quan trọng khi công nghệ và mạng xã hội tạo điều kiện, thậm chí đòi hỏi, sự tương tác với khách hàng ngày càng thực chất và liên tục hơn. Nói đơn giản, các kỹ sư và nhà thiết kế sản phẩm hoàn toàn có khả năng nghĩ ra những cách tuyệt vời để thoả mãn nhu cầu và mong muốn của khách hàng, nhưng phần lớn trường hợp họ đơn giản là không được biết những nhu cầu và mong muốn đó là gì. Gulati cho biết trong một khảo sát ông thực hiện với các lãnh đạo, hơn hai phần ba trong số họ xác định việc làm cho phát triển sản phẩm lấy khách hàng làm trung tâm hơn là một ưu tiên trong thập kỷ tới; nhưng ông cũng viết rằng nghiên cứu của ông cho thấy "kiến thức và chuyên môn [của các công ty] nằm trong các silo tổ chức, và họ gặp khó khăn trong việc huy động nguồn lực vượt qua những ranh giới nội bộ đó theo cách mà khách hàng thực sự coi trọng và sẵn sàng trả tiền."</p>
+
+<p>Tạo ra các growth team liên chức năng là một cách để phá bỏ những rào cản này. Các đội liên chức năng không chỉ giúp sự cộng tác giữa các nhóm product, engineering, data và marketing diễn ra trơn tru và nhanh hơn, mà còn thúc đẩy các thành viên trân trọng và hiểu thêm về góc nhìn của nhau cũng như công việc mà người khác làm. Vậy chính xác thì làm thế nào để thiết lập một growth team đáp ứng nhu cầu chiến lược và các ưu tiên của một dự án hay sáng kiến cụ thể? Chúng tôi sẽ đề cập đến các bước then chốt trong những trang tiếp theo.</p>
+
+<hr class="divider">
+
+<h2>Ai Tham Gia? (The Who)</h2>
+
+<p>Growth team nên quy tụ những người hiểu sâu sắc chiến lược và mục tiêu kinh doanh, những người có chuyên môn để thực hiện phân tích dữ liệu, và những người có "tay nghề" kỹ thuật để triển khai các thay đổi về thiết kế, chức năng hoặc marketing của sản phẩm, cũng như lập trình các thử nghiệm để kiểm chứng những thay đổi đó. Dĩ nhiên, thành phần cụ thể của growth team khác nhau tuỳ từng công ty và từng sản phẩm. Quy mô đội cũng dao động rất lớn, cũng như phạm vi công việc của họ hẹp hay rộng. Một đội có thể nhỏ chỉ bốn, năm thành viên hoặc lớn tới một trăm người trở lên, như ở LinkedIn. Bất kể quy mô thế nào, nhân sự của đội nên bao gồm nhiều, nếu không muốn nói là tất cả, các vai trò sau đây.</p>
+
+<h3>Growth Lead — Người dẫn dắt tăng trưởng</h3>
+
+<p>Trong mọi trường hợp, một growth team đều cần một người lãnh đạo, giống như một chỉ huy tiểu đoàn "đứng ngay ngoài chiến trường": vừa quản lý đội, vừa tích cực tham gia vào quá trình tạo ý tưởng và thử nghiệm. Growth lead định hướng cho việc thử nghiệm cũng như nhịp độ (tempo) của các thử nghiệm sẽ được chạy, và theo dõi xem đội có đang đạt mục tiêu hay không. Growth team nhìn chung nên họp mỗi tuần một lần, và growth lead nên là người điều hành các buổi họp đó (chúng tôi sẽ sớm đưa ra hướng dẫn về cách thực hiện).</p>
+
+<p>Bất kể chuyên môn hay xuất thân, người này đóng vai trò vừa là quản lý, vừa là product owner, vừa là nhà khoa học. Một trách nhiệm then chốt của growth lead là lựa chọn lĩnh vực trọng tâm cốt lõi và các mục tiêu để đội làm việc, cùng với khoảng thời gian thực hiện. Như chúng tôi sẽ khám phá kỹ hơn trong các chương sau, việc tập trung các thử nghiệm vào một mục tiêu chính là cực kỳ quan trọng để tối ưu kết quả. Một growth lead có thể đặt ra lĩnh vực trọng tâm theo tháng, theo quý, hoặc thậm chí theo năm — chẳng hạn như khiến nhiều người dùng hơn nâng cấp từ phiên bản miễn phí của sản phẩm lên phiên bản premium, hoặc xác định đâu là kênh marketing mới tốt nhất cho một sản phẩm. Sau đó growth lead đảm bảo rằng đội không bị chệch hướng bởi việc theo đuổi những ý tưởng không đóng góp cho mục tiêu đã đề ra, tạm gác những ý tưởng đó lại cho tới khi trọng tâm thay đổi và chúng phục vụ được mục tiêu mới.</p>
+
+<p>Growth lead cũng đảm bảo rằng các metric (chỉ số) cụ thể mà đội đã chọn để đo lường và nỗ lực cải thiện là phù hợp với các mục tiêu tăng trưởng đã đặt ra. Thông thường, các đội marketing và product không theo dõi một cách có hệ thống dữ liệu về những hành vi then chốt của người dùng — loại dữ liệu có thể dẫn tới phát hiện những cải tiến cần làm, hoặc có thể là tín hiệu cảnh báo sớm rằng người dùng đang trở nên kém tích cực hơn hoặc đang rời bỏ hẳn sản phẩm. Quá nhiều công ty dồn sự chú ý vào các vanity metric (chỉ số "phù phiếm") trông thì đẹp trên giấy (như số lượng người xem một website) nhưng rốt cuộc lại không phản ánh tăng trưởng thực sự, dù là về mức độ sử dụng sản phẩm hay doanh thu tạo ra. Chúng tôi sẽ đi sâu vào cách chọn đúng metric để đo lường trong Chương 3.</p>
+
+<p>Mọi growth lead đều cần một bộ kỹ năng cơ bản:</p>
+<ul>
+<li>thành thạo phân tích dữ liệu;</li>
+<li>có chuyên môn hoặc thành thạo về product management (tức là quy trình phát triển và ra mắt một sản phẩm);</li>
+<li>hiểu cách thiết kế và vận hành các thử nghiệm.</li>
+</ul>
+
+<p>Mỗi growth lead cũng phải quen thuộc với các phương pháp thúc đẩy việc chấp nhận và sử dụng loại sản phẩm hoặc dịch vụ mà đội đang làm. Chẳng hạn, một mạng xã hội nên có một growth lead am hiểu động lực của truyền miệng lan truyền (viral word of mouth) và của network effect (hiệu ứng mạng lưới) — tức là cách giá trị của mạng lưới liên tục tăng lên khi có thêm nhiều người tham gia — vốn là những cơ chế then chốt giúp nhiều (dù tất nhiên không phải tất cả) sản phẩm mạng xã hội tăng trưởng. Người này cũng nên có chuyên môn liên quan về ngành hoặc sản phẩm: ví dụ, growth lead cho một nhà bán lẻ trực tuyến nên nắm chắc về tối ưu giỏ hàng (shopping cart optimization), merchandising (trưng bày hàng hoá), định giá và chiến lược marketing. Kỹ năng lãnh đạo mạnh mẽ cũng cần thiết để giữ cho đội tập trung và thúc đẩy tăng tốc nhịp độ thử nghiệm, ngay cả khi đối mặt với những thất bại thường xuyên (hoàn toàn có thể đoán trước) của các growth experiment. Ngõ cụt, những bài test không có kết luận rõ ràng, và những thất bại thảm hại đều là một phần của thực tế khi thử nghiệm tăng trưởng. Một growth lead giỏi sẽ duy trì sự nhiệt huyết, đồng thời "che chắn trên không" (air cover) để đội được tự do thử nghiệm và thất bại mà không bị ban lãnh đạo soi xét và gây áp lực quá mức đòi thêm chiến thắng.</p>
+
+<p>Không có một xuất thân nghề nghiệp nào là tốt nhất cho vị trí growth lead. Hiện đã có một số người chuyên sâu vào vai trò này, phần lớn chuyển sang từ một lĩnh vực chuyên môn khác, như engineering, product management, data science hoặc marketing. Những người có chuyên môn ở từng lĩnh vực này đều là ứng viên tốt cho vai trò, vì mỗi người đều mang đến những thế mạnh then chốt cho quy trình growth hacking. Với các start-up, đặc biệt ở giai đoạn tăng trưởng sớm, thường thì founder nên đảm nhận vai trò growth lead. Hoặc nếu không trực tiếp điều hành đội, founder nên bổ nhiệm growth lead và để người này báo cáo trực tiếp cho mình. Ở các công ty lớn hơn — nơi có thể có một hoặc nhiều growth team — các growth lead nên được bổ nhiệm bởi một lãnh đạo có thẩm quyền đối với công việc của đội, và growth lead nên báo cáo cho chính lãnh đạo đó.</p>
+
+<p>Vai trò này nghe có vẻ đáng ngại, và đơn giản là quá sức với một người, nhưng với các công cụ và phương pháp chính thức để ưu tiên thử nghiệm, theo dõi và chia sẻ kết quả mà chúng tôi sẽ giới thiệu trong các chương tiếp theo, quy trình này có thể được quản lý với hiệu quả rất cao.</p>
+
+<h3>Product Manager</h3>
+
+<p>Cách các doanh nghiệp tổ chức đội phát triển sản phẩm rất khác nhau, và điều này sẽ ảnh hưởng đến việc ai được giao vào growth team, đồng thời có thể quyết định cách đội được đặt vào cơ cấu tổ chức của công ty — điều chúng tôi sẽ bàn ở phần sau của chương. Nhìn chung, product manager giám sát việc sản phẩm và các tính năng của nó được hiện thực hoá như thế nào. Như nhà đầu tư mạo hiểm Ben Horowitz nói ngắn gọn:</p>
+
+<blockquote><p>"Một product manager giỏi là CEO của sản phẩm." — Ben Horowitz</p></blockquote>
+
+<p>Ở hầu hết các loại hình công ty, vai trò này rất phù hợp để hỗ trợ sứ mệnh growth hacking: phá bỏ silo giữa các phòng ban và tìm ra những ứng viên tốt ở engineering và marketing để giúp khởi động growth team. Điều này phần lớn là do kinh nghiệm của product manager trong khảo sát, phỏng vấn khách hàng cũng như trong phát triển sản phẩm cho phép họ đóng góp thiết yếu vào quá trình tạo ý tưởng và thử nghiệm. Nếu công ty bạn có vai trò này, người đó chắc chắn phải có mặt trong growth team.</p>
+
+<p>Tuỳ theo quy mô công ty, các chức năng của product management có thể do nhân sự khác đảm nhận, và ở các start-up, đặc biệt trong giai đoạn tăng trưởng sớm, vai trò này có thể do founder đảm nhiệm. Nhưng ở các công ty lớn hơn, có thể có nhiều cấp nhân sự trong product management: từ product manager, director of product management, VP of product management, cho tới chief product officer. Cấp bậc của nhân sự product management được giao vào growth team có thể khác nhau, nhưng như chúng tôi sẽ bàn kỹ hơn ngay sau đây, ở nhiều công ty phần mềm, product manager phụ trách chính sản phẩm mà growth team được thành lập để làm nên được phân công vào đội, và người này báo cáo cho trưởng nhóm product, thường là một VP of product management.</p>
+
+<h3>Software Engineer — Kỹ sư phần mềm</h3>
+
+<p>Những người viết code cho các tính năng sản phẩm, các màn hình mobile và các trang web mà đội thử nghiệm thay đổi là những thành viên nền tảng của một growth team. Thế nhưng quá thường xuyên họ bị gạt ra khỏi quá trình lên ý tưởng khi các công ty lên kế hoạch cho sản phẩm và tính năng mới, hoặc bị đẩy xuống vai trò chỉ nhận lệnh, triển khai bất cứ thứ gì đội product và đội kinh doanh nghĩ ra. Điều này không chỉ làm suy giảm tinh thần của một số nhân sự giỏi và quý giá nhất của bạn, mà còn kìm hãm quá trình lên ý tưởng do không khai thác được sự sáng tạo mà kỹ sư có thể mang lại, cũng như chuyên môn của họ về các công nghệ mới có thể thúc đẩy tăng trưởng. Hãy nhớ lại rằng ở BitTorrent, các kỹ sư đã đóng vai trò vô giá khi đề xuất phát triển tính năng tiết kiệm pin mang lại lợi nhuận lớn. Bản chất cốt lõi của growth hacking chính là tinh thần hacker — tinh thần giải quyết vấn đề bằng những cách tiếp cận kỹ thuật mới lạ, vốn nảy sinh từ lĩnh vực phát triển và thiết kế phần mềm. Growth team đơn giản là không thể vận hành nếu không có kỹ sư phần mềm.</p>
+
+<h3>Marketing Specialist — Chuyên gia marketing</h3>
+
+<p>Dù cần nói rõ rằng có một số growth team vận hành mà không có thành viên chuyên trách là dân marketing chuyên nghiệp, chúng tôi vẫn ủng hộ việc đưa một chuyên gia marketing vào đội để có kết quả tối ưu. Sự "thụ phấn chéo" về chuyên môn giữa engineering và marketing có thể đặc biệt hiệu quả trong việc tạo ra ý tưởng cho các hack để thử. Loại chuyên môn marketing mà đội cần có thể khác nhau tuỳ loại công ty hoặc sản phẩm. Ví dụ, một growth team về nội dung, đang nỗ lực xây dựng lượng độc giả, rõ ràng sẽ được lợi khi có một chuyên gia content marketing trong đội. Chẳng hạn, tại Inman News — một tạp chí chuyên ngành dành cho giới chuyên nghiệp bất động sản, nơi Morgan là COO — growth team có cả giám đốc email marketing, vì tăng trưởng của công ty phụ thuộc rất nhiều vào email như một kênh để thu hút, kiếm tiền và giữ chân khách hàng. Các công ty khác có thể phụ thuộc nhiều vào search engine optimization (SEO — tối ưu công cụ tìm kiếm) và chọn đưa một chuyên gia về lĩnh vực đó vào đội. Đội cũng có thể có nhiều chuyên gia marketing để bao quát nhiều mảng chuyên môn. Các marketer cũng có thể được đưa vào trong từng đợt, tập trung vào một mảng chuyên môn của họ, rồi rời growth team khi mục tiêu đã đạt được.</p>
+
+<h3>Data Analyst — Chuyên viên phân tích dữ liệu</h3>
+
+<p>Hiểu cách thu thập, tổ chức rồi thực hiện phân tích chuyên sâu trên dữ liệu khách hàng để có được insight dẫn tới ý tưởng thử nghiệm là một yêu cầu nền tảng khác đối với các đội. Một growth team có thể không có analyst làm thành viên toàn thời gian, mà thay vào đó có một analyst được phân công cộng tác với đội nhưng đồng thời làm các việc khác cho công ty. Đó chính là tình huống ban đầu của đội BitTorrent. Nhưng nếu công ty có đủ điều kiện để bổ nhiệm một analyst toàn thời gian cho đội thì đó là lý tưởng.</p>
+
+<p>Người đại diện về dữ liệu của đội cần hiểu:</p>
+<ul>
+<li>cách thiết kế thử nghiệm một cách chặt chẽ và có giá trị thống kê;</li>
+<li>cách truy cập các nguồn dữ liệu khách hàng và kinh doanh khác nhau của bạn và kết nối chúng với nhau để rút ra insight về hành vi người dùng;</li>
+<li>cách tổng hợp nhanh kết quả thử nghiệm và đưa ra insight về chúng.</li>
+</ul>
+
+<p>Tuỳ thuộc vào mức độ phức tạp của các thử nghiệm mà đội đang chạy, thành viên marketing hoặc engineering có thể đảm nhận vai trò này, vì ở cả hai lĩnh vực đó, một mức năng lực data analytics nhất định đã trở nên quan trọng. Ở các công ty có trình độ kỹ thuật cao hơn, cả analyst chuyên về báo cáo kết quả thử nghiệm lẫn data scientist — những người "đào" tìm insight sâu — đều nên tham gia.</p>
+
+<p>Điều cốt yếu là không được giao phó việc phân tích dữ liệu cho một bạn thực tập sinh biết dùng Google Analytics hay cho một digital agency — xin dẫn ra những trường hợp cực đoan nhưng lại xảy ra quá thường xuyên. Như chúng tôi sẽ bàn chi tiết trong Chương 3, quá nhiều công ty không đặt đủ sự chú trọng vào phân tích dữ liệu, và dựa dẫm quá nhiều vào các chương trình "đóng gói sẵn" như Google Analytics — vốn có khả năng hạn chế trong việc kết hợp các nguồn dữ liệu khác nhau, như từ sales và từ chăm sóc khách hàng, và hạn chế trong việc đi sâu vào dữ liệu để tạo ra phát hiện. Một data analyst xuất sắc có thể tạo nên khác biệt giữa một growth team phí phạm thời gian và một growth team khai thác được "mỏ vàng" dữ liệu.</p>
+
+<h3>Product Designer — Nhà thiết kế sản phẩm</h3>
+
+<p>Ở đây, một lần nữa, chức danh và chức năng cụ thể khác nhau tuỳ theo loại hình kinh doanh. Trong phát triển phần mềm, chuyên ngành user experience designer (UX designer — nhà thiết kế trải nghiệm người dùng) chịu trách nhiệm phát triển các màn hình và chuỗi thao tác mà người dùng trải qua với phần mềm. Với hàng hoá sản xuất, nhà thiết kế này có thể chịu trách nhiệm về bản vẽ và thông số kỹ thuật của sản phẩm, trong khi ở những công ty khác, designer có thể chủ yếu tham gia thiết kế đồ hoạ cho quảng cáo và khuyến mãi. Có kinh nghiệm thiết kế trong đội thường giúp tăng tốc độ thực thi thử nghiệm, vì đội có một nhân sự chuyên trách để ngay lập tức làm bất kỳ phần việc thiết kế nào cần thiết. UX designer cũng có thể đem lại insight quan trọng về tâm lý người dùng, thiết kế giao diện và các kỹ thuật nghiên cứu người dùng, giúp tạo ra những ý tưởng tuyệt vời để thử nghiệm.</p>
+
+<hr class="divider">
+
+<h2>Quy Mô Và Phạm Vi (The Size and Scope)</h2>
+
+<p>Ở các start-up và các công ty nhỏ đã ổn định, một growth team có thể chỉ gồm một nhân sự cho mỗi lĩnh vực kể trên, hoặc thậm chí chỉ vài người, mỗi người đảm nhận nhiều hơn một vai trò. Ở các công ty lớn, growth team có thể có nhiều kỹ sư, marketer, data analyst và designer. Thành phần của growth team và nhiệm vụ được giao phải được "may đo" cho công ty của bạn: quy mô, cơ cấu tổ chức, cũng như những thách thức và ưu tiên cụ thể của nó. Phạm vi công việc của growth team cũng có thể khá chung — như tăng trưởng mọi mảng của doanh nghiệp — hoặc rất cụ thể, như giám sát việc cải thiện một phần cụ thể của sản phẩm, chẳng hạn tính năng giỏ hàng. Một số growth team là bộ phận cố định, như ở Zillow và Twitter, còn những đội khác được lập ra cho các nhiệm vụ cụ thể, như một đợt ra mắt sản phẩm, và giải tán khi mục tiêu đã đạt. Một số công ty lập ra nhiều growth team với các trọng tâm khác nhau, như LinkedIn và Pinterest — Pinterest có bốn đội chuyên trách lần lượt: thu hút người dùng mới, tăng trưởng lan truyền (viral growth), engagement (mức độ gắn kết) của người dùng, và activation người dùng mới. Những công ty khác chỉ có một tổ chức growth duy nhất chịu trách nhiệm cho nhiều sáng kiến, như Facebook và Uber.</p>
+
+<p>Nếu bạn chỉ mới bắt đầu lập growth team, thì đưa một hoặc hai người từ các phòng ban khác nhau sang để khởi động đội có thể là một cách tốt để "lăn quả bóng", và quy mô đội có thể lớn dần theo thời gian. Trong một số trường hợp, khi quy trình đã được nắm vững, có thể lập thêm các đội khác. Ví dụ, tại IBM, một growth team được thành lập để làm riêng việc tăng adoption cho sản phẩm Bluemix DevOps — một bộ công cụ phát triển phần mềm dành cho kỹ sư — bằng cách phân công năm kỹ sư và năm nhân sự khác từ bộ phận vận hành kinh doanh và marketing để lập thành đội. Tại Inman, Morgan lập growth team gồm một data scientist, ba marketer và web developer của họ để khởi động quy trình growth hacking. Morgan cũng là trưởng bộ phận phát triển sản phẩm, và anh đảm nhận vị trí product management trong đội. Là COO, anh cũng là lãnh đạo cấp cao nhất trong đội, nhưng anh không phải growth lead. Thay vào đó, một marketing manager điều hành quy trình, còn Morgan đóng vai trò đóng góp và định hướng.</p>
+
+<hr class="divider">
+
+<h2>Làm Như Thế Nào? (The How)</h2>
+
+<p>Khi đã chọn được các thành viên, chính xác thì họ nên làm gì? Quy trình growth hacking cung cấp một tập hoạt động cụ thể mà growth team nên thực hiện để tìm ra các cơ hội tăng trưởng mới và khuếch đại các cơ hội sẵn có, thông qua thử nghiệm nhanh để tìm ra những phương án hiệu quả nhất. Quy trình là một vòng lặp liên tục gồm bốn bước then chốt:</p>
+<ol>
+<li>phân tích dữ liệu và thu thập insight;</li>
+<li>tạo ý tưởng;</li>
+<li>ưu tiên hoá thử nghiệm;</li>
+<li>chạy thử nghiệm,</li>
+</ol>
+<p>rồi quay vòng trở lại bước phân tích để xem xét kết quả và quyết định bước tiếp theo. Ở giai đoạn này, đội sẽ tìm kiếm những chiến thắng ban đầu và đầu tư thêm vào các mảng có triển vọng, đồng thời nhanh chóng từ bỏ những hướng cho kết quả mờ nhạt. Bằng cách liên tục đi qua quy trình này, growth team sẽ cộng dồn (compound) những chiến thắng lớn nhỏ theo thời gian, tạo nên một vòng tròn tích cực với kết quả ngày càng được cải thiện.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Quy trình growth hacking (The Growth Hacking Process)</div>
+Vòng lặp bốn bước liên tục: <strong>Analyze</strong> (phân tích dữ liệu và thu thập insight) → <strong>Ideate</strong> (tạo ý tưởng) → <strong>Prioritize</strong> (ưu tiên hoá thử nghiệm) → <strong>Test</strong> (chạy thử nghiệm) → quay lại Analyze để xem xét kết quả và quyết định bước tiếp theo.
+</div>
+
+<p>Đội giữ cho quy trình đi đúng hướng bằng cách gặp nhau trong một buổi growth meeting định kỳ. Các buổi họp đội, nhìn chung nên tổ chức mỗi tuần một lần, tạo ra một diễn đàn chặt chẽ để quản lý hoạt động thử nghiệm của đội, xem xét kết quả và quyết định hack nào sẽ thử tiếp theo. Thông lệ họp định kỳ (standing meeting), vốn là một phần đã được xác lập vững chắc của phương pháp phát triển phần mềm agile, có thể dễ dàng điều chỉnh cho growth hacking. Giống như trong phát triển phần mềm agile — nơi đội dùng các buổi sprint planning để tổ chức công việc sắp tới — các buổi growth meeting cho phép growth team tương tự xem lại tiến độ đến thời điểm hiện tại, ưu tiên các thử nghiệm sẽ thử, và duy trì experiment velocity (tốc độ thử nghiệm).</p>
+
+<p>Trong buổi họp, các ý tưởng được chọn để thử nghiệm sẽ được giao cho các thành viên khác nhau phụ trách triển khai, phân tích, hoặc nghiên cứu để thu thập thêm thông tin xem ý tưởng đó có đáng thử hay không. Trưởng nhóm giữ liên lạc thường xuyên với từng thành viên giữa các buổi họp, kiểm tra tiến độ công việc của họ và giúp xử lý bất kỳ vấn đề hay sự chậm trễ nào phát sinh.</p>
+
+<p>Buổi họp hằng tuần này giữ cho đội đi đúng hướng và tập trung, đồng thời đảm bảo mức độ phối hợp và giao tiếp cao cần thiết để duy trì tính chất tốc độ cao của quy trình; hãy hình dung nó lao vun vút như một chiếc xe đua Công thức 1 (Formula One) đang thực hiện những điều chỉnh chính xác, trái ngược với một chiếc xe tải mất phanh lao đi mất kiểm soát. Ngoài ra, bản chất cộng tác sâu sắc của buổi họp tạo ra động lực "1+1=3", nơi chuyên môn của các thành viên được khuếch đại để biến những ý tưởng hứa hẹn thành những chiến thắng mạnh mẽ, và thường nảy sinh những ý tưởng bất ngờ mà từng thành viên không thể nào tự mình nghĩ ra.</p>
+
+<p>Ví dụ, một phân tích chuyên sâu về customer churn (tức là xác định những người gần đây đã bỏ sản phẩm) có thể cho thấy những người rời bỏ chưa hề sử dụng một tính năng cụ thể của sản phẩm vốn rất được ưa chuộng bởi những người dùng nhiệt thành. Phát hiện đó có thể dẫn đội tới việc thử nghiệm các cách để khiến nhiều người hơn dùng thử tính năng cụ thể đó.</p>
+
+<div class="case">
+<div class="case-title">Case: GrowthHackers.com — khi kỹ sư "lên tiếng" trong buổi họp</div>
+<p>Hoặc lấy một ví dụ khác từ công việc của growth team chúng tôi tại GrowthHackers.com. Khi xem dữ liệu người dùng, chúng tôi phát hiện rằng những nội dung do cộng đồng gửi lên có kèm rich media (như slide thuyết trình từ các hội nghị và video từ YouTube) tạo ra mức độ engagement cao hơn và khiến người xem quay lại nhiều hơn so với những bài đăng chỉ đơn giản dẫn link tới các bài viết ở nơi khác trên Web. Vì vậy các thành viên growth team đã nghĩ ra một loạt ý tưởng để bổ sung thêm các nội dung rich media, như podcast và video, lên trang. Hướng hành động này có vẻ hiển nhiên và dễ đoán; cho đến khi kỹ sư trong đội lên tiếng giải thích rằng không chỉ có thể hỗ trợ thêm rất, rất nhiều loại media trên trang chỉ với một plug-in đơn giản, mà chúng tôi còn có thể viết code để tự động nhận diện các link từ những trang media phổ biến như YouTube, SoundCloud và SlideShare, rồi lập tức nhúng (embed) nội dung đó vào các trang thảo luận trên website. Thay vì chỉ thêm video từ một hoặc hai nguồn media bổ sung, giờ đây chúng tôi có thể hỗ trợ hơn một chục nguồn, đồng thời giúp việc thêm media đó lên GrowthHackers dễ dàng hơn đáng kể. Sau phát hiện này — một phát hiện nhiều khả năng sẽ không có được nếu thiếu ý kiến của kỹ sư trong nhóm — thử nghiệm được thiết kế lại, và nó tỏ ra còn hiệu quả hơn cả kỳ vọng ban đầu của chúng tôi trong việc phát triển cộng đồng.</p>
+</div>
+
+<p>Chúng tôi sẽ giới thiệu các quy trình cụ thể để điều hành buổi họp hiệu quả nhất trong Chương 4, bao gồm cả một agenda (chương trình) họp được khuyến nghị.</p>
+
+<h3>Ai Làm Việc Gì (Who Does What)</h3>
+
+<p>Về các đầu việc được giao, các thành viên vẫn sẽ đảm nhận những nhiệm vụ chuyên môn theo lĩnh vực của mình, đôi khi làm việc độc lập, ít nhất là lúc đầu. Ví dụ:</p>
+<ul>
+<li>các kỹ sư sẽ phụ trách mọi phần lập trình cần cho một thử nghiệm;</li>
+<li>designer sẽ tạo ra mọi yếu tố thiết kế cần thiết;</li>
+<li>data analyst sẽ làm việc chọn ra các tập người dùng sẽ được thử nghiệm một thay đổi;</li>
+<li>thành viên marketing sẽ phụ trách triển khai mọi thử nghiệm với các kênh quảng bá, chẳng hạn như một chiến dịch quảng cáo Facebook mới.</li>
+</ul>
+
+<p>Nếu đội có một UX designer, người đó có thể được giao thu thập và đánh giá phản hồi của người dùng về những loại tính năng mà họ thấy giá trị nhất, rồi mang thông tin định tính đó về cho đội. Nghiên cứu đó có thể dẫn đến một ý tưởng thay đổi một tính năng hoặc một tính năng mới để thử nghiệm. Ví dụ, một kỹ sư có thể được yêu cầu lập trình thay đổi trang giỏ hàng nếu nghiên cứu cho thấy người dùng đang gặp khó khăn khi thao tác trên đó.</p>
+
+<p>Tuy nhiên, có những sáng kiến khác sẽ đòi hỏi sự cộng tác chặt chẽ giữa tất cả thành viên, như việc tạo ra một tính năng sản phẩm mới — điều cần có sự đồng thuận liên chức năng về cách tính năng được thiết kế và triển khai, cách nó được truyền thông hoặc đưa đến khách hàng, và cách đo lường thành công của nó. Ví dụ, đội phụ trách một app mobile dành cho doanh nghiệp có thể quyết định rằng cải thiện tỷ lệ người dùng mới trở thành khách hàng thường xuyên, thành công là ưu tiên then chốt của họ, và họ có thể quyết định tiến hành một thử nghiệm gồm việc thiết kế lại đáng kể vài màn hình đầu tiên chào đón người dùng cùng với thông điệp trên các màn hình đó.</p>
+
+<p>Trong suốt phần còn lại của cuốn sách, chúng tôi sẽ mô tả các thử nghiệm cụ thể được thực hiện bởi các growth team có thật, và sẽ giới thiệu các công cụ để theo dõi kết quả, thiết lập thứ tự ưu tiên cho các thử nghiệm sẽ chạy, cũng như xác định các bước tiếp theo cần làm khi đã có kết quả thử nghiệm trong tay.</p>
+
+<hr class="divider">
+
+<h2>Bắt Buộc Phải Có Sự Bảo Trợ Của Lãnh Đạo (Executive Sponsorship Required)</h2>
+
+<p>Growth team phải được đưa vào cơ cấu báo cáo của công ty với sự rõ ràng tuyệt đối về việc growth lead báo cáo cho ai. Điều bắt buộc là phải giao trách nhiệm về đội cho một lãnh đạo cấp cao, để đảm bảo đội có đủ thẩm quyền vượt qua ranh giới trách nhiệm đã được xác lập giữa các phòng ban. <strong>Tăng trưởng không thể là một dự án phụ.</strong> Nếu không có sự cam kết rõ ràng và mạnh mẽ từ ban lãnh đạo, growth team sẽ thấy mình phải vật lộn với quan liêu, tranh giành "lãnh địa", sự kém hiệu quả và sức ì. Ở các start-up, nếu founder hoặc CEO không trực tiếp dẫn dắt các nỗ lực tăng trưởng, thì đội (hoặc các đội) nên báo cáo trực tiếp cho người đó. Ở các công ty lớn hơn — nơi có thể có nhiều growth team — các đội nên báo cáo cho một phó chủ tịch (VP) hoặc lãnh đạo cấp C (C-level) có thể bảo vệ và thúc đẩy công việc của họ trước những thành viên còn lại của ban điều hành (C-suite). Sự ủng hộ cho các phương pháp này ở những nấc thang cao nhất của tổ chức là yếu tố sống còn cho thành công bền vững của đội.</p>
+
+<div class="case">
+<div class="case-title">Case: Mark Zuckerberg và chữ "Growth" trên bảng trắng</div>
+<p>Mark Zuckerberg là một hình mẫu xuất sắc về kiểu lãnh đạo cần có. Ông tập trung không ngừng nghỉ vào tăng trưởng trong những ngày đầu của Facebook, và nhiệt huyết đó chưa hề suy giảm kể từ đó. Năm 2005, hai năm trước khi Facebook chính thức thành lập growth team, Noah Kagan — một digital marketer, nhân viên thứ 30 của công ty — mang đến cho Zuckerberg một ý tưởng tạo doanh thu. Kagan lo ngại rằng mạng xã hội này cần chứng minh với nhà đầu tư rằng nó có thể kiếm được tiền thật sự. Đứng trong một phòng họp của công ty, Zuckerberg ngắt lời Kagan ngay giữa phần trình bày, đứng dậy, cầm bút dạ và viết lên bảng trắng một chữ duy nhất bằng chữ in to: "Growth" (Tăng trưởng). Ông sẽ không cân nhắc bất kỳ ý tưởng nào nằm ngoài việc tăng tổng số người dùng Facebook. Sự ưu tiên rõ ràng như pha lê dành cho tăng trưởng hơn mọi mối quan tâm kinh doanh khác — kể cả doanh thu — trong những ngày đầu chính là "chốt trục" cho thành công phi thường của Facebook.</p>
+</div>
+
+<p>Ngay cả ngày nay, khi công ty đầu tư vào các công nghệ tương lai như thực tế ảo (virtual reality) và trí tuệ nhân tạo (artificial intelligence), mọi người đều hiểu rõ ràng rằng sức khoẻ của tập khách hàng cốt lõi chính là thứ tạo ra cơ hội để đầu tư cho tương lai. Như Mike Schroepfer, CTO của Facebook, chia sẻ với tạp chí Fast Company:</p>
+
+<blockquote><p>"Tôi có một tay đặt vào công việc hằng ngày và một tay đặt vào tương lai. Đôi khi việc đó khiến người ta hơi phát điên, nhưng điều quan trọng là mảng kinh doanh cốt lõi của chúng tôi tiếp tục làm tốt. Bởi vì chính điều đó cho phép chúng tôi đầu tư mạnh mẽ vào những thứ dài hạn hơn này." — Mike Schroepfer, CTO Facebook</p></blockquote>
+
+<div class="case">
+<div class="case-title">Case: Zillow và "Play" — khi cả công ty cùng xoay quanh một sáng kiến tăng trưởng</div>
+<p>Một founder khác cũng là người ủng hộ nhiệt thành cho quy trình tăng trưởng là Spencer Rascoff, CEO của Zillow — trang web bất động sản lớn nhất thế giới. Nate Moch, nhân viên thứ 40, hiện là Phó chủ tịch phụ trách các đội Product (Vice President of Product Teams), nhớ lại rằng Rascoff và ban điều hành đã biến tăng trưởng thành ưu tiên ngay từ ngày đầu tiên, và khi công ty lớn mạnh, Zillow đã xây dựng một đội chuyên trách xoay quanh Moch để đảm bảo công ty luôn hướng tầm nhìn vào việc duy trì tăng trưởng đó. Đội của Moch làm việc theo cách tương tự như của Facebook: tập trung vào các KPI cốt lõi của công ty và làm việc với các đội sản phẩm khác để thúc đẩy acquisition và retention khách hàng, đạt được các mục tiêu kinh doanh tương ứng của họ.</p>
+<p>Rascoff đã tập hợp toàn công ty xung quanh sứ mệnh tăng trưởng bằng cách thiết lập một trọng tâm cho các nỗ lực tăng trưởng mà ông gọi là "Play" của Zillow — một sáng kiến tăng trưởng lặp lại kéo dài chín đến mười hai tháng mà toàn bộ công ty cùng hướng về. Chẳng hạn năm 2008, công ty nhận ra rằng họ đang mất traffic vào tay một đối thủ mới nổi là Trulia, phần lớn là do Trulia sử dụng SEO rất khéo léo để đưa dữ liệu tin đăng nhà của họ xếp hạng cao hơn của Zillow trên kết quả tìm kiếm Google. Vì vậy ban điều hành Zillow quyết định SEO sẽ là "Play" của năm đó, và mọi đội trong công ty đều được yêu cầu ưu tiên việc trở nên đẳng cấp thế giới về tìm kiếm. Điều này đòi hỏi một sự chuyển đổi văn hoá lớn, vì trước đó công ty đã bỏ qua SEO để ưu tiên các chiến thuật khác. Nhưng cuối cùng mọi đội đều tìm được cách cải thiện các nỗ lực SEO của mình, và kết quả là Zillow đã đuổi kịp rồi vượt qua Trulia, và cuối cùng mua lại đối thủ này vào năm 2015 với giá <strong>3 tỷ USD</strong>.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Cơ Cấu Báo Cáo Của Growth Team (The Reporting Structures for Teams)</h2>
+
+<p>Có hai cơ cấu báo cáo phổ biến cho growth team, theo kết quả một khảo sát các công ty ở Silicon Valley do hai nhà nghiên cứu Andrew McInnes và Daisuke Miyoshi thực hiện. Cơ cấu thứ nhất, mà McInnes và Miyoshi gọi là mô hình chức năng (functional), hay mô hình do product dẫn dắt (product-led), là lập ra các đội báo cáo cho một lãnh đạo product management phụ trách sản phẩm hoặc nhóm sản phẩm mà growth team sẽ làm việc.</p>
+
+<h3>Mô hình Product-led</h3>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Mô hình product-led (The Product-Led Model)</div>
+Growth team nằm trong nhóm product: growth lead (thường là product manager) báo cáo cho lãnh đạo product management (ví dụ VP of product) phụ trách sản phẩm hoặc nhóm sản phẩm mà đội tập trung vào; đội gồm engineer, UX designer và data analyst, và một nhóm product có thể có vài đội nhỏ như vậy.
+</div>
+
+<p>Ví dụ, một đội product-led có thể được dành hoàn toàn cho việc tăng trưởng tập người dùng của app mobile của công ty, trong khi một đội khác có thể được giao giúp thúc đẩy độc giả của một dịch vụ tin tức trực tuyến nâng cấp lên gói đăng ký trả phí. Trong một số trường hợp, nhiệm vụ của các đội chuyên trách một sản phẩm cụ thể sẽ chỉ giới hạn ở việc cải thiện hiệu quả của một khía cạnh của sản phẩm, như activation người dùng mới của một phần mềm học trực tuyến bằng cách tối ưu quy trình onboarding — thuật ngữ chỉ việc định hướng người dùng mới về cách sử dụng sản phẩm.</p>
+
+<div class="case">
+<div class="case-title">Case: Pinterest và Copytune</div>
+<p>Tại Pinterest, John Egan điều hành một growth team chuyên trách hoàn toàn việc thử nghiệm tần suất, nội dung và các lời kêu gọi hành động (call to action) trong email và push notification (thông báo đẩy) trên mobile nhằm khiến người dùng quay lại thường xuyên hơn. Phạm vi đó nghe có vẻ hẹp đến khó tin, nhưng chính sự tập trung cao độ này cho phép đội đào thật sâu vào một thành phần then chốt trong tăng trưởng của công ty. Chẳng hạn, trong một nỗ lực tăng trưởng gần đây, đội đã xây dựng Copytune — một thuật toán machine learning rất tinh vi, cho phép họ thử nghiệm nhanh hàng chục biến thể của thông báo gửi tới người dùng, trên hơn 30 ngôn ngữ, và để phần mềm tự chọn ra phiên bản thắng cuộc rồi chuẩn bị sẵn các bài test tiếp theo để tìm kiếm hiệu quả còn tốt hơn nữa. Kết quả của chương trình là phi thường, giúp tăng thêm người vào chỉ số monthly active user (MAU — người dùng hoạt động hằng tháng, phát âm là "mao") của trang.</p>
+</div>
+
+<p>Một đội product-led cũng có thể được yêu cầu thử nghiệm nhiều cách khác nhau để thúc đẩy tăng trưởng trên mọi tầng của growth funnel (phễu tăng trưởng), từ thu hút thêm khách hàng, đến cải thiện retention, đến tăng lượng doanh thu thu được từ họ.</p>
+
+<p>Thông thường ở các tổ chức dùng mô hình này, mỗi product manager điều hành một đội product nhỏ gồm kỹ sư, UX designer và data analyst, và không hiếm khi một nhóm product có một vài đội nhỏ như vậy. Mô hình này dễ triển khai hơn ở một công ty đã ổn định hoặc một start-up giai đoạn sau, vì nó khớp với cơ cấu quản lý sẵn có. Điều này không chỉ có nghĩa là cần ít tái tổ chức hơn, mà còn giúp giảm ma sát khi xếp lịch các growth experiment vào roadmap hiện có dùng để thử nghiệm các tính năng sản phẩm đang phát triển. Ngoài Pinterest, các công ty theo mô hình này còn có LinkedIn, Twitter và Dropbox.</p>
+
+<h3>Mô hình Independent-led</h3>
+
+<p>Cơ cấu còn lại là một đội độc lập (stand-alone) — tức là không thuộc một đội phát triển sản phẩm sẵn có — với growth team lead báo cáo cho một VP of growth, người thường báo cáo trực tiếp cho ban lãnh đạo cấp cao như CEO hoặc một lãnh đạo điều hành khác. Bản thân vai trò VP of growth thường được tạo ra để đảm bảo có một nhân sự cấp lãnh đạo sở hữu (ownership) kết quả của đội, như ở Uber và Facebook. Trái ngược với việc các đội product-led chuyên trách một sản phẩm cụ thể, các đội độc lập có thẩm quyền tiến hành thử nghiệm trên toàn bộ dải sản phẩm của công ty, và thậm chí tìm kiếm các cơ hội tăng trưởng chiến lược nằm ngoài phạm vi danh mục sản phẩm hiện tại. Một ví dụ cho trường hợp sau là việc growth team của Facebook đã tư vấn cho công ty mua lại Octazen, sau khi đội nhận ra rằng công nghệ của Octazen sẽ giúp tăng hiệu quả sản phẩm giới thiệu bạn bè (friend referral) của mạng xã hội. Và thực tế, growth team của Facebook đã làm một loạt sáng kiến tăng trưởng vô cùng rộng, từ giúp tối ưu các sản phẩm và tính năng sẵn có — như cải thiện luồng đăng ký (sign-up flow) cho người dùng mới — cho đến thậm chí tự xây dựng một số sản phẩm của riêng mình, như Facebook Lite, được thiết kế để chạy ở những nơi trên thế giới có kết nối dữ liệu kém. Đội cũng hỗ trợ các đội sản phẩm, đóng vai trò vừa là một nhóm phân tích nội bộ, vừa là một "đội đặc nhiệm SWAT" có thể "nhảy dù" xuống để giúp xác định các cơ hội tối ưu và tăng trưởng, đồng thời chỉ cho họ cách triển khai quy trình thử nghiệm tăng trưởng.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Mô hình independent-led (The Independent-Led Model)</div>
+Growth team là một đơn vị độc lập, không nằm trong đội phát triển sản phẩm nào: growth team lead báo cáo cho VP of growth, và VP of growth báo cáo trực tiếp cho CEO hoặc lãnh đạo cấp cao khác. Đội có thẩm quyền thử nghiệm trên toàn bộ các sản phẩm của công ty.
+</div>
+
+<p>Các đội độc lập dễ được thành lập nhất ở giai đoạn sớm trong quá trình phát triển của công ty, trước khi cơ cấu doanh nghiệp đã định hình và các cuộc tranh giành quyền sở hữu nguồn lực cũng như quan hệ báo cáo trở nên chính thức hoá. Khi "lãnh địa" chưa có ai chiếm, sẽ ít phàn nàn hơn về việc phân bổ lại trách nhiệm và nhân sự (headcount) cho một growth team. Dù vậy, việc đưa growth team độc lập vào các công ty lớn đã ổn định không phải là bất khả thi. Một cách tiếp cận là cách Walmart đã làm: họ tạo ra bộ phận tăng trưởng độc lập vào năm 2011 bằng cách mua lại một trung tâm đổi mới tại start-up Kosmix — một start-up có tiếng ở Silicon Valley — và trung tâm này trở thành @WalmartLabs. Được vận hành như một bộ phận độc lập tập trung vào thương mại điện tử, đội này tập trung vào các sáng kiến đổi mới số cho các website và ứng dụng mobile của Walmart, như app Savings Catcher thành công mà chúng tôi đã mô tả trong phần giới thiệu. Đội cũng dẫn dắt việc mua lại các start-up số đầy triển vọng, như app tìm kiếm thời trang trên mobile Stylr và trang tổng hợp công thức nấu ăn mang tính xã hội Yumprint, đồng thời làm việc để tích hợp công nghệ và nhân tài của họ vào các sản phẩm số của Walmart.</p>
+
+<div class="callout">
+<div class="callout-title">Lưu ý</div>
+<p>Cần nhấn mạnh rằng ngay cả khi các đội được trao thẩm quyền độc lập, họ vẫn cần sự hậu thuẫn mạnh mẽ của ban lãnh đạo cao nhất để vượt qua những nhạy cảm và va chạm nội bộ có thể nảy sinh giữa các chuyên gia product, marketing, design và engineering — những người có quan niệm riêng về điều gì là quan trọng và thế nào là "cách đúng" để làm việc.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Hoà Hợp Tư Duy Và Gạt Bỏ "Lore" (Melding Minds and Dismissing Lore)</h2>
+
+<p>Không có gì lạ khi một người lần đầu thiết lập growth team trong công ty gặp phải một số phản kháng ban đầu. Với hầu hết các công ty — ngoại trừ những start-up ở giai đoạn sớm nhất, nơi các silo tổ chức và chuẩn mực chưa kịp định hình — việc lập một growth team, hay một nhóm các đội, sẽ đòi hỏi hoặc một sự sắp xếp lại đáng kể về nhân sự và cơ cấu báo cáo, hoặc việc phân bổ lại một phần thời gian của mọi người và dịch chuyển trách nhiệm của họ, hoặc là lâu dài, hoặc là trong suốt thời gian của một sứ mệnh tăng trưởng cụ thể. Như bất kỳ ai từng làm trong bất kỳ loại tổ chức nào đều biết, thực hiện những thay đổi như vậy có thể khá thách thức, vì một vài lý do.</p>
+
+<p>Về bản chất, phần lớn các nguồn gây ma sát này là do văn hoá. Nhiều người trong marketing, phát triển sản phẩm và kỹ thuật phần mềm có định kiến sẵn về quyền sở hữu các sáng kiến: các đội "được cho là" phải làm gì — và phải làm như thế nào. Ở BitTorrent, ý định ban đầu của marketing là chỉ tập trung vào thu hút người dùng. Phân tích dữ liệu do đội data của công ty thực hiện, và chỉ theo yêu cầu của các đội product, còn việc thử nghiệm thì không có "nhà" và phần lớn đã bị bỏ bê. Vì vậy khi growth team xuất hiện và đánh sập các silo phòng ban này, mọi người đã cần thời gian để thích nghi.</p>
+
+<p>Những câu chuyện về ma sát như vậy trong quá trình thiết lập growth team nhiều vô kể. Sau khi Josh Schwarzapel gia nhập Yahoo! để lập và dẫn dắt một growth team được giao nhiệm vụ tăng trưởng các sản phẩm mobile của công ty, anh nhớ lại rằng khi đội bắt đầu chạy thử nghiệm quảng bá các app của Yahoo! tới khách truy cập, họ đã bị đội thương hiệu (brand team) phản đối vì trong một số thông điệp thử nghiệm, họ đã đi chệch khỏi bộ hướng dẫn về văn phong và giọng điệu đã được xác lập. Các product manager cũng dè chừng vì tầm phủ rộng và những tác động của thứ mà growth team đang xây dựng; thông điệp của họ sẽ được hiển thị tới từng người một truy cập trang Yahoo! trên thiết bị mobile. Vượt qua sự phản kháng này đòi hỏi rất nhiều cộng tác liên đội và xây dựng lòng tin. "Chúng tôi đã phải làm rất nhiều việc để có được sự ủng hộ từ các đội đối tác," anh kể lại.</p>
+
+<p>Một nguồn ma sát khác là việc các growth experiment — và nguồn lực cần để thực hiện chúng — có thể ảnh hưởng đến, hoặc lấy đi, thời gian hay nguồn lực cần thiết để hoàn thành các dự án và ưu tiên đã được xác lập từ trước. Ví dụ, ở BitTorrent đã có một số ma sát khi công việc thiết kế test và phân tích kết quả của Annabell lấy mất thời gian của cô dành cho những nỗ lực acquisition cấp bách hơn. Ngoài ra, khi nhu cầu dữ liệu từ đội tăng lên, áp lực lên nguồn lực của đội data đã trở thành vấn đề, cho tới khi ban điều hành quyết định mở rộng nhóm data analytics.</p>
+
+<p>Nguyên nhân cuối cùng có thể gây xung đột nằm ở chỗ khi bạn tập hợp những người đến từ nhiều lĩnh vực và xuất thân đa dạng như vậy, gần như chắc chắn sẽ có những góc nhìn và ưu tiên khác nhau, đôi khi mâu thuẫn nhau:</p>
+<ul>
+<li><strong>Kỹ sư</strong> thường hứng thú nhất với những việc thách thức nhất về mặt kỹ thuật, bất kể giải pháp họ nghĩ ra có tác động đáng kể nào tới tăng trưởng hay không.</li>
+<li><strong>Product manager</strong> thường bị ám ảnh bởi việc phát triển và ra mắt sản phẩm, và có thể phát cáu khi các đội marketing và sales đưa ra yêu cầu thay đổi vào phút chót với lý lẽ kinh doanh yếu ớt.</li>
+<li><strong>UX designer</strong> thường phản đối việc đưa các tính năng thử nghiệm vào để test vì họ không muốn làm phiền những người dùng đang hài lòng bằng những điều khó chịu.</li>
+<li><strong>Marketer</strong> có thể sa vào các vanity metric như số lượng khách truy cập website hay số lead (khách hàng tiềm năng), và quên mất nhu cầu phải đẩy các chỉ số hiệu quả ở những phần khác của phễu (như retention người dùng).</li>
+</ul>
+
+<p>Hơn nữa, những góc nhìn này thường đã ăn sâu trong các thành viên của từng nhóm, không chỉ do cách tổ chức được thiết kế, mà còn do cách mọi người được đào tạo cho công việc, cũng như tâm lý cá nhân và những động lực khuyến khích (incentive) chi phối họ. Vì vậy, ngay cả ở các start-up giai đoạn sớm, việc khiến mọi người cộng tác xuyên qua các chuyên môn này có thể là một thách thức lớn.</p>
+
+<p>Growth team có thể làm dịu những căng thẳng này nếu được quản lý đúng cách và nếu cả đội được khuyến khích, và được khen thưởng, vì đạt được những mục tiêu chung tạo ra kết quả có ý nghĩa cho công ty. Một cách khác để giảm xung đột là đảm bảo các quyết định về việc ưu tiên growth hack nào (và đánh giá mức độ thành công của chúng) được đưa ra hoàn toàn dựa trên dữ liệu cứng thay vì giả định, hay thứ mà Chamath Palihapitiya — người dẫn dắt đầu tiên của growth team Facebook — gọi là "lore" (những "truyền thuyết" nội bộ) đang chi phối quan niệm về việc sản phẩm nên được thiết kế thế nào hay khách hàng muốn gì. Mọi công ty, lớn hay nhỏ, đều có những "lore" ăn sâu cần được thổi bay bằng thử nghiệm dựa trên dữ liệu. Ví dụ ở Qualaroo, tăng trưởng từng bị kìm hãm một thời gian bởi một "lore" của công ty cho rằng chúng tôi không thể tăng giá mà vẫn thành công. Thế nhưng khi chúng tôi tiến hành các thử nghiệm về giá, dữ liệu cho thấy chúng tôi có thể tăng giá <strong>hơn 400%</strong> mà vẫn tăng trưởng nhờ thu hút được một kiểu khách hàng mới.</p>
+
+<p>Khi phân tích dữ liệu cung cấp một lý lẽ vững chắc để thử một hack, sự phản đối sẽ dễ bị hoá giải hơn nhiều. Kết quả của những thử nghiệm được thiết kế tốt cũng cực kỳ khó để phản bác, điều này giúp "bẻ nanh" sự gắn bó cảm xúc mà mọi người thường dành cho tầm nhìn hay chiến lược riêng của mình. Và khi việc thử nghiệm dựa trên dữ liệu, các thành viên trong đội cũng thường tôn trọng sự chặt chẽ của quá trình học hỏi và trân trọng sự rộng rãi mà nó cho phép họ — được tích luỹ cả một chuỗi thất bại để đạt được một chiến thắng.</p>
+
+<p>Cuối cùng, ít có thứ gì dập tắt xung đột và bất đồng hiệu quả hơn thành công. Nhiều thành viên growth team đã kể lại rằng sự nhiệt huyết dành cho phương pháp này đã lớn dần không chỉ trong đội mà còn khắp công ty khi mọi người bắt đầu thấy phương pháp phát huy tác dụng và mang lại những kết quả ấn tượng.</p>
+
+<hr class="divider">
+
+<h2>Đội Cũng Phải Tiến Hoá (Teams Evolve)</h2>
+
+<p>Khi công ty lớn lên và thay đổi, growth team của họ cũng phải như vậy. Tại Facebook, growth team đã bùng nổ từ năm người những ngày đầu thành một đơn vị đồ sộ với nhiều trọng tâm, như các đơn vị phụ trách thị trường quốc tế và thị trường điện thoại ở các nước mới nổi.</p>
+
+<p>Thành phần và trọng tâm của growth team nhìn chung cũng sẽ thay đổi theo thời gian, khi công ty phát triển và tuyển thêm nhân sự. Khi điều này xảy ra, growth team có thể bổ sung thêm người từ các phòng ban cụ thể, lập ra các bộ phận mới, hoặc tách thành các đội riêng để tập trung vào những sáng kiến tăng trưởng cụ thể hơn ở các phần khác nhau của doanh nghiệp — như growth team của Pinterest đã làm khi tiến hoá từ một đội độc lập thành bốn đội con trong nhóm product, hiện tập trung vào các phần khác nhau của trải nghiệm người dùng. Tại Twitter, đội onboarding ban đầu của Josh Elman đã chuyển hoá thành một growth team lớn hơn với trách nhiệm tăng trưởng rộng hơn, không chỉ dừng ở activation người dùng mới. Các chuyên gia khác cũng có thể được kéo vào để đóng góp chuyên môn ở một lĩnh vực cụ thể, dù là thành viên cố định từ trong công ty, hay thành viên tạm thời thông qua consultant (chuyên gia tư vấn) hoặc agency bên ngoài. Việc giữ lại, và thậm chí tiếp tục mở rộng đội hoặc các đội khi công ty scale (mở rộng quy mô), đảm bảo rằng sự "ám ảnh" về tăng trưởng luôn nằm trong DNA của công ty. Ngay cả những sản phẩm và ý tưởng xuất sắc nhất cũng có thể, và thường xuyên, chững lại rồi cuối cùng sụp đổ hoàn toàn vì không được cải thiện liên tục. Growth team là "tấm khiên" tốt nhất trước kết cục đau đớn tiềm tàng này.</p>
+
+<p>Với các start-up giai đoạn sớm — nơi growth team gần như chắc chắn sẽ nhỏ — việc đưa vào những chuyên gia bên ngoài chuyên sâu về một mảng tăng trưởng người dùng (như acquisition hay retention) để tăng thêm "chiều sâu đội hình" có thể mang lại lợi ích lớn, như Dropbox đã thấy khi thuê Sean. Những growth team nhỏ như vậy có thể gặt hái thành quả lớn bằng cách kết hợp hiểu biết nội bộ sâu sắc về sản phẩm và công ty với chuyên môn từ bên ngoài. Một lưu ý cảnh báo là điều tối quan trọng là không được outsource (thuê ngoài) trách nhiệm cốt lõi về tăng trưởng, ở giai đoạn này hay bất kỳ giai đoạn nào. Thực tế là, tăng trưởng quá quan trọng để giao phó cho người khác, và các consultant thường thiếu thẩm quyền trong tổ chức, thiếu thời gian, hoặc thiếu động lực nội tại để làm những việc khó khăn tạo nên tăng trưởng bền vững.</p>
+
+<div class="callout">
+<div class="callout-title">Nguyên tắc</div>
+<p>Có thể mời chuyên gia bên ngoài để bổ sung chuyên môn, nhưng <strong>không bao giờ outsource trách nhiệm cốt lõi về tăng trưởng</strong> — tăng trưởng quá quan trọng để giao phó.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Một Growth Hack Để Bắt Đầu Growth Hacking (A Growth Hack to Start Growth Hacking)</h2>
+
+<p>Triển khai quy trình growth hacking có thể có vẻ đáng ngại. Lập một đội liên chức năng có thể khá rắc rối, vì quản lý các nhóm có thể phản đối việc phân bổ lại thời gian của một số nhân viên của họ. Ý niệm thử nghiệm nhiều đến vậy cũng có thể khiến mọi người không thoải mái. Chắc chắn sẽ có những người hoài nghi và những người phản kháng. Tin tốt là cũng có một vòng tăng trưởng tích cực trong việc áp dụng growth hacking. Một đội nhỏ với trọng tâm hẹp bắt đầu chạy quy trình growth hacking và tạo ra một chuỗi chiến thắng có thể khơi dậy sự nhiệt huyết ngày càng lớn với quy trình này trong khắp công ty. Một khi mọi người thấy được sức mạnh của cách tiếp cận thử nghiệm dựa trên dữ liệu — và những ý tưởng tăng trưởng nảy sinh từ đó — sự hào hứng với quy trình thường có tính lây lan.</p>
+
+<p>Triển khai growth hacking trên toàn công ty, hay thậm chí trong một phòng ban, sẽ không thể diễn ra trong một sớm một chiều; vì vậy hãy cân nhắc bắt đầu với một đội chỉ làm việc trên một sản phẩm, và có lẽ thậm chí chỉ một khía cạnh quan trọng trong cách sản phẩm đó đang được người dùng chấp nhận, như trang đăng ký trên website của bạn. Hoặc bạn có thể lập một đội để tối ưu việc thu hút khách hàng của công ty trên một kênh duy nhất, như Facebook, hoặc cải thiện lượng độc giả blog của công ty, hoặc hiệu quả email marketing của công ty. Hoặc bạn có thể khởi động growth team với trọng tâm duy nhất là một metric, như cải thiện tỷ lệ chuyển đổi (conversion rate) ở bước activation, hoặc củng cố retention khách hàng. Khi đạt được thành công, growth team có thể đảm nhận nhiều sáng kiến hơn, hoặc có thể lập thêm các growth team khác.</p>
+
+<p>Nếu bạn là trưởng một đội nhỏ và muốn thử quy trình này, tốt nhất hãy chuẩn bị cho đội thành công bằng cách giành được sự ủng hộ (buy-in) trước, dù chỉ là với vài đồng nghiệp ngang cấp và một cấp trên. Bạn sẽ mắc sai lầm, thử nghiệm sẽ thất bại, trang web sẽ bị hỏng — đó là một phần không thể tránh khỏi của quá trình thử nghiệm. Có được sự ủng hộ của cấp trên có thể giảm bớt những phản ứng tiêu cực từ những sự cố như vậy. Lauren Schaefer, người từng là growth hacking lead của đội Bluemix DevOps tại IBM, đã chạy một bài test từ khá sớm trong quá trình thử nghiệm growth hacking và làm "tê liệt" trang chủ của sản phẩm. Nhưng sếp của cô là người ủng hộ nỗ lực này, nên cô và growth team đã vượt qua được cú vấp đó.</p>
+
+<p>Điều quan trọng không kém là không được cho "cỗ máy" growth team vào số quá sớm. Bởi vì tất cả những thử nghiệm nhanh trên đời cũng sẽ không thể thổi bùng tăng trưởng bền vững nếu sản phẩm không được chính những người dùng nó yêu thích. Dù rất nhiều công ty vẫn xoay xở đủ doanh số hoặc đủ lòng trung thành của người dùng để tồn tại với những sản phẩm chỉ ở mức tạm được, hay thậm chí đôi khi rõ ràng là kém cỏi, họ vẫn đang trên quỹ đạo thất bại, sớm hay muộn.</p>
+
+<p>Đó là lý do vì sao — như chúng tôi sẽ bàn kỹ hơn trong chương tiếp theo — không nên triển khai bất kỳ kế hoạch scale tăng trưởng quá tham vọng nào cho đến khi công ty đã xác định được sản phẩm mình đưa ra thị trường là một "must-have" (thứ không thể thiếu) hay chỉ là "cũng tạm được nhưng không có cũng chẳng sao". Vậy giờ khi bạn đã biết cách thiết lập một growth team, hãy chuyển sang bước tiếp theo của quy trình: làm thế nào đội có thể dùng phản hồi của khách hàng, thử nghiệm và kiểm thử chặt chẽ, cùng với việc đào sâu vào dữ liệu để đánh giá xem một sản phẩm đã thực sự đạt được product/market fit (sự phù hợp giữa sản phẩm và thị trường) hay chưa.</p>
+
+<hr class="divider">
+
+<h2>Điểm chính của chương</h2>
+<ul>
+<li>Silo giữa marketing, product, engineering và data làm chậm đổi mới; growth team liên chức năng là cách phá rào cản đó (case BitTorrent: +92% doanh thu nâng cấp/ngày, +900% review 4–5 sao, +47% doanh thu nhờ tính năng tiết kiệm pin, +300% doanh thu trong một năm, 100 triệu lượt cài đặt).</li>
+<li>Các vai trò cốt lõi: growth lead, product manager, software engineer, marketing specialist, data analyst, product designer — quy mô và phạm vi đội "may đo" theo công ty.</li>
+<li>Quy trình là vòng lặp: phân tích → tạo ý tưởng → ưu tiên → thử nghiệm, vận hành qua buổi growth meeting hằng tuần.</li>
+<li>Growth team cần lãnh đạo cấp cao bảo trợ; hai mô hình báo cáo phổ biến là product-led và independent-led.</li>
+<li>Giảm ma sát bằng mục tiêu chung, quyết định dựa trên dữ liệu thay vì "lore", và bằng chính những chiến thắng.</li>
+<li>Bắt đầu nhỏ, giành buy-in, không outsource trách nhiệm tăng trưởng — và chỉ tăng tốc khi sản phẩm đã là must-have.</li>
+</ul>
+
+<nav class="chapnav">
+  <a href="/hacking-growth/gioi-thieu"><span class="lbl">Chương trước</span>Giới Thiệu</a>
+  <a href="/hacking-growth/xac-dinh-san-pham-must-have"><span class="lbl">Chương sau</span>Chương 2: Xác Định Sản Phẩm Có Phải Must-Have</a>
+</nav>
+
+</body>
+</html>

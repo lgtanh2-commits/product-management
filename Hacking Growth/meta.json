@@ -1,0 +1,79 @@
+{
+  "slug": "hacking-growth",
+  "title": "Hacking Growth",
+  "author": "Sean Ellis & Morgan Brown · Crown Business · 2017",
+  "tag": "Growth Hacking · Tăng Trưởng Đột Phá",
+  "category": "Product Management",
+  "chapters": [
+    {
+      "n": 0,
+      "title": "Giới Thiệu: Cỗ Máy Tăng Trưởng Không Thể Ngăn Cản",
+      "sub": "Từ Uproar, LogMeIn đến Dropbox, Facebook và Airbnb — growth hacking ra đời như thế nào và vì sao mọi doanh nghiệp hôm nay đều cần nó",
+      "slug": "gioi-thieu",
+      "file": "ch00-hg.html"
+    },
+    {
+      "n": 1,
+      "title": "Xây Dựng Growth Team",
+      "sub": "Phá bỏ silo giữa marketing, product, engineering và data để lập một đội liên chức năng thử nghiệm liên tục vì tăng trưởng",
+      "slug": "xay-dung-growth-team",
+      "file": "ch01-hg.html"
+    },
+    {
+      "n": 2,
+      "title": "Xác Định Sản Phẩm Có Phải Must-Have",
+      "sub": "Tìm aha moment, đo bằng Must-Have Survey và retention, rồi dẫn người dùng đến đó nhanh nhất",
+      "slug": "xac-dinh-san-pham-must-have",
+      "file": "ch02-hg.html"
+    },
+    {
+      "n": 3,
+      "title": "Xác Định Đòn Bẩy Tăng Trưởng",
+      "sub": "Xây dựng phương trình tăng trưởng, chọn North Star metric và thiết lập dữ liệu, báo cáo để tập trung vào đòn bẩy quan trọng nhất",
+      "slug": "xac-dinh-don-bay-tang-truong",
+      "file": "ch03-hg.html"
+    },
+    {
+      "n": 4,
+      "title": "Thử Nghiệm Với Nhịp Độ Cao",
+      "sub": "Chu trình Phân tích – Lên ý tưởng – Ưu tiên (ICE) – Kiểm thử và buổi growth meeting hằng tuần",
+      "slug": "thu-nghiem-voi-nhip-do-cao",
+      "file": "ch04-hg.html"
+    },
+    {
+      "n": 5,
+      "title": "Hacking Acquisition — Thu Hút Khách Hàng",
+      "sub": "Tìm language/market fit và channel/product fit, rồi thiết kế viral loop để thu hút khách hàng hiệu quả",
+      "slug": "hacking-acquisition",
+      "file": "ch05-hg.html"
+    },
+    {
+      "n": 6,
+      "title": "Hacking Activation — Kích Hoạt Người Dùng",
+      "sub": "Lập bản đồ đường đến aha moment, đọc funnel, loại bỏ friction và dùng trigger đúng cách",
+      "slug": "hacking-activation",
+      "file": "ch06-hg.html"
+    },
+    {
+      "n": 7,
+      "title": "Hacking Retention — Giữ Chân Người Dùng",
+      "sub": "Ba giai đoạn retention, xây dựng thói quen, phần thưởng và hồi sinh người dùng ngủ quên",
+      "slug": "hacking-retention",
+      "file": "ch07-hg.html"
+    },
+    {
+      "n": 8,
+      "title": "Hacking Monetization — Tối Đa Hoá Doanh Thu",
+      "sub": "Monetization funnel, cohort, cá nhân hoá, thử nghiệm giá và tâm lý học tiêu dùng",
+      "slug": "hacking-monetization",
+      "file": "ch08-hg.html"
+    },
+    {
+      "n": 9,
+      "title": "Vòng Tăng Trưởng Tích Cực",
+      "sub": "Tránh growth stall, dồn lực vào chiến thắng, mở rộng ý tưởng và theo đuổi moonshot",
+      "slug": "vong-tang-truong-tich-cuc",
+      "file": "ch09-hg.html"
+    }
+  ]
+}

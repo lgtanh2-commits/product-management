@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 9: Vòng Tăng Trưởng Tích Cực — Hacking Growth</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+/* Thành phần riêng của sách — chỉ dùng token có sẵn trong theme.css */
+.callout{background:#fff;border:1px solid var(--color-dew);border-left:4px solid var(--color-sprout);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.callout .callout-title{font-weight:700;color:var(--color-sprout-dark);margin-bottom:6px}
+.callout p:last-child,.callout ul:last-child,.callout ol:last-child{margin-bottom:0}
+.case{background:var(--color-dew);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.case .case-title{font-weight:700;margin-bottom:6px}
+.case p:last-child,.case ul:last-child{margin-bottom:0}
+.figure-note{border:1px dashed var(--color-mist);border-radius:var(--radius-chapter-row);padding:14px 18px;margin:22px 0;color:var(--color-ash);font-size:.95rem}
+.figure-note .figure-title{font-weight:700;color:var(--color-slate-ink);margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<p class="book-topline"><a href="/hacking-growth">← Về mục lục</a></p>
+
+<div class="book-label">Hacking Growth · Sean Ellis &amp; Morgan Brown · Phần II · Chương 9</div>
+<h1>Vòng Tăng Trưởng Tích Cực</h1>
+<p class="chapter-subtitle">Tăng trưởng không bao giờ là việc làm xong: cách tránh growth stall, khai thác tối đa chiến thắng và liên tục tạo ra bước nhảy mới.</p>
+
+<p>Như chúng ta đã thấy xuyên suốt cuốn sách, thúc đẩy tăng trưởng là một công việc không bao giờ thực sự hoàn tất. Những công ty bứt phá và duy trì được thành công của mình là những công ty liên tục đòi hỏi nhiều hơn nữa: tận dụng thành công đã có, nắm bắt những cơ hội mới, và tạo ra một <strong>vòng tăng trưởng tích cực</strong> (virtuous cycle of growth) — nơi mỗi thắng lợi lại tiếp sức cho thắng lợi tiếp theo.</p>
+
+<p>Năm 2017, growth team của Facebook kỷ niệm 10 năm thành lập. Từ một đội chỉ có năm người, được giao nhiệm vụ đảo ngược tình trạng mạng xã hội này đang chững lại về tốc độ thu hút người dùng, đến nay nó đã trở thành nhiều đội, trải rộng trên vô số sáng kiến, chịu trách nhiệm duy trì đà tăng trưởng dường như không thể ngăn cản của mạng xã hội lớn nhất mọi thời đại. Growth team đã đóng vai trò then chốt trong sự tăng trưởng phi thường của Facebook suốt thập kỷ đó, phá vỡ mọi định kiến có sẵn về việc một cộng đồng trực tuyến có thể lớn đến mức nào. Hiện nay công ty phục vụ hơn một tỷ người mỗi ngày, vẫn còn rất nhiều dư địa để tăng trưởng thêm trên khắp thế giới, cùng vô vàn cơ hội chưa được khám phá để gia tăng doanh thu từ tập người dùng khổng lồ ấy.</p>
+
+<p>Hơn thế nữa, chính sự tăng trưởng không ngừng nghỉ — cả về số lượng người dùng lẫn mức độ tương tác (engagement) của họ — đã là nhiên liệu cho sự ủng hộ mạnh mẽ mà công ty nhận được từ các nhà đầu tư tài chính và thị trường đại chúng. Đổi lại, họ đã thưởng cho Facebook nguồn vốn dồi dào để tài trợ cho đổi mới sáng tạo, bao gồm cả những canh bạc dài hạn kiểu "moonshot" (những dự án tham vọng, gần như "bắn lên mặt trăng"), chẳng hạn như việc công ty bước chân vào lĩnh vực thực tế ảo (virtual reality) thông qua thương vụ mua lại nhà sản xuất thiết bị Oculus, hay sáng kiến Internet Everywhere (Internet ở khắp nơi) — trong đó có một kế hoạch táo bạo nhằm đưa Internet không dây đến những góc xa xôi nhất của địa cầu bằng các máy bay không người lái (drone) chạy bằng năng lượng mặt trời. Đó chính là điều chúng tôi muốn nói khi nhắc đến một vòng tăng trưởng tích cực.</p>
+
+<p>Dù growth team của bạn có 5 người hay 500 người, dù bạn làm việc cho một công ty được định giá hàng triệu đô la hay một công ty vẫn đang trong giai đoạn khởi đầu chật vật, bạn cũng hoàn toàn có thể noi theo tấm gương của họ: liên tục và không ngừng nghỉ thử nghiệm trên mọi mặt trận với những cách thức mới để đẩy mạnh tăng trưởng.</p>
+
+<hr class="divider">
+
+<h2>Tránh rơi vào tình trạng chững tăng trưởng (Avoiding Growth Stalls)</h2>
+
+<p>Một trong những mối đe doạ lớn nhất đối với thành công dài hạn là khi các công ty không đủ cảnh giác trong việc phản ứng với những thay đổi của thị trường — có thể là do không nhận ra sự "mỏi mệt" của sản phẩm hoặc của kênh (product or channel fatigue), không chịu thừa nhận sự xuất hiện của đối thủ cạnh tranh mới, không kịp thời cập nhật sản phẩm hay điều chỉnh hoạt động marketing khi cần, hoặc không chịu đón nhận những công nghệ mới đang xuất hiện.</p>
+
+<p>Một ví dụ điển hình về hiểm hoạ của sự tự mãn như vậy là Skype. Skype từng thành công vang dội xét theo bất kỳ thước đo nào, nhưng đã không tiếp tục đổi mới sau khi được Microsoft mua lại. Hệ quả là giờ đây Skype đang nhanh chóng mất chỗ đứng vào tay các ứng dụng di động cung cấp dịch vụ chat như Facebook Messenger và WhatsApp, cũng như Slack — công ty chat nhóm đang tăng trưởng nhanh và càn quét thế giới doanh nghiệp. Skype đã sai ở đâu? Nói đơn giản, đội ngũ sản phẩm và ban điều hành đã không nắm bắt được sức hấp dẫn của nhắn tin di động (mobile messaging), và không nhận ra rằng điện thoại di động và máy tính bảng đang được tích hợp vào giao tiếp nơi công sở nhanh đến mức nào.</p>
+
+<p>Những sai sót như vậy về tầm nhìn chiến lược và đổi mới sản phẩm thường dẫn đến việc công ty rơi vào cái gọi là <strong>growth stall</strong> (chững tăng trưởng) — một thuật ngữ do Matthew Olson, Derek van Bever và Seth Verry của CEB, một mạng lưới tư vấn về lãnh đạo, đặt ra. Những đợt chững lại này thường không được lường trước; chúng lặng lẽ ập đến với các công ty mà không hề báo trước, và chúng xảy ra với cả những thương hiệu lớn đã khẳng định vị thế lẫn những start-up từng tăng trưởng thần tốc. Chúng cực kỳ khó dự đoán, và trớ trêu thay, nhiều đợt chững lại xảy ra ngay sau một giai đoạn tăng trưởng mạnh.</p>
+
+<div class="case">
+<div class="case-title">Case: Levi Strauss và nghiên cứu về growth stall</div>
+<p>Trong bài viết đăng trên <em>Harvard Business Review</em> về một nghiên cứu lớn mà họ thực hiện về growth stall, Olson và các đồng nghiệp đã dẫn trường hợp của thương hiệu biểu tượng Levi Strauss. Công ty này đạt mức doanh số cao kỷ lục vào năm 1995 với doanh thu 7 tỷ đô la, nhưng sau đó, bắt đầu từ năm 1996, doanh số sụt giảm nghiêm trọng đến mức tới năm 2000, doanh thu chỉ còn 4,6 tỷ đô la — giảm 35%.</p>
+<p>Các thương hiệu lớn khác mà nhóm tác giả xác định là từng rơi vào tình trạng chững tăng trưởng bao gồm 3M, Apple, Banc One, Caterpillar, Daimler-Benz, Toys "R" Us và Volvo.</p>
+</div>
+
+<p>Người ta có thể nghĩ rằng những sự đảo chiều đột ngột như vậy hẳn phải bắt nguồn từ một biến động kịch tính nào đó trên thị trường. Nhưng nghiên cứu cho thấy rằng các đợt chững lại thường <em>không</em> do sự xuất hiện của một đối thủ mới táo bạo hay một đổi mới mang tính phá vỡ (disruptive innovation) như smartphone gây ra, mà do những thất bại mang tính kinh niên của chính công ty trong việc theo dõi sát sao mức độ hài lòng của khách hàng và nhiệt tâm tìm kiếm những dấu hiệu cảnh báo sớm về sự bất mãn. Thường thì sự xói mòn lòng trung thành của khách hàng đã diễn ra trong nhiều năm, nhưng công ty không hề nhận ra — cho đến khi đã quá muộn.</p>
+
+<p>Theo các tác giả, growth stall cũng thường xảy ra khi các công ty trở nên quá tự tin rằng mình đã nắm chắc một vị thế cao cấp (premium position) trên thị trường. Nghĩa là, họ có phát hiện ra các mối đe doạ cạnh tranh, nhưng không xem xét chúng đủ nghiêm túc. Cảm giác an toàn giả tạo này có xu hướng dẫn đến việc không đổi mới một cách quyết liệt, chỉ cải tiến nhỏ giọt (incremental) các sản phẩm hiện có thay vì theo đuổi những cơ hội thị trường mới để tăng trưởng. Ngay cả những đội sản phẩm cảnh giác nhất cũng có thể bị phục kích bởi những công ty bứt phá tung ra một công nghệ mới, hoặc ứng dụng một công nghệ mới theo một cách đầy sáng tạo.</p>
+
+<p>Ngược lại, growth stall cũng có thể xảy ra khi các công ty mất tập trung vào sản phẩm hoặc dịch vụ cốt lõi, bị phân tán bởi việc ra mắt những sản phẩm mới hào nhoáng, những phần mở rộng thêm thắt "chuông kêu còi hú" (bells-and-whistles), hoặc việc thâm nhập các thị trường mới. Sự chảy máu nhân tài cũng có thể dẫn tới chững tăng trưởng: khi những ngôi sao từng đóng vai trò then chốt trong việc thúc đẩy tăng trưởng ra đi, bộ máy tổ chức còn lại — thiếu đi tầm nhìn và động lực vượt trội của họ — không đủ sức duy trì đà tăng trưởng mạnh mẽ.</p>
+
+<div class="callout">
+<div class="callout-title">Những nguyên nhân phổ biến dẫn đến growth stall</div>
+<ul>
+<li>Không theo dõi sát mức độ hài lòng của khách hàng và bỏ qua dấu hiệu cảnh báo sớm về sự bất mãn.</li>
+<li>Quá tự tin vào vị thế cao cấp trên thị trường, xem nhẹ mối đe doạ cạnh tranh, chỉ cải tiến nhỏ giọt.</li>
+<li>Mất tập trung vào sản phẩm/dịch vụ cốt lõi vì sản phẩm mới hào nhoáng, tính năng thêm thắt, thị trường mới.</li>
+<li>Chảy máu nhân tài — những người then chốt tạo ra tăng trưởng rời đi.</li>
+<li>Tự mãn trong marketing và phụ thuộc quá mức vào một vài kênh đang mất dần hiệu quả.</li>
+</ul>
+</div>
+
+<p>Những cạm bẫy này không chỉ giới hạn trong phát triển sản phẩm. Sự tự mãn và việc không đổi mới trong nỗ lực marketing cũng có thể dẫn tới sự chậm lại nghiêm trọng của tăng trưởng. Một dạng growth stall phổ biến xảy ra khi các công ty trở nên phụ thuộc quá mức vào một số kênh nhất định, trong khi các kênh này có thể đang mất dần hiệu quả. Khi những kênh marketing từng mang về dòng khách hàng mới bất tận đi vào giai đoạn bão hoà, những dòng chảy đó có thể nhanh chóng chỉ còn là những giọt nhỏ — do bất cứ nguyên nhân nào, từ cạnh tranh mới, đến thay đổi trong hành vi người tiêu dùng (thường do công nghệ gây ra, như sự dịch chuyển sang di động), cho tới những quy định mới chi phối kênh đó.</p>
+
+<p>Các nhà xuất bản trực tuyến như Upworthy và Buzzfeed là minh chứng điển hình cho trường hợp sau cùng. Những thương hiệu này phải chịu đựng sự phụ thuộc đầy bất an vào thuật toán News Feed của Facebook — thứ mà họ dùng để dẫn một lượng lớn traffic về trang của mình. Mỗi lần Facebook quyết định tinh chỉnh quy tắc về những câu chuyện được hiển thị cho người dùng, các nhà xuất bản lại cùng nhau nín thở, bởi chỉ một thay đổi nhỏ trong thuật toán News Feed cũng có thể dễ dàng khiến lượng độc giả của họ sụt giảm mạnh — và kéo theo đó là doanh thu quảng cáo.</p>
+
+<div class="case">
+<div class="case-title">Case: Viddy và cái giá của việc phụ thuộc vào một kênh</div>
+<p>Một số công ty đã mắc sai lầm khi phụ thuộc quá nặng nề vào News Feed của Facebook đến mức một thay đổi như vậy trở thành mối đe doạ sống còn. Ví dụ, Viddy — một ứng dụng video từng được định giá tới 370 triệu đô la — dựa vào Facebook để quảng bá và phân phối tới người dùng nhiều đến mức khi Facebook tinh chỉnh quy tắc của thuật toán News Feed theo cách khiến ứng dụng này ít hiển thị hơn hẳn trên trang, Viddy đã chứng kiến lượng người dùng lao dốc nhanh chóng từ 50 triệu người mỗi tháng xuống còn chưa đến 500.000 người. Cuối cùng, các nhà phát triển đã phải đóng cửa ứng dụng.</p>
+</div>
+
+<p>Facebook không phải là "thủ phạm" duy nhất gây ra sự bất ổn của kênh như vậy; nhiều kênh thường xuyên đưa ra các thay đổi về quy tắc, có thể gây hậu quả nghiêm trọng đến tăng trưởng của những công ty phụ thuộc quá nhiều vào chúng để tiếp cận thị trường mục tiêu. Google là một ví dụ khác: họ liên tục tinh chỉnh thuật toán xếp hạng tìm kiếm — thường xuyên định đoạt số phận của những công ty mà tìm kiếm là kênh chính để thu hút khách hàng.</p>
+
+<p>Mặc dù việc khách hàng rời bỏ (churn) và mất thị phần do một hoặc vài sai sót kể trên thường hoàn toàn có thể tránh được, nhưng cũng đúng là những biến động kịch tính — dù do đổi mới của đối thủ hay do thay đổi điều kiện thị trường — có thể đánh úp các công ty theo những cách mà họ gần như không, hoặc hoàn toàn không, kiểm soát được. Công nghệ mang tính phá vỡ cũng có thể đột ngột ảnh hưởng tới hiệu quả của các kênh marketing, như sự ra đời của công cụ chặn quảng cáo (ad blocking). Khi tốc độ đổi mới ngày càng tăng, và những công cụ mới đầy sức mạnh — như lưu trữ đám mây cho các tập dữ liệu lớn (big data) và thuật toán học máy (machine learning) để khai thác dữ liệu đó — giờ đây đã trở nên rẻ và dễ tiếp cận ngay cả với những start-up non trẻ, thì ngay cả những "ông lớn" đương nhiệm hùng mạnh nhất như Walmart và Microsoft cũng phải học cách trở nên linh hoạt (agile) hơn cả trong phát triển sản phẩm lẫn marketing. Ngày nay, không công ty nào có thể để bất kỳ khách hàng tiềm năng nào rơi vào tay đối thủ. Đây là lý do tại sao từ những start-up vừa mới ra đời cho đến những "cường quốc" dẫn đầu thị trường đều đang áp dụng growth hacking.</p>
+
+<p>Growth team giúp các công ty luôn trong tư thế sẵn sàng, liên tục để mắt tới những thay đổi trong hành vi khách hàng và thử nghiệm những ý tưởng tăng trưởng mới. Growth team vừa chủ động hành động vừa đi trước đón đầu (active and proactive); họ là những "máy dò" các dấu hiệu cảnh báo sớm, và họ hoàn toàn tận tâm với việc thu hút (acquiring), kích hoạt (activating), giữ chân (retaining) và kiếm tiền (monetizing) từ số lượng khách hàng tối đa, thậm chí còn thúc đẩy việc kiến tạo những cơ hội tăng trưởng mới.</p>
+
+<p>Nhưng tất nhiên, growth team cũng chỉ là con người. Họ cũng có thể trở nên tự mãn và xao nhãng khỏi sứ mệnh tăng trưởng, hoặc bị đánh úp bởi các lực lượng thị trường và các công nghệ mang tính phá vỡ. Tuy nhiên, quy trình growth hacking với nhịp độ cao (high-tempo) cho phép họ điều chỉnh hướng đi hiệu quả với tốc độ tối ưu. Chương này sẽ giới thiệu một số cạm bẫy phổ biến có thể khiến growth team khựng lại — và chỉ ra cách giảm thiểu hoặc tránh chúng.</p>
+
+<hr class="divider">
+
+<h2>Bơi cùng cá mập (Swimming with Sharks)</h2>
+
+<p>Một số loài cá mập buộc phải luôn di chuyển để sống sót; nếu ngừng bơi, chúng sẽ chết theo đúng nghĩa đen. Growth team cũng giống như những con cá mập đó. Những đội không liên tục đổi mới, không liên tục đào sâu vào dữ liệu khách hàng và khảo sát, không nhanh chóng thử nghiệm và tạo ra kết quả thì sẽ không tồn tại được lâu. Những ưu tiên cạnh tranh nhau, nguồn lực hạn chế và sức ì của tổ chức có thể nhanh chóng "nuốt chửng" ngay cả những đội từng có hiệu suất cao nhất.</p>
+
+<p>Đây là mối nguy đặc biệt đối với các start-up khi họ đạt tới tốc độ tăng trưởng nhanh. Thiếu người và phải xoay xở điên cuồng để phục vụ số lượng khách hàng ngày càng tăng, nhân viên có quá nhiều việc phải làm chỉ để giữ cho hoạt động kinh doanh vận hành trơn tru, đến mức các thành viên growth team có thể bị kéo đi xử lý những nhu cầu đó. Hơn nữa, sau một đợt dồn lực thử nghiệm dồn dập nhằm thúc đẩy, chẳng hạn, việc ra mắt một sản phẩm mới, thì việc giảm nhịp độ thử nghiệm sau khi sản phẩm đã được chấp nhận rộng rãi có thể được coi là hợp lý. Suy cho cùng, trong hoàn cảnh đáng ghen tị đó, tăng trưởng gần như không phải là vấn đề. Nhưng điều quan trọng là phải luôn ghi nhớ hiểm hoạ của việc trượt dần vào sự tự mãn như vậy. Hãy nhớ rằng, growth stall rất thường ập đến với các công ty vào lúc họ ít ngờ tới nhất. Chúng tôi hiểu quá rõ mối nguy của việc rời mắt khỏi tăng trưởng từ chính trải nghiệm xây dựng GrowthHackers.com.</p>
+
+<div class="case">
+<div class="case-title">Case: GrowthHackers.com thoát khỏi growth stall</div>
+<p>Đó là cuối năm 2014, và cộng đồng này mới chỉ hơn một tuổi. Dù đã chứng kiến lượng khách truy cập tăng mạnh trong 10 tháng trước đó, chúng tôi đột nhiên chạm phải một vùng bình nguyên (plateau). Trong ba tháng đầy bực bội, traffic của trang đứng yên, và chúng tôi không thể hiểu chuyện gì đang xảy ra. Chúng tôi đã bị chững lại.</p>
+<p>Phải chăng cộng đồng trực tuyến này đã không còn thu hút được sự quan tâm của các growth hacker? Phải chăng chúng tôi đã không đáp ứng được nhu cầu của họ, khiến họ bỏ đi và tụ họp ở nơi khác? Hay số người áp dụng phương pháp này đã chậm lại? Theo linh cảm, Sean quyết định xem lại xem chúng tôi đã chạy bao nhiêu thử nghiệm trong ba tháng xảy ra đợt chững lại, và anh sững sờ khi phát hiện ra rằng chúng tôi đã chạy <strong>chưa đến 10 thử nghiệm trong cả quý</strong>. Trớ trêu thay, tất cả chúng tôi đều đã sa vào sự tự tin giả tạo rằng tăng trưởng đã được bảo đảm. Sự xông xáo của giai đoạn đầu đã trở thành nạn nhân của những công việc hành chính thường nhật, và việc thử nghiệm tăng trưởng đầy giá trị đã bị xếp sau những công việc vụn vặt (busywork). Sean nhanh chóng tập hợp lại cả đội.</p>
+<p>Chúng tôi thống nhất rằng kể từ thời điểm đó, chúng tôi sẽ làm đúng những gì mình vẫn rao giảng: chạy tối thiểu <strong>ba thử nghiệm mỗi tuần</strong> (ba thử nghiệm mỗi tuần nghe có vẻ không nhiều, và với một số đội thì đúng là không nhiều, nhưng với đội nhỏ của chúng tôi, đó là một nhịp độ mạnh mẽ), và luôn ưu tiên các nỗ lực tăng trưởng hơn công việc hành chính. Chúng tôi thề sẽ dành thời gian và nguồn lực cho những sáng kiến mà growth team cho là quan trọng, bất kể phải đánh đổi mọi thứ khác.</p>
+<p>Khi lời thách thức đã được đưa ra, chúng tôi làm mới lại quy trình lên ý tưởng (ideation), nhanh chóng nâng backlog ý tưởng cần thử nghiệm từ 50 lên 100, rồi 200 và hơn nữa. Ngay lập tức cả đội cảm thấy tràn đầy năng lượng trở lại, và đến tuần thứ hai, chúng tôi bắt đầu thấy nỗ lực của mình có lực kéo (traction) khi các thử nghiệm bắt đầu trúng đích. Mỗi tuần, khi chúng tôi lướt nhanh qua chu trình, mức tăng trưởng lại tăng thêm. Các thử nghiệm chỉ cho chúng tôi những cách để kích hoạt (activate) khách truy cập tốt hơn — chuyển đổi nhiều người hơn từ khách ghé thăm một lần thành thành viên gắn bó, tích cực tham gia cộng đồng. Chúng tôi cải thiện retention thông qua các vòng lặp tái tương tác (reengagement loops), thông báo (notifications), và nỗ lực đưa nhiều người dùng hơn tới aha moment của chính chúng tôi nhanh hơn và thường xuyên hơn. Tóm lại, trong ba tháng tiếp theo, chúng tôi đã làm được nhiều điều để thúc đẩy tăng trưởng hơn cả năm trước đó cộng lại.</p>
+<p>Kết quả thật đáng kinh ngạc: chúng tôi thoát khỏi tình trạng chững lại và bước vào một quỹ đạo đi lên nhanh chóng.</p>
+</div>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Lượng khách truy cập duy nhất hàng tháng (Monthly Unique Visitors) của GrowthHackers</div>
+Biểu đồ thể hiện lượng unique visitors mỗi tháng của GrowthHackers.com: tăng mạnh trong khoảng 10 tháng đầu, sau đó đi ngang suốt ba tháng (giai đoạn growth stall cuối năm 2014), rồi bật lên theo một quỹ đạo đi lên rõ rệt sau khi đội khôi phục nhịp độ tối thiểu ba thử nghiệm mỗi tuần.
+</div>
+
+<p>Đỉnh điểm là khi chúng tôi có thêm 20.000 khách truy cập mới chỉ trong vòng 2 tuần, và rốt cuộc tăng traffic của trang thêm <strong>76%</strong> trong quý đó, gần gấp đôi so với điểm xuất phát. Trong suốt giai đoạn này, chúng tôi không hề đầu tư thêm vào traffic trả phí hay quảng cáo. Kết quả đến 100% từ việc chạy hết chu trình này đến chu trình khác của quy trình growth hacking nhanh nhất có thể, học hỏi xem điều gì hiệu quả rồi dồn lực (doubling down) vào những thử nghiệm chiến thắng đó để thúc đẩy tăng trưởng hơn nữa.</p>
+
+<p>Sau đợt tái khởi động này, phần lớn thời gian chúng tôi đã ổn định ở một lịch thử nghiệm đều đặn và mạnh mẽ — dù có phần bớt dữ dội hơn — với những giai đoạn nhịp độ nhanh hơn khi ra mắt các sáng kiến mới, như phần mềm mới hay một thử nghiệm marketing mới. Sự lên xuống như vậy là điều có thể lường trước, nhưng điều then chốt là phải bám sát các chỉ số tăng trưởng một cách nghiêm ngặt, và liên tục tự hỏi liệu đội đang chậm lại vì một lý do chính đáng, hay vì sự tự mãn đang len lỏi vào. Nếu là trường hợp thứ hai, đội cần phải đẩy nhanh nhịp độ thử nghiệm ngay lập tức.</p>
+
+<div class="callout">
+<div class="callout-title">Câu hỏi tự kiểm tra định kỳ</div>
+<p>Đội đang chậm lại vì một lý do chính đáng, hay vì sự tự mãn đang len lỏi vào? Nếu là tự mãn — hãy tăng tốc độ thử nghiệm ngay lập tức.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Đừng đánh giá thấp sức mạnh của việc dồn lực (Don't Underestimate the Power of Doubling Down)</h2>
+
+<p>Một lý do khác khiến growth team có thể trượt vào sự tự mãn là họ nghĩ rằng mình đã chạm tới giới hạn kết quả có thể tạo ra từ các đòn bẩy tăng trưởng (growth levers) của mình. Thế nhưng, trước khi một đội chuyển sang một sáng kiến mới, họ nên thúc ép bản thân tìm ra những cách mới để khai thác tối đa các kênh và chiến thuật đã được chứng minh là thành công. Các đội có thể bỏ lỡ rất nhiều tăng trưởng nếu không dồn lực (doubling down) vào những thành công đã có.</p>
+
+<p>Brian Balfour và Andrew Chen mô tả cách các đội nên đẩy mạnh hơn nữa vào những đòn bẩy đã thành công giống như chiến thuật chơi trò chơi bàn cờ Battleship (Bắn tàu). Khi bạn đã có cú "trúng" đầu tiên trong lúc dò tìm những con tàu ẩn trên bàn cờ của đối thủ, bạn trở thành một tên lửa tầm nhiệt lao theo con tàu đó, liên tục gọi ra những ô xung quanh khu vực đó cho đến khi đánh chìm nó. Growth team cũng muốn quyết liệt y như vậy khi theo đuổi những cú "trúng" của mình, tiếp tục dấn tới để khai thác tối đa mọi hướng đi thành công.</p>
+
+<div class="case">
+<div class="case-title">Case: Newsletter của GrowthHackers — chồng chiến thắng lên chiến thắng</div>
+<p>Tại GrowthHackers, chẳng hạn, việc ra mắt bản tin email (email newsletter) điểm lại những bài viết nổi bật nhất mỗi tuần là một thành công quan trọng ban đầu trong việc thu hút độc giả. Chúng tôi thấy rõ như ban ngày trong số liệu analytics — mỗi tuần, một làn sóng người dùng quay lại trang để đọc bài. Thế nhưng chúng tôi không tuyên bố thắng lợi rồi nghỉ ngơi; chúng tôi tập trung cao độ vào việc tìm cách biến nó thành một động lực tăng trưởng còn mạnh mẽ hơn.</p>
+<ol>
+<li><strong>Di chuyển form đăng ký:</strong> Chúng tôi thử nghiệm việc chuyển form đăng ký nhận newsletter từ cuối landing page lên đầu trang. Như đã kể trước đó, thay đổi này giúp tăng 700% lượt đăng ký, mở rộng đáng kể danh sách email của chúng tôi — thứ sẽ tiếp tục sinh lời mỗi tuần.</li>
+<li><strong>Thêm bước opt-in khi tạo tài khoản:</strong> Sau đó chúng tôi tự hỏi làm sao để khai thác thêm nữa từ lần tối ưu hoá này, để thực sự tận dụng tối đa cơ hội email marketing. Vì vậy chúng tôi thiết kế lại quy trình tạo tài khoản người dùng trên GrowthHackers.com, thêm một bước để mọi người chọn đăng ký (opt in) nhận email newsletter. Thử nghiệm đó giúp tăng thêm 22% lượt đăng ký email.</li>
+<li><strong>Áp dụng social proof:</strong> Nhưng chúng tôi vẫn chưa dừng lại; chúng tôi biết kết quả quá tốt để từ bỏ hướng thử nghiệm này ngay. Chúng tôi ngờ rằng form đăng ký email chưa hấp dẫn được như nó có thể, và đặt giả thuyết rằng sẽ có thêm nhiều người đăng ký nếu họ được cho biết newsletter phổ biến đến mức nào (một ví dụ hoàn hảo về nguyên tắc social proof — bằng chứng xã hội — mà bạn đã đọc ở chương trước). Vì vậy chúng tôi thiết kế một thanh đăng ký mới với lời kêu gọi hành động (call to action) nổi bật hơn, khuyến khích người dùng đăng ký bằng dòng chữ: <em>"Tham gia cùng hơn 60.000 chuyên gia tăng trưởng đến từ Twitter, Facebook, Google, Uber và nhiều công ty khác, những người nhận nội dung hay nhất của chúng tôi mỗi tuần."</em> Thử nghiệm đó mang lại thêm 44% lượt đăng ký.</li>
+</ol>
+</div>
+
+<p>Tóm lại, khi growth team tìm ra một điều gì đó hiệu quả, họ nên đầu tư để khai thác tối đa từ nó, thay vì vội chuyển sang chiến trường tiếp theo. Dồn lực là một cách mạnh mẽ để chồng chiến thắng tăng trưởng này lên trên chiến thắng tăng trưởng khác.</p>
+
+<hr class="divider">
+
+<h2>Đào sâu hơn để tìm "vàng" dữ liệu (Mining Deeper for Data Gold)</h2>
+
+<p>Growth team cũng có thể (một cách sai lầm) nghĩ rằng họ đã chạm tới giới hạn kết quả có thể tạo ra từ một đòn bẩy nào đó, trong khi thực ra họ chỉ mới cạn kiệt tiềm năng của nguồn dữ liệu mà họ đang tiếp cận được. Trong những trường hợp như vậy, các đội phải cân nhắc đầu tư thời gian và tiền bạc để xây dựng một kho dữ liệu toàn diện hơn bằng cách tăng cường năng lực analytics, như đã khuyên ở phần trước.</p>
+
+<p>Hãy nhớ lại rằng sau gần một năm hoạt động, growth team của Facebook đã ngừng toàn bộ việc thử nghiệm trong trọn một tháng — tháng 1 năm 2009 — để đầu tư cải thiện hệ thống theo dõi analytics (analytics tracking), giúp họ thực hiện những phân tích dữ liệu tinh vi và mạnh mẽ hơn. Việc này được thực hiện chính là để phản ứng với tình trạng số lượng ý tưởng thúc đẩy tăng trưởng mà đội nghĩ ra ngày càng ít đi. Nhờ đầu tư vào những insight analytics sâu hơn, đội có thể theo dõi và đo lường tốt hơn cách người dùng Facebook di chuyển từ trang này sang trang khác trên website. Dữ liệu mới đã khai mở một mạch quặng phong phú gồm những thử nghiệm tiềm năng để đội thử, tiếp thêm nhiên liệu cho đà tăng trưởng đưa công ty lên những tầm cao mới.</p>
+
+<p>Để xác định nên đào sâu dữ liệu ở đâu, growth team nên rà soát từng tác vụ và hành trình (pathway) chính mà khách hàng và người dùng trải qua để đạt tới aha moment của sản phẩm. Trong mỗi tác vụ và trải nghiệm then chốt đó, growth team nên xác định những khoảng trống dữ liệu, hoặc những khu vực mà dữ liệu mỏng hơn hay kém chi tiết (granular) hơn so với những chỗ khác, rồi tìm cách củng cố.</p>
+
+<div class="case">
+<div class="case-title">Ví dụ: Growth team của một thương hiệu thời trang</div>
+<p>Growth team của một thương hiệu thời trang có thể tự hỏi liệu họ có xác định được một khách truy cập xem bao nhiêu hình ảnh của một món đồ trước khi thêm nó vào giỏ hàng hay không. Hoặc liệu họ có tính được khách hàng mất bao nhiêu thời gian để điền từng trường thông tin khi nhập thông tin giao hàng hay không.</p>
+<p>Bằng cách nâng cấp hệ thống dữ liệu để có thể trả lời những truy vấn như vậy, đội có thể phát hiện ra rằng khách hàng xem 4 hình ảnh của một món đồ sẽ thêm nó vào giỏ hàng trong 50% trường hợp, so với chỉ 20% khi họ xem từ 2 hình ảnh trở xuống. Insight tinh tế hơn này sẽ dẫn họ tới hàng loạt thử nghiệm tăng trưởng mới, chẳng hạn như thêm nhiều ảnh hơn cho mỗi sản phẩm, hoặc cải thiện mức độ dễ dàng khi xem và lướt qua nhiều ảnh sản phẩm.</p>
+</div>
+
+<table>
+<thead>
+<tr><th>Số hình ảnh khách xem</th><th>Tỷ lệ thêm vào giỏ hàng (ví dụ giả định)</th></tr>
+</thead>
+<tbody>
+<tr><td>4 hình ảnh</td><td>50%</td></tr>
+<tr><td>2 hình ảnh trở xuống</td><td>20%</td></tr>
+</tbody>
+</table>
+
+<p>Ngoài việc lấp đầy các khoảng trống dữ liệu về cách sử dụng sản phẩm và hành vi khách hàng, đội cũng nên tự hỏi liệu mình có đủ kỹ năng phân tích cần thiết để khai thác tối đa dữ liệu đang có hay không. Nếu growth team vẫn đang làm việc mà không có một data analyst hay data scientist chuyên trách, công ty nên cân nhắc tuyển dụng hoặc điều chuyển một người sang làm việc toàn thời gian cùng đội.</p>
+
+<hr class="divider">
+
+<h2>Lặn vào những kênh mới (Dive into New Channels)</h2>
+
+<p>Ở Chương 5, chúng ta đã bàn về việc tập trung vào một hoặc hai kênh để thu hút khách hàng mới là tối ưu ở giai đoạn đầu của quá trình thúc đẩy tăng trưởng, nhưng theo thời gian, các đội nên thử nghiệm bổ sung các kênh mới. Đây có thể là một cách mạnh mẽ không chỉ để vươn tới những mức tăng trưởng cao hơn nữa, mà còn để thoát khỏi nguy cơ growth stall có thể xảy ra khi một kênh đột ngột thay đổi luật chơi — như chúng tôi đã nói là có thể xảy ra với Facebook hoặc Google.</p>
+
+<p>Nếu các đội đã rơi vào bế tắc, khó nghĩ thêm được ý tưởng nào trong các kênh hiện có, đó là dấu hiệu cho thấy thử nghiệm với kênh mới là một bước đi đáng thử. Ví dụ, với một công ty vốn chỉ dựa vào kênh thu hút trả phí (paid acquisition), growth team nên thử nghiệm phát triển các kênh tự nhiên (organic) như tối ưu hoá công cụ tìm kiếm (SEO), content marketing hoặc social media marketing để bổ trợ cho các nỗ lực trả phí.</p>
+
+<p>Bỏ qua hoặc xem nhẹ các kênh tăng trưởng organic là một cạm bẫy khác mà growth team thường mắc phải. Marketing trả phí dễ triển khai đến mức đôi khi nó làm suy yếu quyết tâm tìm kiếm những giải pháp sáng tạo hơn. Thêm vào đó, các kênh tăng trưởng organic nhìn chung cần nhiều thời gian hơn để tạo ra kết quả, điều này có thể khiến các đội hạ mức ưu tiên của chúng để dành chỗ cho các kênh trả phí nhanh hơn. Nhưng các kênh organic có thể trở thành những động lực tăng trưởng dài hạn cực kỳ quan trọng. Ví dụ, SEO đã là một thành phần then chốt trong tăng trưởng của những công ty như TripAdvisor, Yelp, Zillow và nhiều công ty khác. Họ không hề khởi đầu với những lợi thế tìm kiếm khổng lồ mà mỗi công ty hiện đang có; các đội của họ đã thử nghiệm cật lực để đạt được thành công đó.</p>
+
+<hr class="divider">
+
+<h2>Mở rộng quy trình lên ý tưởng (Open Up the Ideation Process)</h2>
+
+<p>Thường thì phương thuốc tốt nhất cho một growth team đang bị chững lại hoặc đang cạn ý tưởng là mang vào một góc nhìn mới mẻ. Mời những người từ các phòng ban, các đội khác và các cá nhân khác cùng đóng góp vào quy trình ideation có thể tạo ra vô số ý tưởng mới đầy sáng tạo. Hãy nhớ lại rằng tại GrowthHackers, chúng tôi đã mở quy trình ideation cho toàn bộ công ty, rồi đến hội đồng quản trị và các cố vấn đáng tin cậy, và sau đó là các thành viên của cộng đồng. Và thực tế là một số thử nghiệm thành công nhất mà đội từng chạy lại do một trong các cố vấn bên ngoài đề xuất, chẳng hạn như những thay đổi trên trang giúp cải thiện thứ hạng của chúng tôi trong kết quả tìm kiếm Google cho các từ khoá quan trọng.</p>
+
+<p>Các đội có thể tìm kiếm sự "thụ phấn chéo" ý tưởng (cross-fertilization) như vậy bằng nhiều cách:</p>
+<ul>
+<li>Ankur Patel, trưởng nhóm growth hacking chính (principal growth hacking lead) tại Microsoft, thường xuyên tập hợp các product manager, kỹ sư và designer từ những đội khác nhau trong Microsoft để chia sẻ tư duy và insight mới, tạo ra những đợt bùng nổ ý tưởng mới cho đội của anh thử nghiệm.</li>
+<li>Tại Science, một vườn ươm start-up (start-up incubator) nơi Morgan từng làm việc, thông tin về những thử nghiệm chiến thắng mà một start-up đã thử được chia sẻ để các start-up khác cũng có thể cân nhắc áp dụng.</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Thực hiện những cú "bắn lên mặt trăng" (Taking Moonshots)</h2>
+
+<p>Một trong những thách thức lớn nhất đối với các công ty trong việc tiếp tục theo đuổi tăng trưởng là phá vỡ giới hạn của những cách vận hành đang thành công — tức là tâm lý "nếu nó chưa hỏng thì đừng sửa" ("if it ain't broke, don't fix it"). Growth team có thể đóng vai trò then chốt trong việc giúp công ty tư duy vượt ra ngoài chiếc hộp quen thuộc, phá vỡ khuôn mẫu, và tìm cách đi xa hơn những thứ "chưa hỏng" để thực sự tìm ra điều gì đó hiệu quả hơn.</p>
+
+<p>Một điểm khởi đầu tốt là thử nghiệm những thiết kế lại đáng kể (significant redesigns) đối với các tính năng, hoặc đối với hoạt động marketing hay sản phẩm của công ty vốn đang thành công, để xem liệu chúng có thể được hình dung lại một cách căn bản hay không. Các đội có thể bắt đầu ở quy mô tương đối nhỏ, bằng cách đặt câu hỏi liệu những tính năng hay màn hình dường như đã được tối ưu hoá có thể còn hiệu quả hơn nữa nếu được làm lại toàn bộ hay không.</p>
+
+<div class="callout">
+<div class="callout-title">Vượt qua cực đại địa phương (local maximum)</div>
+<p>Hãy xem đây là nguyên tắc vượt qua vùng bình nguyên của một <strong>local maximum</strong> (cực đại địa phương). Local maximum được định nghĩa là giá trị cao nhất trong một tập điểm hiện tại, nhưng không phải là điểm cao nhất tổng thể. Ví dụ, việc chạy thử nghiệm trên cùng một trang giá (pricing page) trong suốt một năm có thể đưa bạn tới local maximum về hiệu suất của trang giá đó. Nhưng để đạt hiệu suất cao hơn nữa, rốt cuộc đội nên thử nghiệm một kiểu trang giá hoàn toàn mới. Vượt qua những local maximum như vậy là điều thiết yếu để tiếp tục khai mở tăng trưởng mới.</p>
+</div>
+
+<p>Một growth team nên thường xuyên lên lịch cho những thử nghiệm vượt ra ngoài việc tối ưu hoá, hướng tới đổi mới với những thay đổi lớn hơn. Những canh bạc moonshot này là tuyến phòng thủ tốt nhất của công ty trước lối tư duy đổi mới nhỏ giọt — thứ rất thường dẫn tới growth stall. Tất nhiên, những nỗ lực lớn hơn này thường cần nhiều thời gian chuẩn bị hơn. Cách tiếp cận tốt nhất là xếp lịch những "cú vung gậy lớn" (big swings) xen giữa các đợt tối ưu hoá nhỏ giọt.</p>
+
+<p>Hãy nhớ lại cách phần mềm tối ưu hoá dựa trên machine learning Copytune của Pinterest đã đại diện cho một bước nhảy vọt vượt xa A/B test đơn thuần để thu hút thêm hàng triệu người dùng tương tác. Tương tự, khi Uber quyết định thực hiện một bước đi triệt để là thử nghiệm một phiên bản dịch vụ tính giá cố định cho mỗi chuyến đi (flat fee per ride), thay vì mức giá biến động tuỳ theo nhu cầu gọi xe (vào thời điểm viết sách, phiên bản này mới chỉ được thử nghiệm giới hạn tại San Francisco), đó là một bước nhảy đáng chú ý so với các thử nghiệm tăng trưởng khác. Việc thử nghiệm táo bạo như vậy một cách đều đặn là vô cùng quan trọng. Song hành cùng các nỗ lực tối ưu hoá liên tục, những canh bạc lớn hơn này có thể dẫn tới những bước tiến nhảy vọt.</p>
+
+<hr class="divider">
+
+<p>Chúng tôi tin rằng growth hacking còn hơn rất nhiều so với một chiến lược kinh doanh, hay thậm chí là một quy trình liên tục. Đó là một triết lý, một cách tư duy, và đó là cách tư duy có thể được áp dụng ở bất kỳ đội ngũ hay công ty nào, dù lớn hay nhỏ. Hy vọng cuốn sách này đã truyền cảm hứng để bạn biến nó thành của riêng mình.</p>
+
+<p>Chúc bạn gặt hái thật nhiều chiến thắng trên hành trình hướng tới sự tăng trưởng không thể ngăn cản.</p>
+
+<h2>Điểm chính của chương</h2>
+<ul>
+<li>Tăng trưởng là công việc không bao giờ kết thúc; vòng tăng trưởng tích cực (như Facebook) biến mỗi thắng lợi thành nhiên liệu cho thắng lợi tiếp theo.</li>
+<li>Growth stall thường đến bất ngờ, sau giai đoạn tăng trưởng mạnh, và chủ yếu do công ty bỏ qua dấu hiệu bất mãn của khách hàng, tự mãn, mất tập trung, chảy máu nhân tài hoặc phụ thuộc quá mức vào một kênh (Viddy, Upworthy, Buzzfeed).</li>
+<li>Như cá mập phải bơi để sống, growth team phải duy trì nhịp độ thử nghiệm — GrowthHackers thoát stall và tăng 76% traffic trong một quý chỉ nhờ quay lại nhịp tối thiểu ba thử nghiệm mỗi tuần.</li>
+<li>Dồn lực (doubling down) vào những gì đã hiệu quả: newsletter của GrowthHackers tăng liên tiếp 700%, 22%, 44% lượt đăng ký qua ba thử nghiệm nối tiếp.</li>
+<li>Khi cạn ý tưởng, hãy đầu tư đào sâu dữ liệu và bổ sung năng lực phân tích (data analyst/data scientist).</li>
+<li>Thử nghiệm kênh mới, đặc biệt là kênh organic như SEO, để tăng trưởng thêm và giảm rủi ro phụ thuộc kênh.</li>
+<li>Mở rộng quy trình ideation ra ngoài growth team để có góc nhìn mới.</li>
+<li>Thường xuyên xen kẽ các moonshot/big swings giữa những tối ưu hoá nhỏ để vượt qua local maximum.</li>
+</ul>
+
+<nav class="chapnav">
+  <a href="/hacking-growth/hacking-monetization"><span class="lbl">Chương trước</span>Chương 8: Hacking Monetization — Tối Đa Hoá Doanh Thu</a>
+</nav>
+
+</body>
+</html>

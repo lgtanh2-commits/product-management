@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 8: Hacking Monetization — Tối Đa Hoá Doanh Thu — Hacking Growth</title>
+<link rel="stylesheet" href="../assets/theme.css">
+<style>
+/* Thành phần riêng của sách — chỉ dùng token có sẵn trong theme.css */
+.callout{background:#fff;border:1px solid var(--color-dew);border-left:4px solid var(--color-sprout);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.callout .callout-title{font-weight:700;color:var(--color-sprout-dark);margin-bottom:6px}
+.callout p:last-child,.callout ul:last-child,.callout ol:last-child{margin-bottom:0}
+.case{background:var(--color-dew);border-radius:var(--radius-chapter-row);padding:16px 20px;margin:22px 0}
+.case .case-title{font-weight:700;margin-bottom:6px}
+.case p:last-child,.case ul:last-child{margin-bottom:0}
+.figure-note{border:1px dashed var(--color-mist);border-radius:var(--radius-chapter-row);padding:14px 18px;margin:22px 0;color:var(--color-ash);font-size:.95rem}
+.figure-note .figure-title{font-weight:700;color:var(--color-slate-ink);margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<p class="book-topline"><a href="/hacking-growth">← Về mục lục</a></p>
+
+<div class="book-label">Hacking Growth · Sean Ellis &amp; Morgan Brown · Phần II · Chương 8</div>
+<h1>Hacking Monetization — Tối Đa Hoá Doanh Thu</h1>
+<p class="chapter-subtitle">Tăng doanh thu trên mỗi khách hàng bằng phân tích monetization funnel, cohort, cá nhân hoá, thử nghiệm giá và tâm lý học tiêu dùng.</p>
+
+<p>Mục tiêu tối thượng của việc thu hút (acquire), kích hoạt (activate) và giữ chân (retain) khách hàng, dĩ nhiên, là để kiếm được doanh thu từ họ. Lý tưởng nhất, bạn muốn kiếm được ngày càng nhiều doanh thu hơn từ mỗi khách hàng theo thời gian — điều này được gọi là tăng <strong>giá trị vòng đời khách hàng (lifetime value — LTV)</strong>. Vì vậy, trong chương này, chúng ta sẽ tập trung cụ thể vào sứ mệnh kiếm thêm tiền từ tập khách hàng mà bạn đang có.</p>
+
+<p>Growth hacking mang lại rất nhiều cách để thiết kế thử nghiệm nhằm tối ưu hoá thu nhập từ tập khách hàng của bạn. Chúng tôi nhận thấy rằng nhiều growth team không tận dụng được những chiến thuật này, mà chủ yếu tập trung vào acquisition (thu hút khách hàng) và activation (kích hoạt khách hàng). Nhưng khi làm như vậy, họ đang bỏ lỡ một tiềm năng tăng trưởng đáng kể. Chúng tôi hy vọng chương này sẽ thay đổi điều đó.</p>
+
+<p>Những cách cơ bản để tăng doanh thu trên mỗi khách hàng khác nhau tuỳ theo mô hình kinh doanh của công ty. Nếu bạn là một công ty bán lẻ (retail), việc monetization (kiếm tiền) tốt hơn từ tập khách hàng về cơ bản đạt được bằng cách thuyết phục khách hàng mua nhiều hơn bất cứ thứ gì bạn đang bán. Nếu bạn là một công ty phần mềm dạng dịch vụ (software as a service — SaaS), điều đó đạt được bằng cách khiến nhiều thuê bao hơn gia hạn đăng ký, và gia hạn trong nhiều năm hơn, cũng như thuyết phục nhiều người trong số họ nâng cấp lên các gói dịch vụ có mức phí cao hơn (hoặc trong trường hợp đặc biệt của các dịch vụ freemium — miễn phí cơ bản, trả phí cho tính năng nâng cao — là khiến nhiều người dùng hơn nâng cấp lên gói trả phí). Nếu doanh thu của bạn đến từ việc bán không gian quảng cáo, thì việc đẩy doanh thu lên cao về bản chất đến từ việc tạo ra nhiều không gian quảng cáo hơn để bán, và thuyết phục nhiều nhà quảng cáo hơn mua cũng như trả nhiều tiền hơn cho không gian mà họ mua.</p>
+
+<p>Mỗi mô hình này đòi hỏi những chiến thuật khác nhau, nhưng trong mọi trường hợp, growth team nên bắt đầu bằng cùng một quy trình chẩn đoán cơ bản để tạo ra ý tưởng cho các thử nghiệm nhằm tăng thu nhập.</p>
+
+<hr class="divider">
+
+<h2>Lập bản đồ monetization funnel (Map Your Monetization Funnel)</h2>
+
+<p>Như với mọi nỗ lực growth hacking, bước đầu tiên là thực hiện phân tích dữ liệu để giúp bạn khoanh vùng những thử nghiệm có tiềm năng cao nhất. Khi nói đến monetization, việc phân tích bắt đầu bằng cách quay trở lại bản đồ cơ bản của toàn bộ hành trình khách hàng (customer journey) — mà như bạn còn nhớ từ Chương Sáu, team nên tạo ra ngay khi bắt đầu quy trình growth hacking. Mục tiêu ở giai đoạn này là làm nổi bật tất cả các cơ hội trong hành trình — từ acquisition đến retention — để kiếm doanh thu từ khách hàng. Bạn cũng nên xác định tất cả những điểm nút dọc đường đang tạo ra rào cản cho việc tạo doanh thu, chẳng hạn như sự ma sát (friction) trong quy trình thanh toán.</p>
+
+<p>Với các công ty bán lẻ, việc lập bản đồ này thường được gọi là <strong>purchase funnel</strong> (phễu mua hàng), và những điểm nút đặc biệt quan trọng để tăng doanh thu là các màn hình hiển thị sản phẩm đang bán, giỏ hàng (shopping cart) và trang thanh toán. Với các công ty SaaS, những điểm nút đặc biệt quan trọng là trang (hoặc các trang) giải thích tính năng và giá của các dịch vụ hay các cấp gói khác nhau, cùng những trang quảng bá add-on (tiện ích bổ sung) và nâng cấp. Còn với các công ty tạo doanh thu từ bán quảng cáo, những điểm nút quan trọng nhất là tất cả các trang mà công ty có cơ hội hiển thị quảng cáo, bất kể công ty hiện đã làm điều đó hay chưa.</p>
+
+<p>Bước tiếp theo sau khi lập bản đồ cơ bản này là phân tích xem ở đâu trong hành trình khách hàng công ty đang kiếm được nhiều tiền nhất, và ở đâu dường như có những <strong>pinch point</strong> (điểm thắt) — tức là những bước mà thu nhập tiềm năng bị mất đi, và chúng khác nhau tuỳ mô hình. Bằng cách xác định những trang và tính năng có giá trị cao trong một sản phẩm, website hay app, growth team có thể thử nghiệm các cách để tạo ra thêm doanh thu từ chúng; trong khi đó, việc xác định những pinch point có tỷ lệ chuyển đổi (conversion rate) thấp và ma sát cao sẽ tạo ra ý tưởng để vá lại những chỗ rò rỉ doanh thu.</p>
+
+<p>Mỗi mô hình kinh doanh khác nhau này đều có những pinch point điển hình trong hành trình khách hàng. Với các công ty thương mại điện tử (e-commerce), các bước từ lúc chọn một món hàng đến lúc hoàn tất việc mua là một vùng nguy hiểm, nơi nhiều giao dịch mua thường bị bỏ dở giữa chừng. Một nghiên cứu thực hiện đầu năm 2016 bởi Monetate (một dịch vụ cung cấp khả năng tuỳ biến cho các công ty e-commerce) cho thấy: trong khi khoảng 9,6% khách truy cập website thêm một món hàng vào giỏ, chỉ có chưa đầy 3% thực sự tiếp tục mua hàng. Với các doanh nghiệp SaaS, những trang hiển thị các lựa chọn gói và giá thường chưa được tối ưu đúng mức, làm giảm tỷ lệ mua. Với các công ty dựa vào doanh thu quảng cáo, những quảng cáo quá xâm phạm (intrusive) khiến người dùng khó chịu, hoặc không đủ dễ thấy hay không đủ hấp dẫn về thông điệp hoặc thiết kế, là những "hố sụt" monetization phổ biến.</p>
+
+<p>Những pinch point phổ biến này là điểm khởi đầu tốt để đánh giá, nhưng việc phân tích chi tiết hơn monetization funnel cụ thể của bạn là cực kỳ quan trọng và gần như chắc chắn sẽ làm lộ ra thêm những điểm yếu riêng của sản phẩm bạn để growth team thử nghiệm. Ví dụ, một nhà bán lẻ trực tuyến có thể phát hiện rằng một số trang sản phẩm của họ đang tạo ra ít lượt mua hơn so với mức mà nghiên cứu ngành về doanh số của những danh mục đó cho thấy lẽ ra chúng phải đạt được. Khi đó, growth team nhiều khả năng sẽ quyết định tập trung thử nghiệm các hack để tăng doanh số trong những danh mục đó. Hoặc với một nhà cung cấp nội dung hay công ty truyền thông sống nhờ doanh thu quảng cáo, việc phân tích có thể cho thấy quảng cáo video ở một vị trí quảng cáo cụ thể đang hoạt động kém xa so với quảng cáo dạng chữ (text ads) ở cùng vị trí đó. Growth team khi ấy có thể chọn tập trung cải thiện hiệu quả của quảng cáo video, bằng cách thử nghiệm với kích thước và vị trí đặt của chúng, hoặc với bản chất của chính video, chẳng hạn như độ dài, lời kêu gọi hành động (call to action), có phụ đề hay không, cùng nhiều thay đổi tiềm năng khác.</p>
+
+<p>Với một công ty SaaS, việc phân tích có thể cho thấy một pinch point ở bước chuyển từ đăng ký dùng thử miễn phí (free trial) sang thuê bao trả phí. Đào sâu vào nguyên nhân của sự sụt giảm này, phân tích có thể phát hiện rằng những người dùng không sử dụng một tính năng cụ thể trong thời gian dùng thử miễn phí có khả năng mua gói enterprise béo bở chỉ bằng một nửa so với những người có dùng. Team có thể quyết định tập trung vào các thử nghiệm nhằm tăng tỷ lệ khách hàng dùng thử sử dụng tính năng đó, để dẫn đến nhiều giao dịch mua hơn khi thời gian dùng thử kết thúc.</p>
+
+<p>Về công cụ để lập bản đồ này, nhiều gói phần mềm phân tích (analytics) phổ biến mà chúng tôi đã nhắc đến cho tới giờ đều có khả năng hiển thị purchase funnel đơn giản cho các công ty e-commerce. Và các dịch vụ quảng cáo như DoubleClick cung cấp phần mềm phân tích phản hồi quảng cáo cho các công ty trên Web bán không gian quảng cáo. Nhưng việc lập bản đồ hoàn chỉnh tất cả các bước trong monetization funnel của công ty bạn thường sẽ đòi hỏi thêm công sức của một data analyst (chuyên viên phân tích dữ liệu).</p>
+
+<hr class="divider">
+
+<h2>Bạn đang kiếm được bao nhiêu từ các cohort? (How Much Are You Making from Cohorts?)</h2>
+
+<p>Khi phân tích dữ liệu khách hàng để đánh giá cơ hội, bạn cũng muốn chia khách hàng thành nhiều cohort (nhóm khách hàng có chung đặc điểm), như bạn đã làm khi hacking retention. Tuy nhiên lần này, trọng tâm là mỗi nhóm đóng góp bao nhiêu doanh thu. Do đó, bộ cohort đầu tiên cần tách ra là nhóm khách hàng mang lại lợi nhuận cao so với nhóm mang lại lợi nhuận thấp. Với một dịch vụ thuê bao (subscription), các nhóm này thường sẽ được phân chia theo cấp gói thuê bao. Với một công ty e-commerce, bạn có thể chia khách hàng thành các nhóm theo số tiền họ chi cho việc mua hàng mỗi năm (hoặc mỗi tháng, mỗi tuần, tuỳ mô hình của bạn). Với một công ty dựa vào doanh thu quảng cáo, việc phân chia sẽ phức tạp hơn một chút. Vì mức độ tương tác (engagement) của người dùng là một trong những yếu tố chính quyết định số lượng quảng cáo công ty có thể hiển thị và mức giá họ có thể tính cho nhà quảng cáo, các công ty dựa trên quảng cáo không chỉ nên theo dõi <strong>doanh thu trung bình trên mỗi người dùng (average revenue per user — ARPU)</strong> — chỉ số monetization cơ bản nhất cho mô hình kinh doanh này — mà còn nên phân khúc những nhóm người dùng cụ thể theo mức độ engagement của họ, và đặc biệt là mức độ tương tác với quảng cáo, chẳng hạn như lượng thời gian dành trên site hoặc trong app, số trang hay số màn hình được xem mỗi phiên (session), và các chỉ số engagement khác đặc thù cho từng công ty (chẳng hạn số video một người dùng xem).</p>
+
+<p>Ngoài những cách phân chia liên quan đến doanh thu này, growth team một lần nữa nên chia khách hàng thành nhiều nhóm khác, như đã được khuyến nghị trong phần hacking retention. Các nhóm này nên bao gồm, nhưng không giới hạn ở: nhóm theo địa điểm, độ tuổi và giới tính, loại mặt hàng đã mua hoặc tính năng đã dùng, nguồn mà qua đó khách hàng được thu hút (chẳng hạn từ một quảng cáo Google hay từ chương trình giới thiệu — referral program), loại thiết bị họ dùng để truy cập site hoặc app (máy tính để bàn so với di động, Microsoft Windows so với Apple), trình duyệt Web được dùng, số lượt truy cập site hoặc app trong một khoảng thời gian nhất định, và ngày của lần mua hàng hoặc hành động đầu tiên. Nhưng một lần nữa, thay vì tìm kiếm các mẫu hình (pattern) trong tỷ lệ retention, ở giai đoạn này bạn muốn tìm kiếm mối tương quan với doanh thu kiếm được từ mỗi nhóm này — điều sẽ mang lại ý tưởng cho các thử nghiệm.</p>
+
+<div class="case">
+<div class="case-title">Case: HotelTonight và kết nối 3G/4G</div>
+<p>Lấy một ví dụ, HotelTonight — một mobile app cho phép khách hàng đặt phòng khách sạn vào phút chót với mức giảm giá đáng kể — đã có một khám phá quan trọng và bất ngờ khi họ phân tích hành vi mua hàng của khách dựa trên cách họ kết nối với app (tức là qua Wi-Fi hay qua kết nối di động 3G hoặc 4G). Phát hiện khá khó hiểu là những khách hàng kết nối qua 3G hoặc 4G đặt phòng với tỷ lệ gấp đôi những người dùng app qua Wi-Fi (suy cho cùng, chẳng phải đặt phòng qua Wi-Fi sẽ dễ hơn sao?). Giả thuyết của họ cho phát hiện này là: việc so sánh giá trên các trang du lịch khác dễ dàng hơn khi dùng Wi-Fi so với khi dùng kết nối dữ liệu chập chờn; với dữ liệu di động chập chờn, các website đối thủ ì ạch trở nên quá chậm và thiếu ổn định, khiến những khách hàng đó sẵn lòng đặt phòng với HotelTonight hơn thay vì so sánh giá — điều mà họ có thể dễ dàng làm qua Wi-Fi tốc độ cao. Sử dụng insight này, HotelTonight tập trung quảng cáo của mình để chỉ nhắm đến những người dùng không kết nối Web bằng Wi-Fi, và kết quả là đã thúc đẩy tỷ lệ mua cao hơn từ những khách hàng mới nhìn thấy quảng cáo của họ.</p>
+</div>
+
+<p>Với các công ty e-commerce, những cách nhóm cohort đặc biệt quan trọng cần xem xét, ngoài số tiền khách chi để mua hàng, bao gồm: số lượng món hàng đã mua, giá trị trung bình mỗi đơn hàng của khách, loại mặt hàng họ mua, ngày mua hàng đầu tiên, số lần họ mua hàng trong một khung thời gian được chọn (chẳng hạn mỗi tháng hoặc mỗi năm), và cả thời điểm trong tháng hoặc trong năm họ thường mua hàng. Ví dụ, hãy xét một team phát hiện ra rằng 55% khách hàng mua một lần trong vòng 90 ngày sẽ tiếp tục chi tiêu từ 500 đô-la trở lên trong 12 tháng tiếp theo, trong khi 95% khách hàng mua hai lần trong vòng 90 ngày đạt hoặc vượt mức chi tiêu 500 đô-la trong cùng khoảng thời gian. Họ có thể thiết kế một loạt thử nghiệm để khuyến khích tất cả những người dùng đã mua một lần quay lại mua tiếp trong vòng 90 ngày, chẳng hạn bằng cách đưa ra một mức giảm giá sâu hoặc một ưu đãi đặc biệt (như miễn phí vận chuyển) chỉ dành riêng cho những người dùng đó, qua một email gửi sau 30 ngày, rồi thêm một lần nữa qua một email nhắc lại gửi sau 60 ngày.</p>
+
+<p>Với các doanh nghiệp theo mô hình doanh thu quảng cáo, việc phân chia tập người dùng một cách tinh tế hơn cho phép công ty thử nghiệm các cách để monetize hơn nữa những không gian quảng cáo vốn đã tạo ra engagement cao, cũng như tăng hiệu quả quảng cáo — và do đó tăng doanh thu — ở những không gian mà engagement còn yếu. Ví dụ, growth team của một công ty truyền thông có thể phát hiện rằng những độc giả dành ít nhất hai phút trên site có khả năng nhấp vào quảng cáo cao gấp ba lần những người dành ít thời gian hơn. Được trang bị kiến thức đó, họ có thể thiết kế một loạt thử nghiệm để tăng lượng thời gian mà nhóm độc giả ít sử dụng dành cho site, chẳng hạn bằng cách cải thiện việc chọn lọc các bài viết được hiển thị cho họ sau khi đọc xong bài hiện tại. Mặt khác, nếu họ phát hiện nhiều độc giả đang dành rất nhiều thời gian trên những trang không có quảng cáo đặc biệt hiệu quả — chẳng hạn trang thư viện video hoặc các bài viết dài (long-form) — họ có thể thiết kế thử nghiệm với những loại quảng cáo mới trên các trang này và với những vị trí đặt thay thế, chẳng hạn giữa các video hoặc nhúng trong bài viết để xuất hiện khi độc giả đọc dần xuống.</p>
+
+<p>Với các công ty SaaS, vốn có khách hàng thường là doanh nghiệp, những cohort đặc biệt quan trọng cần điều tra là các loại hình doanh nghiệp khác nhau, vì một số doanh nghiệp sẽ "rủng rỉnh" hơn những doanh nghiệp khác, khiến họ sẵn lòng mua các gói đắt tiền hơn và các tính năng add-on. Ví dụ, SurveyMonkey cung cấp một dịch vụ khảo sát có thể được dùng bởi nhiều loại công ty khác nhau cho nhiều mục đích khác nhau — từ các team marketing làm nghiên cứu thị trường, đến các team chăm sóc khách hàng đo lường mức độ hài lòng của khách hàng, đến sinh viên thực hiện khảo sát cho bài nghiên cứu, cùng nhiều đối tượng khác. Khi growth team của SurveyMonkey thực hiện phân tích này, Elena Verna — người dẫn dắt các nỗ lực tăng trưởng của công ty — và team của cô đã phát hiện ra (có lẽ không mấy ngạc nhiên) rằng người dùng từ các cơ sở giáo dục và tổ chức phi lợi nhuận, cũng như sinh viên đại học, mua các dịch vụ premium với tỷ lệ thấp hơn hẳn các nhóm người dùng khác. Vì vậy, họ đã thử nghiệm đưa ra các gói được giảm giá đặc biệt cho những nhóm này nhằm kiếm thêm doanh thu từ họ bằng cách chuyển đổi họ từ khách hàng miễn phí sang trả phí với tỷ lệ cao hơn.</p>
+
+<p>Những tính năng phần mềm mà khách hàng sẵn lòng trả tiền nhất cũng có khả năng khác nhau giữa các cohort. Ví dụ, một tập đoàn lớn có thể có hệ thống phần mềm quản lý quan hệ khách hàng (customer relationship management — CRM) nội bộ của riêng mình, và do đó sẵn lòng trả thêm cho phần mềm tích hợp rõ ràng vào hệ thống hiện có đó; trong khi một start-up chưa có hệ thống ổn định có thể coi trọng việc có được nhiều tính năng dùng ngay (out of the box) hơn, nhưng không mấy quan tâm đến tích hợp hệ thống.</p>
+
+<p>Nếu một sản phẩm hoặc dịch vụ được cung cấp ở phạm vi quốc tế, các công ty cũng nên đảm bảo xem xét monetization theo từng quốc gia, vì các quốc gia khác nhau có những chuẩn mực khác nhau về loại phương thức thanh toán, và cả mức phí được tính, cho các dịch vụ. Ví dụ, người dùng ở Đức có thể có xu hướng mua hàng bằng một tập phương thức thanh toán cụ thể, khác với phương thức thanh toán được ưa chuộng ở Nga, dẫn đến tỷ lệ monetization khác biệt rõ rệt giữa hai quốc gia. Tương tự, một số mô hình kinh doanh có thể được hiểu rõ ở quốc gia này hơn quốc gia khác. Ví dụ, các mô hình kinh doanh thuê bao được hiểu rất rõ ở Mỹ, nhưng có thể ít được đón nhận hơn ở những quốc gia khác. Growth team có thể thử nghiệm đưa ra các bộ lựa chọn khác nhau cho từng quốc gia để tăng monetization tại mỗi nơi.</p>
+
+<hr class="divider">
+
+<h2>Hiểu khách hàng của bạn là ai (Learning Who Your Customers Are)</h2>
+
+<p>Như chúng ta đã thấy, có rất nhiều cách để phân khúc tập khách hàng nhằm tìm ra những insight mới. Và một trong những bước đầu tiên đối với growth team đang cố gắng monetize tập khách hàng đó tốt hơn là xác định những nhóm khách hàng chung có cùng đặc điểm tương tự. Đó có thể là họ ở cùng một địa điểm, có cùng trải nghiệm, chi tiêu số tiền xấp xỉ nhau, có cùng nhu cầu đối với sản phẩm của bạn, hoặc là sự kết hợp của nhiều yếu tố (nhiều yếu tố trong số đó chúng tôi đã nêu trong các cách tách cohort tiềm năng ở trên). Mục tiêu của việc tạo ra các nhóm này là để tạo ra ý tưởng tốt hơn về những cách đáp ứng mong muốn và nhu cầu cụ thể của khách hàng. Nhiều marketer hẳn đã quen thuộc với bài tập tạo <strong>persona</strong> — những hồ sơ hư cấu về một khách hàng đại diện cho mỗi nhóm — cho chính mục đích này.</p>
+
+<p>Ví dụ, tại Inman, chúng tôi đã xác định bốn loại khách hàng chính:</p>
+<ul>
+<li>các môi giới bất động sản (real estate agent) mới vào nghề, có dưới ba năm kinh nghiệm;</li>
+<li>các môi giới có từ năm đến mười năm kinh nghiệm;</li>
+<li>các nhà môi giới quản lý sàn (real estate broker);</li>
+<li>và các lãnh đạo nhượng quyền (franchise) và công nghệ.</li>
+</ul>
+<p>Những nhóm chung này đại diện cho các cụm lớn phổ biến trong tập khách hàng của chúng tôi, và growth team của chúng tôi đã tập trung thiết kế các thử nghiệm như truyền thông qua email được tuỳ biến, landing page (trang đích) và các ưu đãi khuyến mãi nhằm thúc đẩy tăng doanh thu từ mỗi nhóm.</p>
+
+<hr class="divider">
+
+<h2>Hỏi khách hàng xem họ muốn những lợi ích gì (Ask Customers What Benefits They Want)</h2>
+
+<p>Growth team cũng nên một lần nữa tận dụng khảo sát (survey) và tìm hiểu trực tiếp từ khách hàng những cải tiến nào trong sản phẩm — chẳng hạn các tính năng mới tiềm năng, các cấp gói mới, hoặc có lẽ là việc chọn lọc mặt hàng tốt hơn — mà mỗi phân khúc khách hàng chủ chốt của bạn muốn thấy nhất. Không cần phải nói cũng biết rằng cốt lõi của sứ mệnh tăng doanh thu chính là cung cấp cho khách hàng những dịch vụ và sản phẩm mà họ thấy hấp dẫn nhất và đáp ứng tốt nhất nhu cầu của họ. Và tất nhiên, những mong muốn đó có thể khác nhau giữa các nhóm khách hàng.</p>
+
+<p>Cũng không cần phải nói rằng một trong những cách tốt nhất để đẩy khối lượng mua hàng của khách lên là cung cấp cho họ thêm mặt hàng để mua hoặc thêm tính năng để trả tiền. (Hoặc, với các mô hình dựa trên quảng cáo, là thêm trải nghiệm và nội dung để họ tiêu thụ nhiều thời gian hơn và tương tác sâu hơn.) Trước đó chúng tôi đã đề cập đến mối nguy của <strong>feature creep</strong> (sự phình to tính năng), và giờ đây điều quan trọng là phải nhấn mạnh mặt còn lại của vấn đề: nhìn chung, các công ty cần đều đặn — và rất thận trọng, sáng suốt — giới thiệu những mặt hàng mới để mua hay tính năng mới để dùng nhằm tiếp tục tăng doanh thu. Hãy nghĩ xem Amazon đã không ngừng tăng số lượng danh mục mặt hàng họ bán và các lựa chọn trong những danh mục đó như thế nào, và Facebook đã mạnh mẽ tiếp tục giới thiệu tính năng mới ra sao. Chìa khoá để có những bổ sung tốt là tập trung cao độ vào việc mang đến cho khách hàng những lợi ích mà họ thấy giá trị nhất và sẵn lòng trả tiền, chứ không chỉ đơn giản là gắn thêm nhiều lựa chọn mà công ty phỏng đoán là khách hàng sẽ muốn.</p>
+
+<p>Growth team nên giới thiệu một cách có hệ thống những ý tưởng về sản phẩm hoặc tính năng mới tới khách hàng qua khảo sát, rồi thử nghiệm những sản phẩm hoặc tính năng đó trước khi triển khai rộng rãi. Một ví dụ tuyệt vời là câu hỏi khảo sát dưới đây mà team BitTorrent đã gửi tới người dùng để quyết định nên xây dựng tính năng nào trong số một loạt tính năng mới khả dĩ. Hãy lưu ý rằng thay vì hỏi người dùng những câu hỏi mở, BitTorrent đưa ra cho người dùng một loạt lợi ích và hỏi lợi ích nào có giá trị nhất. Bạn có thể khuyến khích người dùng trả lời, đồng thời xác thực rằng người dùng thực sự muốn những tính năng họ nói là họ muốn, bằng cách đề nghị tặng một vài người trả lời khảo sát một bản sao miễn phí của sản phẩm có kèm các tính năng mới — như bạn có thể thấy BitTorrent đã làm.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Khảo sát người dùng về tính năng mới (Surveying Users About New Features)</div>
+Mẫu câu hỏi khảo sát của BitTorrent: thay vì hỏi mở, khảo sát liệt kê một loạt lợi ích của các tính năng tiềm năng (trong đó có tính năng tiết kiệm pin — battery saver — và tự động tắt — auto-shutdown) và yêu cầu người dùng xếp hạng mức độ giá trị của từng lựa chọn; đi kèm là lời đề nghị tặng một số người trả lời một bản sao miễn phí của sản phẩm có các tính năng mới.
+</div>
+
+<p>Bằng cách yêu cầu người trả lời xếp hạng từng lựa chọn, rất có thể bạn sẽ có được hai hoặc vài lựa chọn tốt cho các sản phẩm tiếp theo, mà growth team có thể đề xuất đưa vào lịch trình product development roadmap (lộ trình phát triển sản phẩm). Team BitTorrent đã tiến hành phát triển tính năng <strong>battery saver</strong> (tiết kiệm pin) phần lớn dựa trên việc nó nhận được phản hồi mạnh mẽ nhất trong khảo sát này, và kết quả là tính năng đó đã thúc đẩy doanh thu hằng ngày tăng 47%. Tính năng <strong>auto-shutdown</strong> (tự động tắt), vốn cũng nhận được phản hồi mạnh, sau đó cũng được thử nghiệm và — sau khi nhận được phản hồi tích cực — đã được giới thiệu tới toàn bộ người dùng app, giúp tăng doanh thu hằng ngày thêm 20%.</p>
+
+<hr class="divider">
+
+<h2>Dùng dữ liệu và thuật toán để tuỳ biến sản phẩm theo mong muốn và nhu cầu của khách hàng (Using Data and Algorithms to Customize Offerings to Customers’ Wants and Needs)</h2>
+
+<p>Ở Chương Bảy, chúng ta đã bàn về cá nhân hoá (personalization) như một chiến thuật để xây dựng mối quan hệ bền chặt hơn với khách hàng và nhờ đó giúp bạn giữ chân họ. Personalization cũng là một chiến thuật monetization tốt, và đặc biệt hiệu quả là các gợi ý được tuỳ biến (customized recommendations), thường được đưa ra trên site hoặc trong app trong lúc khách hàng đang truy cập, và cả qua email cũng như tin nhắn đẩy (push message) trên di động. Một lần nữa, Amazon là người đi đầu trong thực tiễn này, khi đã phát triển một trong những <strong>"recommendation engine"</strong> (cỗ máy gợi ý) mạnh mẽ nhất — thuật ngữ chỉ các chương trình thuật toán tuỳ biến những mặt hàng nào được gợi ý cho bạn khi bạn duyệt site. Các lựa chọn này dựa trên sự kết hợp giữa lịch sử tìm kiếm và thói quen mua sắm của khách hàng, cùng với dữ liệu về thói quen của những người mua sắm khác tương tự khách hàng đó. Trên thực tế, mỗi người mua sắm trên Amazon đều nhìn thấy phiên bản Amazon của riêng mình, với một trải nghiệm độc nhất được may đo theo sở thích của họ.</p>
+
+<p>Một số recommendation engine — như của Amazon, cũng như những engine được Google và Netflix triển khai — phức tạp đến khó tin, nhưng nhiều engine khác lại dựa trên những phép toán tương đối đơn giản. Như Colin Zima, giám đốc phân tích (chief analytics officer) tại Looker — một phần mềm business intelligence — giải thích, việc tạo ra gợi ý có thể khá dễ dàng dựa trên một công thức đơn giản gọi là <strong>Jaccard index</strong>, hay hệ số tương đồng Jaccard (Jaccard similarity coefficient), dùng để xác định mức độ tương đồng giữa hai sản phẩm. Điều này giúp gợi ý thêm những mặt hàng mà khách hàng có thể muốn mua, vì phần mềm đã tính toán được rằng những mặt hàng đó, khi được mua, thường được mua cùng nhau.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Jaccard Index</div>
+Công thức: J(A, B) = |A ∩ B| / |A ∪ B| — độ tương đồng giữa hai mặt hàng A và B bằng kích thước phần giao (số người mua cả A và B) chia cho kích thước phần hợp (số người mua A hoặc B).
+</div>
+
+<p>Dù công thức trông có vẻ hơi đáng sợ, thực tế nó rất dễ hiểu. Điều phương trình nói là: độ tương đồng giữa hai mặt hàng A và B bằng kích thước phần giao (intersection) của A và B chia cho phần hợp (union) của A và B. Hãy dùng app đi chợ (grocery app) của chúng ta để đi qua một ví dụ nhanh về cách nó hoạt động. Giả sử team muốn kiểm chứng giả thuyết rằng việc gợi ý những sản phẩm thường được mua cùng nhau trong app sẽ làm tăng giá trị đơn hàng trung bình của mỗi lần mua sắm. Để những gợi ý này hiệu quả, họ cần tính toán để chắc rằng khả năng những người mua một sản phẩm, chẳng hạn bơ đậu phộng, cũng sẽ mua sản phẩm được gợi ý, chẳng hạn mứt (jelly), là lớn hơn so với khả năng đó ở các tổ hợp sản phẩm khác. Team sẽ muốn gợi ý những mặt hàng thường được mua cùng nhau nhất để tăng khả năng người mua chấp nhận gợi ý và thêm sản phẩm bổ sung đó vào giỏ hàng.</p>
+
+<p>Kích thước phần giao trong Jaccard index là số người mua cả bơ đậu phộng và mứt cùng nhau, còn phần hợp là số người đã mua bơ đậu phộng hoặc mứt một cách độc lập. Ví dụ, nếu bạn thấy có 30 người đã mua cả bơ đậu phộng và mứt cùng nhau, trong khi 100 người đã mua bơ đậu phộng hoặc mứt một cách độc lập, bạn sẽ có điểm tương đồng Jaccard là 0,3 — thực ra là khá cao so với mặt bằng chung của loại điểm này. Ngược lại, điểm của bơ đậu phộng và, chẳng hạn, bột giặt gần như chắc chắn sẽ thấp hơn nhiều.</p>
+
+<div class="callout">
+<div class="callout-title">Ví dụ tính Jaccard index</div>
+<p>Số người mua cả bơ đậu phộng VÀ mứt (phần giao) = 30<br>Số người mua bơ đậu phộng HOẶC mứt (phần hợp) = 100<br>Jaccard = 30 / 100 = <strong>0,3</strong> — một mức tương đồng khá cao.</p>
+</div>
+
+<p>Phép tính này có thể được thực hiện cho vô số tổ hợp của mọi mặt hàng trong cửa hàng, tạo ra những gợi ý mạnh mẽ dẫn đến nhiều lượt mua hơn. Và với những recommendation engine tốt nhất, các gợi ý sản phẩm này sẽ chỉ ngày càng tốt hơn và được cá nhân hoá hơn theo thời gian, vì khách hàng mua sắm càng nhiều thì càng có thêm dữ liệu — không chỉ về những gì một khách hàng cá nhân đã mua, mà còn về những mẫu hình chung trong một tập lớn người mua sắm. Ví dụ, recommendation engine của app đi chợ có thể gợi ý nước có ga (seltzer) và chanh khi một người mua bỏ Red Bull vào giỏ hàng — ngay cả khi người đó chưa từng mua bất kỳ sản phẩm nào trong số này — dựa trên dữ liệu cho thấy phần lớn những người mua Red Bull đang mua đồ pha (mixer) để uống cùng vodka.</p>
+
+<h3>Đừng xâm phạm (Don’t Be Intrusive)</h3>
+
+<p>Một lời cảnh báo quan trọng về việc tuỳ biến là nó có thể phản tác dụng nếu bạn không tế nhị trong cách thực hiện. Nếu bạn có vẻ đang tọc mạch quá sâu vào đời sống của mọi người, việc tuỳ biến trở nên — không còn từ nào tốt hơn — đáng sợ (creepy). Một trường hợp khét tiếng là chuỗi bán lẻ lớn (big-box retailer) Target đã vô tình "tiết lộ" việc mang thai của một thiếu nữ, điều mà cô đang cố giấu cha mẹ. Công ty đã nhắm tới cô bằng các phiếu giảm giá (coupon) cho quần áo trẻ sơ sinh và nôi, và như phóng viên Charles Duhigg kể lại trên tạp chí <em>New York Times Magazine</em>, cha của cô gái đã xông vào cửa hàng và đối chất với một quản lý, giận dữ:</p>
+
+<blockquote><p>"Con bé vẫn còn đang học trung học, vậy mà các người gửi cho nó phiếu giảm giá quần áo trẻ sơ sinh và nôi à? Các người đang muốn khuyến khích nó có bầu sao?"</p></blockquote>
+
+<p>Khi người quản lý gọi điện xin lỗi vài ngày sau đó, người cha lại phản ứng rất khác:</p>
+
+<blockquote><p>"Tôi đã nói chuyện với con gái tôi. Hoá ra có một vài chuyện đã xảy ra trong nhà tôi mà tôi không hoàn toàn biết. Con bé sẽ sinh vào tháng Tám. Tôi nợ anh một lời xin lỗi." — người cha</p></blockquote>
+
+<p>Bất kể người cha đã tha thứ, câu chuyện được đưa tin rộng rãi này đã châm ngòi cho một cơn bão phản đối từ khách hàng của Target và những người bảo vệ quyền lợi người tiêu dùng — những người coi việc khai thác dữ liệu (data mining) và cá nhân hoá như vậy là một sự xâm phạm đời tư không thể tha thứ.</p>
+
+<p>Bạn cũng có thể nhanh chóng khiến người ta quay lưng nếu bạn đoán sai điều họ muốn thấy từ bạn. Khi khách hàng nhận được những gợi ý không hấp dẫn — dù là từ một nhà bán lẻ quần áo gợi ý trang phục theo phong cách không hợp gu họ, hay từ Netflix gợi ý một thể loại phim họ ghét — họ không chỉ không ấn tượng mà thậm chí có thể cảm thấy bị xúc phạm. Hãy nghĩ đến lúc bạn nhận được một món quà sinh nhật từ một người bạn thân — hoặc tệ hơn, từ vợ hoặc chồng của bạn — mà hoàn toàn không hợp gu của bạn. Cá nhân hoá sai có thể gây tổn hại nghiêm trọng đến doanh thu thay vì cải thiện nó.</p>
+
+<p>Đây là thêm một lý do cho thấy việc thử nghiệm mà growth team được thiết lập để thực hiện là vô cùng quan trọng. Một cách tốt để kiểm tra mức độ hiệu quả của bất kỳ kế hoạch tuỳ biến nào là bắt đầu bằng việc gửi email và thông báo tin nhắn được cá nhân hoá cho chỉ một phân khúc nhỏ khách hàng để đánh giá phản hồi và hiệu quả. Bằng cách bắt đầu như vậy, growth team có thể có được một số dữ liệu sớm về mức độ hiệu quả của các trải nghiệm tuỳ biến, rồi quyết định đầu tư thêm nếu kết quả cho thấy xứng đáng. Hầu hết phần mềm email marketing đều cho phép nhiều tuỳ chọn cá nhân hoá, từ đơn giản là chèn tên người nhận vào tin nhắn cho đến khả năng gửi những thông điệp và ưu đãi khác nhau dựa trên hành vi trước đây của họ.</p>
+
+<p>Ví dụ, team app đi chợ của chúng ta có thể gửi một phiếu miễn phí giao hàng cho những khách hàng mới chỉ mua một lần, nhằm thúc đẩy thêm một lần mua nữa; và nếu thử nghiệm đó thành công, team có thể thử nghiệm xây dựng các thông báo ngay trong app, quảng bá việc miễn phí giao hàng cho tất cả người dùng đã mua ít nhất một lần.</p>
+
+<hr class="divider">
+
+<h2>Tối ưu hoá giá (Optimizing Your Pricing)</h2>
+
+<p>Một trong những vấn đề hóc búa nhất trong việc tăng doanh thu từ trước đến nay luôn là xác định cách định giá sản phẩm và dịch vụ — định giá quá thấp thì bạn đang bỏ lỡ doanh thu, nhưng định giá quá cao thì bạn lại mất doanh thu vì đẩy khách hàng đi. Các công ty có thể sai theo vô số cách: từ việc không phân tích đủ trước khi đặt giá ban đầu, đến việc chạy thử nghiệm về giá quá thưa thớt, đến việc định giá cao hơn mức thị trường chịu chi, hoặc quá vội vàng hạ giá khi không nên. Growth team có thể hỗ trợ rất nhiều trong việc định giá đúng bằng cách phối hợp với các team sản phẩm và tài chính để thực hiện khảo sát và nghiên cứu khách hàng, nhằm tìm ra khoảng giá tối ưu để bắt đầu thử nghiệm bên trong đó.</p>
+
+<p>Các công ty bán hàng hoá vật chất có con đường tương đối đơn giản khi đặt giá. Họ cần tính đến chi phí sản xuất hoặc mua vào những mặt hàng mình bán, cộng với các chi phí liên quan đến marketing và giao những sản phẩm đó tới khách hàng, trong khi vẫn phải có lãi. Nhưng ngay cả trong phương trình này, growth team vẫn có thể thử nghiệm dựa trên những thông tin họ thu được về hành vi mua hàng và giá trị vòng đời của khách hàng. Họ cũng có thể lấy cảm hứng từ nhiều nguyên tắc đã được phát hiện là kích thích việc mua hàng trong ngành bán lẻ qua nhiều thập kỷ nghiên cứu. Ví dụ, trong cuốn sách <em>Priceless: The Myth of Fair Value (and How to Take Advantage of It)</em>, William Poundstone trích dẫn sức mạnh của việc sử dụng <strong>"charm price"</strong> (giá hấp dẫn) — những mức giá cố ý kết thúc bằng 9, 99, 98 hoặc 95 thay vì một số tiền chẵn tròn. Dù khó tin đến mấy, những chiến lược định giá này thực sự hiệu quả; Poundstone viết:</p>
+
+<blockquote><p>"Trong 8 nghiên cứu được công bố từ năm 1987 đến 2004, charm price được ghi nhận là giúp tăng doanh số trung bình 24% so với các mức giá lân cận." — William Poundstone</p></blockquote>
+
+<p>Những chiến thuật bổ sung bắt nguồn từ tâm lý học — chẳng hạn neo giá trị (anchoring) của một mặt hàng bằng cách so sánh với những mặt hàng khác đang bán, hay việc có hiển thị ký hiệu đô-la trên giá hay không — đều có thể tác động đến hành vi. Như với bất cứ điều gì, những chiến lược này sẽ không hiệu quả với mọi sản phẩm và mọi người mua, nhưng với rất nhiều lựa chọn như vậy, growth team có vô số cơ hội để liên tục thử nghiệm và tối ưu hoá giá nhằm cải thiện tăng trưởng doanh thu.</p>
+
+<h3>Định giá cho SaaS: hỏi khách hàng họ sẵn lòng trả bao nhiêu</h3>
+
+<p>Trong khi định giá một món hàng vật chất là tương đối đơn giản, thì một phần mềm được cung cấp qua Web và không có chi phí nguyên liệu thô thì sao? Patrick Campbell, CEO của Price Intelligently, đưa ra rất nhiều lời khuyên về các best practice để tìm ra "điểm ngọt" (sweet spot) về giá cho các sản phẩm SaaS. Ông đề xuất bắt đầu — như chúng tôi đã khuyến nghị với nhiều sáng kiến tăng trưởng khác — bằng việc gửi đi một bản khảo sát hỏi người nhận không chỉ những tính năng nào quan trọng nhất với họ, mà còn họ sẵn lòng trả bao nhiêu, bằng cách đặt bốn câu hỏi sau theo đúng thứ tự sau:</p>
+
+<ol>
+<li>Ở mức giá nào thì [sản phẩm của bạn] trở nên đắt đến mức bạn sẽ không bao giờ cân nhắc mua nó?</li>
+<li>Ở mức giá nào thì [sản phẩm của bạn] bắt đầu trở nên đắt, nhưng bạn vẫn sẽ cân nhắc mua nó?</li>
+<li>Ở mức giá nào thì [sản phẩm của bạn] bắt đầu trở thành một món hời thực sự?</li>
+<li>Ở mức giá nào thì [sản phẩm của bạn] bắt đầu trở nên rẻ đến mức bạn sẽ nghi ngờ chất lượng của nó?</li>
+</ol>
+
+<p>Các câu trả lời sẽ cho bạn một khoảng giá mà mọi người cho là quá cao, quá thấp và vừa phải, và growth team nên vẽ chúng lên một biểu đồ như sau:</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Khách hàng của bạn sẵn lòng trả bao nhiêu? (How Much Are Your Customers Willing to Pay?)</div>
+Biểu đồ biểu diễn bốn đường ứng với bốn câu hỏi khảo sát (quá đắt, bắt đầu đắt, một món hời, quá rẻ) theo các mức giá. Các đường cắt nhau tạo thành một vùng gần như hình thoi ở giữa biểu đồ — đó là khoảng giá lý tưởng để tiến hành các thử nghiệm về giá.
+</div>
+
+<p>Vùng có hình dạng gần như hình thoi ở giữa biểu đồ chính là khoảng thử nghiệm lý tưởng cho các thử nghiệm giá của bạn. Tất nhiên, phản hồi của khách hàng không nên là dữ liệu duy nhất được xem xét; việc định giá phải cân nhắc một tập hợp phức tạp các yếu tố, như chi phí sản xuất và phân phối, marketing, chi phí chung (overhead), cũng như nghiên cứu thị trường về các sản phẩm cạnh tranh. Và khoảng giá mà growth team nên chạy thử nghiệm phải được xác định với sự phối hợp, và được phê duyệt bởi, team tài chính cùng ban lãnh đạo điều hành.</p>
+
+<p>Một số người cũng lập luận rằng việc hỏi trực tiếp khách hàng về giá chỉ cho bạn những insight "trả giá thấp" (lowball), vì khách hàng luôn tìm cách bảo vệ lợi ích của chính họ. Tuy vậy, ngay cả với những người cho rằng không thể rút ra mức giá trực tiếp từ khách hàng, đa số đều đồng ý rằng phản hồi của khách hàng dưới dạng khảo sát và phỏng vấn ít nhất cũng nên được dùng để định hướng cho bạn khi quyết định tính giá bao nhiêu cho sản phẩm — cũng như ai là khách hàng mục tiêu sẽ sẵn lòng trả mức giá đó. Và thực tế, đó chính là lý do vì sao cách tiếp cận thử nghiệm đối với giá lại quan trọng đến vậy. Quá nhiều công ty đặt ra một mức giá rồi coi nó như thể đã khắc trên đá, trong khi thực tế team nên liên tục thử nghiệm với nó, giống như họ làm với các yếu tố khác của doanh nghiệp. Dù bạn chọn dùng nguyên văn các câu hỏi về giá ở trên, điều chỉnh chúng cho phù hợp với nhu cầu cụ thể của mình, hay tự nghĩ ra những câu hỏi hoàn toàn mới, thì điều then chốt là tận dụng phản hồi của khách hàng để định hướng cho việc thử nghiệm liên tục của bạn.</p>
+
+<p>Sau đó, bạn sẽ muốn kết hợp nghiên cứu về giá này với nghiên cứu về tính năng mà chúng ta đã bàn trước đó để tạo ra một ma trận gồm những tính năng mà mọi người thấy giá trị nhất và các mức giá họ sẵn lòng trả. Điều này mang lại cho bạn cái mà Campbell gọi là <strong>persona/pricing fit</strong> (sự phù hợp giữa persona và giá), giúp bạn tự tin xây dựng các gói sản phẩm và mức giá đáp ứng nhu cầu và kỳ vọng của những người mua trong tập khán giả của bạn.</p>
+
+<div class="case">
+<div class="case-title">Case: Công ty video streaming giả định — Basic Bonnie và All-Access Andrew</div>
+<p>Hãy quay lại công ty video streaming giả định mà chúng ta đã gặp ở Chương Bảy để xem điều này vận hành trong thực tế như thế nào. Thông qua khảo sát và phân tích cohort, họ có thể đã xác định được hai kiểu khách hàng rất khác nhau đang dùng dịch vụ: một nhóm chỉ muốn khả năng cơ bản là xem chương trình và phim khi họ muốn, không có quảng cáo; và một nhóm khác muốn một trải nghiệm giải trí phong phú hơn nhiều. Như đã bàn ở trên, growth team tạo ra những khách hàng nguyên mẫu đại diện cho mỗi nhóm: <strong>Basic Bonnie</strong> đại diện cho kiểu khách hàng không cần màu mè, chỉ muốn streaming video đơn giản; còn <strong>All-Access Andrew</strong> đại diện cho khách hàng muốn (và sẵn lòng trả tiền cho) mọi tính năng "đủ đồ chơi" mà dịch vụ cung cấp.</p>
+<p>Hiểu được những khác biệt về sở thích này sẽ mang lại cho growth team những lĩnh vực thử nghiệm để khám phá. Ví dụ, vì một số khách hàng sẵn lòng trả nhiều hơn đáng kể so với gói thuê bao cơ bản 9,99 đô-la mỗi tháng, team có thể thử nghiệm đưa ra cho một số khách hàng này một gói giá còn cao hơn nữa, có thể cho phép họ xem trên nhiều thiết bị hơn, hoặc cho phép nhiều thành viên gia đình truy cập dịch vụ cùng lúc.</p>
+</div>
+
+<h3>Value metric — tính phí theo giá trị khách hàng nhận được</h3>
+
+<p>Bất kể bạn đang cố monetize sản phẩm gì, khi tạo ra các lựa chọn cho khách hàng, bạn muốn đảm bảo rằng giá của mình tương xứng với giá trị mà họ nhận được từ việc sử dụng sản phẩm. Và với một số sản phẩm nhất định, đáng chú ý nhất là phần mềm, thường thì bạn nên tính phí theo mức sử dụng. Ví dụ, phần mềm marketing của HubSpot tính phí theo số lượng contact (liên hệ) được lưu trữ trong cơ sở dữ liệu, vì đó là một thước đo tốt về mức độ khách hàng sử dụng dịch vụ và giá trị họ nhận được từ nó. Nếu thay vào đó HubSpot tính phí theo mỗi tài khoản người dùng mà một công ty đăng ký, kết quả có khả năng xảy ra là các công ty chỉ đăng ký một vài tài khoản và để nhiều nhân viên dùng chung, nghĩa là doanh thu HubSpot kiếm được sẽ không tương xứng với mức độ sử dụng sản phẩm. Unbounce tính phí theo số lượng khách truy cập vào các landing page được tạo bằng phần mềm của họ, còn SurveyMonkey tính phí theo số lượng câu trả lời thu được qua phần mềm khảo sát; cả hai đều là những thước đo gắn trực tiếp với giá trị mà người dùng nhận được từ dịch vụ. Những thước đo làm cơ sở để tính phí khách hàng này được gọi là <strong>value metric</strong> (thước đo giá trị).</p>
+
+<p>Để xác định value metric của bạn, Campbell khuyên bạn nên tự hỏi ba câu:</p>
+<ol>
+<li>Value metric có khớp với nơi khách hàng cảm nhận được giá trị không?</li>
+<li>Thước đo đó có tăng theo khi khách hàng sử dụng sản phẩm nhiều hơn không?</li>
+<li>Nó có dễ hiểu không?</li>
+</ol>
+
+<p>Value metric của SurveyMonkey rõ ràng đáp ứng các tiêu chí này; thật dễ hiểu vì sao họ tính phí dựa trên số câu trả lời mà các khảo sát thu được, bởi vì một khảo sát càng thu được nhiều câu trả lời thì giá trị của khảo sát đó càng cao, và hiển nhiên, giá trị này tăng lên khi người dùng tạo và gửi đi càng nhiều khảo sát.</p>
+
+<h3>Trình bày giá trên pricing page</h3>
+
+<p>Nhưng chỉ đặt đúng giá thôi là chưa đủ; điều quan trọng không kém là cách bạn trình bày và truyền đạt mức giá đó tới khách hàng trên trang giá (pricing page) và ở những nơi khác. Nếu mô hình của bạn có nhiều lựa chọn giá, điều quan trọng là tính năng của các gói khác nhau có thể được so sánh dễ dàng với nhau, để khách hàng có thể nhanh chóng đánh giá liệu khoản phí tăng thêm cho bất kỳ gói nào trên mức cơ bản có đáng với họ hay không. Họ nên nhìn thấy tất cả các tính năng cơ bản trong danh sách tính năng của mỗi gói, và sau đó các lợi ích bổ sung của mỗi gói nên được liệt kê rõ ràng. Bạn có thể thấy điều này trong thực tế ở trang giá giả định dưới đây.</p>
+
+<div class="figure-note">
+<div class="figure-title">Hình: Trang giá SaaS điển hình (Typical SaaS Pricing Page)</div>
+Một pricing page giả định với nhiều gói đặt cạnh nhau: mỗi gói đều liệt kê đầy đủ các tính năng cơ bản, và các lợi ích bổ sung của từng gói cao hơn được nêu rõ ràng, giúp khách hàng dễ dàng so sánh và đánh giá liệu khoản phí tăng thêm có xứng đáng hay không.
+</div>
+
+<p>Growth team làm việc trên các sản phẩm dựa vào doanh thu quảng cáo nên thử nghiệm với việc định giá các đơn vị quảng cáo (ad unit). Các thử nghiệm nên được chạy với những loại ad unit khác nhau — như quảng cáo banner tiêu chuẩn, những quảng cáo có hiệu ứng động hoặc yếu tố tương tác (tức rich ads) so với quảng cáo video — và cả với vị trí đặt của chúng, để so sánh mức độ engagement của người dùng. Có trong tay dữ liệu về engagement đó, team có thể thử nghiệm với các mô hình thanh toán cho những không gian quảng cáo khác nhau, chẳng hạn các gói tính giá theo mỗi người dùng nhấp vào quảng cáo (pay per click), trả tiền theo lượt xem (pay per view), hoặc có lẽ là mô hình affiliate (liên kết), theo đó bên cung cấp không gian quảng cáo được trả một khoản phí giới thiệu cho những người dùng nhấp qua quảng cáo rồi thực hiện một hành động hoặc mua hàng trên site của nhà quảng cáo.</p>
+
+<h3>Thử nghiệm giá liên tục và dynamic pricing</h3>
+
+<p>Nhưng hãy nhớ, một khi giá đã được đặt, nó không nên bị đánh dấu là xong rồi không bao giờ xem lại nữa. Giống như mọi đòn bẩy tăng trưởng (growth lever) khác mà chúng ta đã đề cập cho tới giờ, giá cần được thử nghiệm liên tục. Chúng tôi khuyến nghị growth team của các sản phẩm SaaS chạy thử nghiệm thay đổi giá ít nhất mỗi quý tài chính một lần, trong khi các công ty e-commerce được khuyên nên thử nghiệm giá linh hoạt và liên tục hơn nhiều, như Amazon đang làm. Được gọi là <strong>dynamic pricing</strong> (định giá động), chiến lược này dựa trên dữ liệu về nhiều yếu tố khác nhau — như tồn kho, tính mùa vụ, thời điểm trong ngày, lịch sử mua hàng trước đây của người mua, loại máy tính họ đang dùng, và nhiều yếu tố khác — để liên tục thay đổi và thử nghiệm các mức giá khác nhau nhằm tìm ra mức giá mang lại nhiều lượt mua nhất với lợi nhuận cao nhất.</p>
+
+<p>Nhưng hãy cẩn thận: như với personalization, dynamic pricing có thể phản tác dụng nếu làm sai, như trang du lịch Orbitz đã nhận ra khi có tin tức lan ra rằng những người dùng tìm kiếm ưu đãi du lịch trên site bằng máy tính Mac thường xuyên được hiển thị những khách sạn và gói du lịch đắt tiền hơn so với những người truy cập bằng PC. Thật vậy, nghiên cứu của Orbitz đã cho thấy người dùng Mac sẵn lòng và có khả năng chi nhiều hơn tới 30% cho phòng khách sạn, và công ty đã dùng dữ liệu đó để thu thêm doanh thu từ họ. Không cần phải nói, khi biết được điều này, khách hàng dùng Mac đã không mấy vui vẻ.</p>
+
+<p>Growth team trong mô hình quảng cáo cũng nên tối ưu hoá giá theo cách linh hoạt tương tự. Các nền tảng quảng cáo lớn nhất, như Google và Facebook, sử dụng mô hình đấu giá (auction) để xác định giá trị kho quảng cáo (ad inventory) của mình. Về cơ bản, điều đó có nghĩa là khi nhà quảng cáo muốn đặt một quảng cáo, họ đặt một mức giá thầu (bid) cho số tiền họ sẵn lòng trả, rồi site trao không gian quảng cáo cho người trả giá cao nhất (đây là một sự đơn giản hoá quá mức; các quy trình đấu giá phức tạp đến choáng ngợp). Khi ngân sách của người trả giá đó cạn — thường là khi chạm mức trần hằng ngày hoặc một giới hạn khác — người trả giá cao kế tiếp sẽ được trao kho quảng cáo, và cứ thế tiếp tục cho đến khi toàn bộ kho quảng cáo hiện có được sử dụng hết. Các công ty này cũng dùng những yếu tố như chất lượng quảng cáo và phản hồi của khách hàng để tính vào việc nhà quảng cáo nào có được không gian nào và quảng cáo nào được hiển thị nổi bật hơn — một động lực mạnh mẽ để nhà quảng cáo tạo ra những quảng cáo chất lượng cao hơn. Điều đó, tất nhiên, phục vụ lợi ích của cả nhà quảng cáo lẫn nền tảng quảng cáo. Các nhà xuất bản (publisher) nhỏ hơn không có loại hệ thống đấu giá này nên liên tục thử nghiệm việc định giá kho quảng cáo của mình dựa trên cung và cầu để thúc đẩy tăng trưởng doanh thu tốt nhất.</p>
+
+<hr class="divider">
+
+<h2>Tính tương đối của giá (Pricing Relativity)</h2>
+
+<p>Khi các team phối hợp với ban quản lý để xây dựng các thử nghiệm về giá, cần cân nhắc một số phát hiện về giá đã được khẳng định qua thực tiễn lâu dài và nghiên cứu. Một trong số đó là <strong>pricing relativity</strong> (tính tương đối của giá) — nguyên tắc cho rằng cảm nhận của con người về giá bị ảnh hưởng bởi giá của những lựa chọn khác mà họ được đưa ra. Trong cuốn sách kinh điển <em>Predictably Irrational</em> (Phi lý trí), Dan Ariely mô tả một thử nghiệm cho thấy quyết định của người tiêu dùng về mức giá họ muốn trả bị ảnh hưởng nhiều đến mức nào bởi tập hợp các lựa chọn mà họ có. Ý tưởng cho thử nghiệm này nảy sinh khi Ariely nhận thấy tạp chí <em>The Economist</em> đang dùng một phương án giá thuê bao khá khó hiểu: ấn bản chỉ trực tuyến (online-only) với giá 59 đô-la mỗi năm, ấn bản in của tạp chí với giá 125 đô-la mỗi năm, hoặc gói kết hợp bản in và bản Web cũng với giá 125 đô-la.</p>
+
+<p>Tò mò trước hai lựa chọn thuê bao khác nhau nhưng được đưa ra với cùng một mức giá, Ariely đưa trang thuê bao (minh hoạ bên dưới) cho một nhóm 100 sinh viên MIT và yêu cầu họ chọn một phương án. Dễ hiểu là tất cả đều chọn hoặc ấn bản chỉ Web, hoặc ấn bản in-và-Web, với 84% chọn gói sau. Sau đó, ông bỏ đi lựa chọn ở giữa — chỉ bản in (không ai chọn) — rồi yêu cầu một nhóm 100 sinh viên mới chọn giữa chỉ hai lựa chọn. Bỗng nhiên kết quả khác biệt đến kinh ngạc. Lúc này, 68% sinh viên (so với 16% trước đó) chọn phương án đầu tiên, rẻ hơn — chỉ Web. Tại sao? Bởi vì chỉ đơn giản việc nhìn thấy lựa chọn ở giữa đã mang lại cho khách hàng tiềm năng một cách dễ dàng hơn nhiều để so sánh giá trị của mỗi đề nghị, và nhiều người thấy rằng về bản chất họ đang nhận được gói thuê bao Web miễn phí — thật là hời! — dẫn họ đến việc chọn phương án đắt hơn. Gói ở giữa đôi khi được gọi là <strong>decoy package</strong> (gói mồi nhử), và có thể là một cách mạnh mẽ để hướng khách hàng đến những sản phẩm có giá cao hơn.</p>
+
+<table>
+<caption>Các lựa chọn thuê bao (Subscription Options) — thử nghiệm của Dan Ariely với <em>The Economist</em></caption>
+<thead>
+<tr><th>Lựa chọn</th><th>Giá/năm</th><th>Có gói mồi nhử (3 lựa chọn)</th><th>Không có gói mồi nhử (2 lựa chọn)</th></tr>
+</thead>
+<tbody>
+<tr><td>Chỉ Web (online-only)</td><td>$59</td><td>16%</td><td>68%</td></tr>
+<tr><td>Chỉ bản in (gói mồi nhử)</td><td>$125</td><td>0% (không ai chọn)</td><td>—</td></tr>
+<tr><td>Bản in + Web</td><td>$125</td><td>84%</td><td>32% (suy ra)</td></tr>
+</tbody>
+</table>
+
+<div class="case">
+<div class="case-title">Case: SmartShoot và sản phẩm mồi nhử</div>
+<p>Digital marketer Steve Young đã dùng sản phẩm mồi nhử này với hiệu quả sâu sắc tại SmartShoot — một marketplace kết nối các nhà quay phim và nhiếp ảnh gia chuyên nghiệp với những người cần dịch vụ của họ. Ban đầu, khi công ty đưa ra hai lựa chọn — một gói theo tháng và một gói theo năm — 40% khách truy cập mua gói năm và phần còn lại mua gói tháng. Young và team đặt giả thuyết rằng bằng cách đưa ra một đề nghị kém hơn một chút (và rẻ hơn một chút) so với gói 299 đô-la của họ, họ có thể tận dụng hiện tượng tính tương đối của giá và thúc đẩy nhiều lượt mua gói năm hơn. Vì vậy, họ đã thêm một sản phẩm mồi nhử có giá chỉ thấp hơn 10 đô-la so với gói 299 đô-la nhưng giới hạn nghiêm ngặt các tính năng có sẵn. Kết quả là tỷ lệ chuyển đổi của họ tăng vọt 233%, với 86% người mua chọn sản phẩm gói năm 299 đô-la.</p>
+</div>
+
+<p>Bài học là không thể nhầm lẫn: các team nên thử nghiệm với một lựa chọn sản phẩm được định giá để giúp khách hàng hiểu rõ hơn giá trị tương đối của những mặt hàng và gói mà bạn mong muốn bán.</p>
+
+<hr class="divider">
+
+<h2>Ít hơn không phải lúc nào cũng tốt hơn (Less Is Not Always More)</h2>
+
+<p>Khi cố gắng tăng khối lượng mua hàng, sự thôi thúc hạ giá có thể rất mạnh. Giá thấp hơn thường dẫn đến khối lượng bán cao hơn — nhưng không nhất thiết. Trong một số trường hợp, hạ giá thực tế có thể làm giảm doanh số, hoặc ít nhất là không mang lại mức tăng nhu cầu như mong đợi. Đó là lý do tại sao việc thử nghiệm hạ giá trước khi tiến hành áp dụng nó cho toàn bộ tập khách hàng lại quan trọng đến vậy.</p>
+
+<div class="case">
+<div class="case-title">Case: Qualaroo tăng giá để tăng doanh thu</div>
+<p>Tại Qualaroo, chúng tôi đã tăng doanh thu đáng kể bằng cách tiến hành các thử nghiệm cho thấy rằng chúng tôi thực ra nên tăng giá. Chúng tôi bắt đầu với giả thuyết rằng nếu cải thiện các tính năng của phiên bản freemium của widget khảo sát trực tuyến mà Qualaroo bán, thì nhiều người bắt đầu dùng nó sẽ sẵn lòng nâng cấp lên phiên bản trả phí hơn, để có thêm các tính năng mở rộng và năng lực khảo sát bổ sung. Nhưng giả thuyết đó đã thất bại; phiên bản miễn phí được cải thiện hoàn toàn không tạo ra bất kỳ mức tăng nào trong doanh số sản phẩm trả phí. Sau đó, chúng tôi đặt giả thuyết rằng có lẽ khách hàng mục tiêu của chúng tôi ít nhạy cảm với các tổ hợp giá và tính năng, nên chúng tôi đảo ngược hướng đi và thử nghiệm với mức giá cao hơn — và hoá ra giả thuyết thứ hai của chúng tôi đã đúng: bằng cách tính giá cao hơn, chúng tôi khiến sản phẩm hấp dẫn hơn đối với các khách hàng lớn đang tìm kiếm sản phẩm tốt nhất trong phân khúc (best-in-class), chứ không nhất thiết là lựa chọn có chi phí thấp nhất.</p>
+<p>Nhà tâm lý học và tác giả sách bán chạy Robert Cialdini giải thích hiện tượng này: theo ông, đây là kết quả của việc con người dùng giá như một tín hiệu về chất lượng, và điều này đặc biệt phổ biến trong các thị trường như công nghệ và dịch vụ chuyên nghiệp. Và quả thực chúng tôi thấy điều đó đúng khi tiếp tục tăng giá ba lần trong vòng một năm rưỡi tiếp theo, thúc đẩy tăng trưởng doanh thu lớn và mở ra một thị trường hoàn toàn mới gồm những công ty lớn hơn nhiều muốn có năng lực khảo sát này.</p>
+</div>
+
+<p>Ngay cả khi bạn không bán một dịch vụ Web hay một sản phẩm công nghệ, vấn đề là khách hàng của bạn có thể ít nhạy cảm về giá hơn bạn nghĩ — và quy trình growth hacking mang lại một cách đơn giản để tìm ra chính xác mức độ nhạy cảm về giá của họ. Điều này không chỉ áp dụng cho việc định giá sản phẩm và dịch vụ đang bán, mà còn cho cả những khoản giảm giá đưa ra để khách hàng hành động.</p>
+
+<div class="case">
+<div class="case-title">Case: Inman thử nghiệm mức giảm giá khi khách bỏ dở checkout</div>
+<p>Tại Inman, team đã thử nghiệm việc giảm giá cho những khách truy cập đang bỏ dở giao dịch giữa chừng khi thanh toán (checkout), bằng cách đề nghị giảm 25% trong thời gian giới hạn cho đơn hàng của họ nếu hoàn tất quy trình thanh toán. Không có gì ngạc nhiên, khoản giảm giá này tạo ra mức tăng đáng kể so với việc không giảm giá gì cả, làm tăng tỷ lệ người hoàn tất giao dịch thêm 39%. Nhưng khi họ chạy một thử nghiệm khác, so sánh mức giảm 25% với mức giảm 10%, họ phát hiện ra rằng mức giảm nhỏ hơn vẫn chuyển đổi được số lượng khách hàng bổ sung xấp xỉ như vậy — và nhờ đưa ra mức giảm nhỏ hơn, họ đã cải thiện được doanh thu thu về từ quy trình đăng ký thêm 18,9%.</p>
+</div>
+
+<hr class="divider">
+
+<h2>Hãy tiến hành thận trọng (Proceed with Caution)</h2>
+
+<p>Mặc dù thử nghiệm giá là cực kỳ quan trọng, nó cũng có thể khá rắc rối vì khách hàng nhìn chung không phản ứng tốt với những thay đổi giá dễ nhận thấy. Vì vậy, growth team phải đảm bảo trải nghiệm khách hàng luôn nhất quán; ví dụ, một khi khách hàng đã nhìn thấy một biến thể (variant) thử nghiệm của trang giá, họ nên luôn nhìn thấy biến thể đó trong những lần truy cập tiếp theo. Để hiểu việc thay đổi giá và tính năng có thể khiến khách hàng tiềm năng quay lưng như thế nào, hãy tưởng tượng cảm giác của bạn khi thấy một món đồ bạn vừa trả 100 đô-la được niêm yết chỉ 75 đô-la ngay ngày hôm sau!</p>
+
+<p>Một thách thức khác, đặc thù cho những sản phẩm được bán bởi đội ngũ bán hàng (sales team), là có thể khó phối hợp các thử nghiệm giá với những nhân viên kinh doanh (sales rep) đang tích cực chốt các khách hàng tiềm năng (prospect) — và những người có thể nhận hoa hồng cao hơn khi sản phẩm được định giá cao hơn. Sales team cũng phải luôn biết khách truy cập đang nhìn thấy phiên bản trang nào (hãy nghĩ xem sẽ ngượng ngùng và tai hại thế nào khi một nhân viên kinh doanh đưa ra một mức giá, trong khi khách hàng tiềm năng lại đang nhìn thấy một trang giá thử nghiệm trông hoàn toàn khác hoặc có giá khác), nghĩa là cần kết nối các thử nghiệm của growth team với cơ sở dữ liệu quản lý khách hàng nội bộ của sales team. Việc xây dựng kết nối giữa hai bên có thể được thực hiện bởi team phần mềm, hoặc bằng cách kết nối các công cụ bên thứ ba như Optimizely và Salesforce thông qua một công nghệ như Zapier hoặc Segment — những công cụ đóng vai trò như "đường ống" để truyền dữ liệu giữa các hệ thống công nghệ rời rạc.</p>
+
+<p>Thách thức cuối cùng là growth team thường không có thẩm quyền riêng để tự thử nghiệm thay đổi giá, vì việc này đòi hỏi nỗ lực phối hợp của các team sản phẩm, tài chính và bán hàng (nếu công ty dùng mô hình dựa vào bán hàng). Do đó, điều thiết yếu là các thử nghiệm về giá và giảm giá phải được thực hiện một cách cân nhắc và phối hợp chặt chẽ, đảm bảo rằng tất cả các bên liên quan (stakeholder) ở mọi bộ phận của doanh nghiệp đều nắm được những thử nghiệm giá đang được chạy và tác động của chúng lên cả trải nghiệm người dùng lẫn các chỉ số kinh doanh quan trọng khác, như biên lợi nhuận (margin), doanh thu định kỳ (recurring revenue) và giá trị đơn hàng trung bình của mỗi khách hàng.</p>
+
+<hr class="divider">
+
+<h2>Khoảng cách một xu (The Penny Gap)</h2>
+
+<p>Ở đầu bên kia của vấn đề định giá là thách thức nảy sinh khi khách hàng đã quá quen với việc nhận những sản phẩm giống như của bạn mà không mất tiền — như thường thấy với phần mềm hoặc app trực tuyến — đến mức họ không muốn trả bất cứ khoản nào cho nó cả. Nhà đầu tư mạo hiểm (venture capitalist) Josh Kopelman đặt tên cho bài toán định giá này là <strong>penny gap</strong> (khoảng cách một xu), ám chỉ khoảng cách lớn mà người tiêu dùng cảm nhận giữa một sản phẩm miễn phí và việc phải trả dù chỉ một khoản rất nhỏ cho nó.</p>
+
+<p>Thực tế, trong một số trường hợp, đặc biệt với các sản phẩm Web hoặc kỹ thuật số, ma sát của việc yêu cầu mọi người trả dù chỉ một khoản nhỏ có thể lớn đến mức đôi khi cung cấp sản phẩm miễn phí thực ra lại rẻ hơn chi phí bỏ ra để thu hút một khách hàng sẵn lòng trả tiền. Hơn nữa, việc monetize người dùng miễn phí thông qua quảng cáo, hoặc bằng cách tính phí cho các tính năng add-on, có thể mang lại lợi nhuận cực kỳ lớn.</p>
+
+<div class="case">
+<div class="case-title">Case: App 7 Minute Workout của Stuart K. Hall</div>
+<p>Hãy xem trường hợp app 7 Minute Workout của Stuart K. Hall. Sau khi quảng bá app như một sản phẩm phải trả tiền trước (pay-up-front) trong vài tuần, gửi đi các thông cáo báo chí kèm mã khuyến mãi mà chỉ tác động rất ít đến lượt tải về, Hall quyết định cho app miễn phí để xem điều gì sẽ xảy ra. Chỉ trong vòng ba ngày, lượt tải app đã tăng lên trung bình 72.000 lượt mỗi ngày, tức khoảng 2.500 lần so với khi còn là app trả phí. Nó trở thành app thể dục số một trên iPhone tại bốn mươi chín quốc gia. Nhưng không chỉ lượt tải tăng vọt; doanh thu của app cũng tăng mạnh. Đó là vì khi cho app miễn phí, Hall đã thêm vào các giao dịch mua trong app (in-app purchase) dưới dạng một bản nâng cấp pro cung cấp tính năng theo dõi bài tập và tuỳ biến. Chỉ vài tính năng nâng cấp đơn giản này đã dẫn đến mức tăng 300% tổng doanh thu, dù 97% người dùng không trả bất cứ đồng nào để dùng app.</p>
+</div>
+
+<p>Sự thật là, nếu sản phẩm của bạn là một mobile app, có thể bạn thực sự không có lựa chọn nào khác ngoài việc cung cấp nó miễn phí. Chỉ cần nhìn nhanh vào doanh thu của các game iOS có doanh thu cao nhất là thấy rõ điều này. Tại thời điểm viết sách, trong số các game có doanh thu cao nhất trên App Store của Apple, không có một game nào trong top 50 là sản phẩm phải trả tiền trước. Tất cả đều miễn phí tải về, và kiếm tiền hoặc từ quảng cáo, hoặc bằng cách tính phí cho các bản nâng cấp trong app để mở khoá thêm tính năng.</p>
+
+<p>Nếu nguồn monetization chính của bạn là add-on và nâng cấp, thì việc tối ưu chiến lược thuyết phục nhiều người dùng miễn phí nâng cấp hơn càng trở nên quan trọng. May mắn là đã có một số chiến thuật được phát triển mà growth team có thể thử nghiệm. Một trong số đó là hiển thị những tính năng chỉ dành cho người dùng trả phí ngay trong lúc người dùng miễn phí đang sử dụng sản phẩm. Spotify, app streaming nhạc nổi tiếng, làm điều này một cách xuất sắc, bằng cách hiển thị một số tính năng premium ngay trong trải nghiệm của người dùng miễn phí. Khi người dùng miễn phí cố truy cập các tính năng này, họ gặp một lời kêu gọi hành động (call to action) để mở khoá các tính năng premium bằng cách nâng cấp từ phiên bản miễn phí lên thuê bao trả phí.</p>
+
+<p>Ngoài việc bán các tính năng premium, growth team có thể thử nghiệm tính phí thuê bao cho các phiên bản nâng cấp, hoặc giới thiệu hàng hoá ảo (virtual goods) hay tiền tệ trong app (in-app currency) — một chiến lược mà nhiều game nổi tiếng, từ Candy Crush đến Pokémon Go, đã sử dụng thành công để thúc đẩy monetization. Electronic Arts là một công ty game nổi bật cung cấp nhiều game sử dụng tiền tệ kỹ thuật số, cho phép người chơi tiến nhanh hơn trong game hoặc thêm nhân vật vào game, và nhiều hơn nữa. Những hàng hoá ảo trong game này phổ biến đến mức đã đóng góp hơn 173 triệu đô-la doanh thu cho Electronic Arts trong quý 4 năm tài chính 2015. Và chiến lược này không chỉ áp dụng cho game. Có những ví dụ ở đủ mọi lĩnh vực — từ app hẹn hò đến app ảnh và hơn thế nữa — sử dụng tiền tệ ảo như một chiến lược monetization. Ví dụ, app hẹn hò nổi tiếng Coffee Meets Bagel bán "beans" (hạt cà phê) — một loại tiền tệ có thể dùng để làm những việc như có thêm cơ hội thứ hai với một người ghép đôi đã bỏ lỡ, hoặc xem danh tính những người bạn chung giữa người dùng và một đối tượng ghép đôi tiềm năng.</p>
+
+<p>Growth team cũng nên thử nghiệm kết hợp nhiều cách tạo doanh thu cho một sản phẩm freemium. Nhiều app thành công dùng hỗn hợp quảng cáo, phí giới thiệu (referral fee) và tài trợ (sponsorship) để tạo doanh thu. Các team cũng có thể cân nhắc monetize dữ liệu và hoạt động của người dùng bằng cách bán quyền truy cập vào chúng. Ví dụ, một app có thể tính phí các công ty khác để truy cập vào dữ liệu hoạt động người dùng của mình theo mô hình thuê bao, hoặc thông qua chia sẻ doanh thu (revenue sharing), chẳng hạn bằng cách hợp tác với một nhà bán lẻ trực tuyến để bán hàng ngay trong app.</p>
+
+<p>Trong mọi trường hợp, growth team nên để dữ liệu dẫn đường: đo lường những gì đang hiệu quả và những gì khách hàng quan tâm muốn trả tiền, rồi thử nghiệm để đáp ứng những nhu cầu đó và tối đa hoá doanh thu theo thời gian.</p>
+
+<hr class="divider">
+
+<h2>Trau dồi kiến thức tâm lý học người tiêu dùng (Bone Up on Consumer Psychology)</h2>
+
+<p>Khảo sát có thể là công cụ mạnh mẽ để khám phá những gì mọi người sẵn lòng trả tiền, nhưng tất cả chúng ta đều biết rằng người tiêu dùng không phải lúc nào cũng lý trí hay dễ đoán. Họ nói họ muốn một thứ, nhưng lại trả tiền cho thứ khác. Vì vậy, trong khi phản hồi của khách hàng là một cách mạnh mẽ để nghĩ ra các hack cho thử nghiệm, thì việc hiểu tâm lý học của hành vi người tiêu dùng có giá trị vô cùng to lớn trong việc monetize những khách hàng đó và tăng trưởng doanh thu.</p>
+
+<p>Một kho nghiên cứu hấp dẫn đã mang lại những insight mạnh mẽ về tâm lý học đằng sau việc vì sao con người mua hàng, mà growth team có thể dùng làm nguồn cảm hứng cho các thử nghiệm nhằm tăng thu nhập. Daniel Kahneman, nhà tâm lý học đoạt giải Nobel, người đã nghiên cứu và viết rất nhiều về kinh tế học hành vi (behavioral economics), đã chia sẻ nhiều insight như vậy trong cuốn sách <em>Thinking, Fast and Slow</em> (Tư duy nhanh và chậm). Tương tự, nhà kinh tế học Dan Ariely trình bày những thử nghiệm mở mang tầm mắt mà ông đã thực hiện về cách người tiêu dùng ra quyết định mua hàng — như chúng ta đã thấy ở ví dụ thuê bao <em>The Economist</em> ở trên — trong cuốn <em>Predictably Irrational</em>. Một góc nhìn hấp dẫn khác về cách người tiêu dùng đưa ra lựa chọn là cuốn <em>The Art of Choosing</em> (Nghệ thuật lựa chọn) của nhà kinh tế học Sheena Iyengar, một trong những chuyên gia hàng đầu thế giới về tâm lý học lựa chọn. Việc đi sâu vào tất cả những gì các nhà nghiên cứu này — và nhiều người khác đã thực hiện những công trình quan trọng trong lĩnh vực — khám phá ra về hành vi người tiêu dùng nằm ngoài phạm vi của chương này, nhưng chúng tôi khuyên bạn nên tham khảo những cuốn sách này để tìm hiểu thêm và nảy ra những ý tưởng doanh thu mới để thử nghiệm.</p>
+
+<p>Tuy nhiên, ở đây chúng tôi sẽ điểm lại sáu nguyên tắc gây ảnh hưởng đến hành vi người tiêu dùng của Robert Cialdini, mà chúng ta đã bàn ở Chương Năm liên quan đến việc kích hoạt khách hàng, và xem chúng có thể được dùng như thế nào để gợi cảm hứng cho các hack monetization.</p>
+
+<h3>Nguyên tắc có đi có lại (The Principle of Reciprocity)</h3>
+
+<p>Về bản chất, đây là nguyên tắc cho rằng con người chúng ta được "lập trình sẵn" để đáp lại một ân huệ. Các công ty và marketer có thể khai thác sức mạnh của sự có đi có lại bằng những thử nghiệm tăng trưởng xoay quanh việc cho đi trước khi yêu cầu một cam kết mua hàng.</p>
+
+<p>Costco là bậc thầy trong việc áp dụng nguyên tắc này, biến các mẫu thử và màn trình diễn sản phẩm tại cửa hàng thành điểm nhấn của trải nghiệm mua sắm tại chuỗi. Người phát ngôn của công ty, Giovanni DeMeo, cho biết một số màn trình diễn sản phẩm đã làm tăng lượng mua tới mức đáng kinh ngạc là 2.000%, một phần là vì khi khách hàng cảm thấy mình đã nhận được thứ gì đó miễn phí — dù là một lát thịt pastrami hay một hướng dẫn cách dùng chiếc dao gọt rau củ tối tân — họ cảm thấy buộc phải đáp lại bằng một lần mua hàng. Công cụ HubSpot marketing grader mà chúng ta đã bàn trước đó cũng dùng nguyên tắc này. Nó cung cấp miễn phí cho bạn một bản phân tích chi tiết về website của bạn, vì các thử nghiệm tăng trưởng đã cho thấy nhờ đó bạn có xu hướng sẵn lòng trò chuyện với một nhân viên kinh doanh của HubSpot, đăng ký nhận email của họ, hoặc giới thiệu thương hiệu này cho người khác. Việc tặng miễn phí webinar, video, whitepaper và các nội dung khác cũng có thể kích hoạt sự có đi có lại này, cũng như nâng cấp miễn phí về phí vận chuyển và thời gian giao hàng, hay giảm giá ngay tại chỗ trong e-commerce. Thực tế, mô hình freemium trong SaaS cũng là một biến thể của sự có đi có lại, ở chỗ họ tặng miễn phí một bộ tính năng với kỳ vọng rằng một số người sẽ nâng cấp nhờ việc sử dụng thành công và nhu cầu đối với sản phẩm.</p>
+
+<h3>Nguyên tắc cam kết và nhất quán (The Principle of Commitment and Consistency)</h3>
+
+<p>Hãy nhớ lại rằng Cialdini phát hiện: một khi chúng ta đã thực hiện một hành động, chúng ta có khả năng thực hiện một hành động khác nhất quán với hành động trước đó. Đó là lý do vì sao nhân viên bán xe hơi được hướng dẫn để khiến người mua tiềm năng ký tắt vào một bản điều khoản (term sheet) không có nghĩa vụ ràng buộc nào, vì hành động ký tắt vào một tờ giấy khiến bạn có nhiều khả năng ký vào giấy tờ mua xe sau này trong quy trình hơn. Ý tưởng tương tự được nhà bán lẻ kính mắt Warby Parker sử dụng. Chương trình thử tại nhà (home-try-on) của họ cho phép khách hàng tiềm năng chọn và nhận tới năm cặp kính để thử trước khi mua. Một khi bạn đã đeo một cặp kính của họ lên mặt, khó có khả năng bạn sẽ không tiếp tục mua.</p>
+
+<p>Bạn có thể dùng nguyên tắc này để thúc đẩy doanh thu bằng cách yêu cầu người dùng đưa ra những cam kết nhỏ từ đầu để dẫn đến những giao dịch mua lớn hơn về sau. Amazon dùng nguyên tắc này với tính năng Wish List (danh sách mong muốn). Họ biết rằng khi bạn thêm sách hay món hàng vào Wish List, bạn có nhiều khả năng sẽ mua món đó hơn vì bạn đã thừa nhận mong muốn mua nó. Một ví dụ khác: gửi cho một khách hàng vừa mua hàng trên site của bạn một tin nhắn theo dõi (follow-up) ngắn kèm ưu đãi để mua thêm lần nữa có thể dẫn đến thêm giao dịch từ những người muốn nhất quán với quyết định mua hàng trước đó của mình. Thậm chí chỉ cần hỏi một người vừa mua sắm xem họ có mua lại từ bạn trong tương lai không cũng có thể đủ để kích hoạt thêm những lần mua hàng về sau.</p>
+
+<h3>Nguyên tắc bằng chứng xã hội (The Principle of Social Proof)</h3>
+
+<p>Mong muốn tuân theo chuẩn mực xã hội hoặc làm theo hành vi của người khác là một trong những động lực mạnh mẽ nhất thúc đẩy việc mua hàng. Cialdini nêu bật trường hợp của Her Majesty’s Revenue &amp; Customs (HMRC — cơ quan thuế của Anh, tương đương IRS của Mỹ), vào năm 2009 đã đối mặt với một lượng nợ thuế khổng lồ chưa thu được từ những công dân chậm nộp thuế. Các nỗ lực thu nợ dưới dạng thư gửi qua bưu điện tỏ ra không hiệu quả, nên HMRC đã hợp tác với Steve Martin, đồng tác giả của Cialdini, để thử một cách tiếp cận mới tận dụng sức mạnh của bằng chứng xã hội (social proof) — một cách tiếp cận hoá ra cực kỳ đơn giản và hiệu quả. HMRC đã thêm một câu duy nhất vào thư đòi nợ gửi cho một nhóm thí điểm những người nộp thuế chậm trễ: một câu nêu sự thật rằng phần lớn cư dân Vương quốc Anh nộp thuế đầy đủ và đúng hạn. Kết quả là tỷ lệ thu nợ trong nhóm thí điểm tăng vọt từ 57% lên 86%, cộng lại thành 560 triệu bảng Anh tiền thuế thu được (trên tổng số 650 triệu bảng còn tồn đọng). Chỉ đơn giản nhắc nhở mọi người về chuẩn mực xã hội xung quanh việc nộp thuế đã tạo ra một sự cải thiện đáng kinh ngạc.</p>
+
+<p>Quá nhiều công ty áp dụng sai bằng chứng xã hội, đưa ra những lời chứng thực (testimonial) khó tin hoặc chung chung để cố thuyết phục khách hàng mua những mặt hàng đắt tiền hơn — chẳng hạn một nhà hàng có thể in một lời chứng thực ở mặt sau thực đơn kiểu như "Bít tết ngon nhất thành phố. Rất thích!" Thế nhưng điều này thực ra có thể khiến thực khách nản lòng không gọi món đắt tiền đó, vì nó làm dấy lên nghi ngờ về tính xác thực của lời khẳng định. Chuyên gia chuyển đổi (conversion expert) Angie Schottmuller xác định bảy yếu tố cốt lõi khiến các đánh giá (review) và lời chứng thực trở nên hiệu quả, mà bà đặt thành từ viết tắt <strong>CRAVENS</strong>:</p>
+
+<div class="callout">
+<div class="callout-title">CRAVENS — 7 yếu tố của testimonial hiệu quả (Angie Schottmuller)</div>
+<ul>
+<li><strong>C</strong>redible — Đáng tin cậy</li>
+<li><strong>R</strong>elevant — Liên quan</li>
+<li><strong>A</strong>ttractive — Hấp dẫn</li>
+<li><strong>V</strong>isual — Trực quan</li>
+<li><strong>E</strong>numerated — Có số liệu cụ thể</li>
+<li><strong>N</strong>earby purchase points — Đặt gần điểm mua hàng</li>
+<li><strong>S</strong>pecific — Cụ thể</li>
+</ul>
+</div>
+
+<p>Cửa hàng giao hoa daFlores đã đẩy doanh thu lên cao hơn khi họ thêm vào site e-commerce một lời chứng thực đáp ứng những tiêu chí đơn giản này. Phiên bản gốc của site hiển thị một số lời chứng thực dạng chữ, nhưng sau khi phát hiện ra rằng khách truy cập mới không biết nhiều về thương hiệu của họ, họ đã thay những lời chứng thực đó bằng một hình ảnh tôn vinh 600.000 người hâm mộ trên Facebook của công ty. Hoá ra việc thể hiện lượng người theo dõi đông đảo trên mạng xã hội theo cách đáng tin cậy, liên quan, hấp dẫn, có số liệu và trực quan đã mang lại mức tăng 44% doanh thu từ những người mua sắm — những người có lẽ cảm thấy yên tâm hơn khi mua sắm trên một site có nhiều khách hàng hài lòng đến vậy.</p>
+
+<p>Một cơ hội monetization cho growth team là tăng mức độ hiển thị của bằng chứng xã hội dọc theo con đường chuyển đổi dẫn tới mua hàng. Thêm lời chứng thực, logo của những khách hàng nổi bật, kết quả mà người dùng sản phẩm của bạn đạt được, và số người hiện đang mua sắm hoặc đặt chỗ trên website của bạn — tất cả đều là những cách để củng cố quá trình ra quyết định của khách hàng bằng thông tin dựa trên những gì người dùng khác đã làm. Ví dụ, ModCloth, nhà bán lẻ trực tuyến dành cho phụ nữ, dùng chương trình Be the Buyer để cho người dùng quyết định nên bán những kiểu dáng và kích cỡ quần áo nào, đồng thời đánh dấu những món này bằng một huy hiệu (badge) để cho người mua biết đây là những món "được người mua duyệt" (buyer approved). Những món có huy hiệu Be the Buyer bán được với tốc độ gấp đôi các món khác trên site.</p>
+
+<h3>Nguyên tắc uy quyền (The Principle of Authority)</h3>
+
+<p>Nghiên cứu cho thấy chúng ta có xu hướng tin tưởng các chuyên gia và những người ở vị trí có thẩm quyền hơn là một người bình thường. Ngay cả việc thêm vào những ngôn từ tinh tế thể hiện sự uy quyền cũng có thể làm tăng hành vi mua hàng, như Kaya Skin Clinic đã chứng minh khi họ tạo ra mức tăng 22% doanh số chỉ đơn giản bằng cách thêm từ <em>expert</em> (chuyên gia) vào lời kêu gọi hành động trên website, để nó trở thành: "Tôi muốn ý kiến của chuyên gia. Hãy đăng ký cho tôi!" ("I want an expert opinion. Sign me up!")</p>
+
+<p>Nguyên tắc uy quyền giải thích vì sao cứ bốn quảng cáo truyền hình thì có một quảng cáo có người nổi tiếng chứng thực (celebrity endorsement), và vì sao những thương hiệu được sáng lập bởi người nổi tiếng — như Honest Company của nữ diễn viên Jessica Alba — lại thành công đến vậy. Tuỳ theo ngành và ngân sách của bạn, việc mời người nổi tiếng chứng thực có thể nằm ngoài tầm với, nhưng mỗi thị trường ngách đều có những người có ảnh hưởng (influencer) và người dẫn dắt thị hiếu (tastemaker) có uy tín trong tập khán giả mà bạn đang nhắm tới. Growth team có thể thử nghiệm việc giới thiệu những influencer như vậy để thúc đẩy tăng trưởng doanh thu tốt hơn thông qua nguyên tắc uy quyền.</p>
+
+<h3>Nguyên tắc thiện cảm (The Principle of Liking)</h3>
+
+<p>Chúng ta cũng mua nhiều hơn khi một sản phẩm hay dịch vụ được giới thiệu bởi những người mà chúng ta yêu mến. Airbnb đã tận dụng nguyên tắc thiện cảm khi họ thiết kế lại chương trình giới thiệu bạn bè (friend referral program) bằng cách kèm ảnh của người gửi lời giới thiệu vào lời mời. Việc thêm nét cá nhân này là một phần lý do khiến chương trình giới thiệu mới của họ ghi nhận mức tăng 300% mỗi ngày về số lượt đăng ký và số đêm đặt phòng đến từ lời giới thiệu của bạn bè trên Airbnb.</p>
+
+<p>Nếu bạn đang tìm kiếm các thử nghiệm để tận dụng nguyên tắc thiện cảm, hãy cân nhắc dùng hình ảnh của người thật — như nhân viên kinh doanh hoặc khách hàng của bạn — trên website. Ngoài ra, nội dung (copy) thân thiện, chào đón trên landing page cũng có thể kích hoạt phản ứng tương tự. Bạn còn nhớ nhà sáng lập Nasty Gal, Sophia Amoruso, đã lấy những món hàng bán chậm và phối chúng lên những người mẫu được yêu thích nhất của site để kích cầu chứ? Đó chính là nguyên tắc thiện cảm trong thực tế. Tin tốt là nhiều thay đổi trong số này không đòi hỏi những cuộc đại tu kỹ thuật lớn, và có thể là những thử nghiệm nhanh mà growth team có thể chạy để tạo ra khối lượng mua hàng lớn hơn hoặc để hướng mọi người đến những món hàng giá cao hơn.</p>
+
+<h3>Nguyên tắc khan hiếm (The Principle of Scarcity)</h3>
+
+<p>Khi cảm thấy mình sắp bỏ lỡ điều gì đó, chúng ta có nhiều khả năng hành động hơn. Booking.com sử dụng nguyên tắc khan hiếm để tăng doanh thu một cách đặc biệt hiệu quả. Trang ưu đãi du lịch này hiển thị những ưu đãi mà bạn đã bỏ lỡ, cho khách truy cập biết rằng những ưu đãi này sẽ không tồn tại mãi. Họ cũng cho thấy hôm nay đã có bao nhiêu người khác đặt ưu đãi, khách sạn còn lại bao nhiêu phòng, và thậm chí có bao nhiêu người đang xem tin đăng đó ngay lúc này — một yếu tố kích hoạt khác nói với khách hàng rằng: "Tốt hơn hết bạn nên mua ngay, trước khi quá muộn."</p>
+
+<p>Sử dụng sự khan hiếm như một chiến thuật bán hàng là để kích hoạt nỗi sợ bỏ lỡ (fear of missing out — FOMO) ở người mua sắm. Bạn có thể chạy các thử nghiệm giới hạn thời gian khuyến mãi, hiển thị số hàng tồn kho còn lại khi mỗi mặt hàng chỉ còn vài món, giới hạn số suất hẹn có thể đặt với các chuyên viên tư vấn, hoặc giới hạn số người có thể tận dụng một ưu đãi đặc biệt. Khi một thứ gì đó sắp bán hết, khó có được, một ưu đãi sắp hết hạn, hoặc khách hàng của bạn có thể bỏ lỡ theo cách này hay cách khác, bạn có nhiều khả năng chốt được giao dịch hơn so với bình thường.</p>
+
+<hr class="divider">
+
+<p>Giờ đây, khi đã đi trọn một vòng qua bốn loại thử nghiệm then chốt để thúc đẩy tăng trưởng — acquisition, activation, retention và monetization — trong chương tiếp theo, và cũng là chương cuối, chúng ta sẽ khám phá tầm quan trọng sống còn của việc growth team tiếp tục làm việc trên tất cả các mặt trận này để tránh rơi vào cái bẫy phổ biến của <strong>growth stall</strong> (đình trệ tăng trưởng): những giai đoạn tăng trưởng chững lại có thể — và thường — dẫn đến thảm hoạ, ngay cả với những thương hiệu hàng đầu. Hãy nhớ rằng, growth team không bao giờ được ngủ quên trên chiến thắng. Như một biến tấu của câu ngạn ngữ cũ "Ngủ quên là thua" (You snooze, you lose), môi trường kinh doanh siêu cạnh tranh ngày nay đảm bảo rằng: nếu bạn chững lại, bạn sẽ gục ngã.</p>
+
+<h2>Điểm chính của chương</h2>
+<ul>
+<li>Bắt đầu bằng việc lập bản đồ monetization funnel trên toàn hành trình khách hàng, tìm những điểm tạo nhiều doanh thu nhất và các pinch point làm rò rỉ doanh thu.</li>
+<li>Phân tích cohort theo doanh thu (cấp gói, mức chi tiêu, ARPU/engagement) và theo nhiều chiều khác (thiết bị, nguồn, quốc gia, loại doanh nghiệp…) để tìm ý tưởng thử nghiệm.</li>
+<li>Dùng persona và khảo sát dạng xếp hạng lợi ích để quyết định tính năng/sản phẩm mới đáng xây dựng.</li>
+<li>Recommendation engine (kể cả dựa trên Jaccard index đơn giản) giúp tăng giá trị đơn hàng — nhưng cá nhân hoá phải tế nhị và thử trên nhóm nhỏ trước.</li>
+<li>Giá phải được thử nghiệm liên tục: khảo sát bốn câu hỏi về mức giá, persona/pricing fit, value metric, trình bày pricing page rõ ràng, decoy package; giá cao hơn hoặc giảm giá ít hơn đôi khi lại mang về nhiều doanh thu hơn.</li>
+<li>Thử nghiệm giá cần nhất quán với người dùng, đồng bộ với sales team và được phối hợp với sản phẩm, tài chính, ban lãnh đạo.</li>
+<li>Với penny gap, miễn phí kèm in-app purchase, virtual goods, quảng cáo hoặc kết hợp nhiều nguồn doanh thu có thể sinh lời hơn bán trả trước.</li>
+<li>Sáu nguyên tắc của Cialdini (có đi có lại, cam kết và nhất quán, bằng chứng xã hội, uy quyền, thiện cảm, khan hiếm) là nguồn cảm hứng dồi dào cho các hack monetization.</li>
+</ul>
+
+<nav class="chapnav">
+  <a href="/hacking-growth/hacking-retention"><span class="lbl">Chương trước</span>Chương 7: Hacking Retention — Giữ Chân Người Dùng</a>
+  <a href="/hacking-growth/vong-tang-truong-tich-cuc"><span class="lbl">Chương sau</span>Chương 9: Vòng Tăng Trưởng Tích Cực</a>
+</nav>
+
+</body>
+</html>
