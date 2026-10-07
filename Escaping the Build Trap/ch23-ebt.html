@@ -3,78 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chương 23: Budgeting — Escaping the Build Trap</title>
+<title>Chương 23: Lập Ngân Sách — Escaping the Build Trap</title>
 <link rel="stylesheet" href="../assets/theme.css">
 </head>
 <body>
 <p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
 <div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 23</div>
-<h1>Budgeting</h1>
-<p class="chapter-subtitle">Tại sao annual feature commitments phá vỡ product development — và cách budget như một venture capitalist</p>
+<h1>Lập Ngân Sách</h1>
+<p class="chapter-subtitle">Tại sao các cam kết tính năng hàng năm phá vỡ việc phát triển sản phẩm — và cách lập ngân sách như một nhà đầu tư mạo hiểm</p>
 
 <hr class="divider">
 
-<p>Hầu hết các công ty budget theo cách hoàn toàn không phù hợp với cách product development thực sự hoạt động. Annual planning cycle yêu cầu product teams commit features cụ thể sẽ build trong 12 tháng tới. Engineering capacity được allocated dựa trên những commitments đó. Và khi thực tế đến, learning thay đổi requirements — nhưng budget đã locked.</p>
+<p>Hầu hết các công ty lập ngân sách theo cách hoàn toàn không phù hợp với cách phát triển sản phẩm thực sự vận hành. Chu kỳ lập kế hoạch hàng năm yêu cầu các product team cam kết những tính năng cụ thể sẽ xây dựng trong 12 tháng tới. Năng lực kỹ thuật được phân bổ dựa trên những cam kết đó. Và khi thực tế ập đến, những gì học được làm thay đổi yêu cầu — nhưng ngân sách thì đã bị khóa cứng.</p>
 
-<h2>Waterfall Budgeting Trong Agile World</h2>
+<h2>Lập Ngân Sách Kiểu Waterfall Trong Thế Giới Agile</h2>
 
-<p>Có một paradox kỳ lạ trong nhiều tech companies: họ đã adopt Agile development practices — sprint planning, retrospectives, iterative delivery. Nhưng họ vẫn giữ waterfall budgeting — planning toàn bộ năm, committing features theo scope, locking capacity theo roadmap cứng nhắc.</p>
+<p>Có một nghịch lý kỳ lạ ở nhiều công ty công nghệ: họ đã áp dụng các thực hành phát triển Agile — lập kế hoạch sprint, retrospective, giao hàng theo từng vòng lặp. Nhưng họ vẫn giữ cách lập ngân sách kiểu waterfall — lên kế hoạch cho cả năm, cam kết tính năng theo phạm vi cố định, khóa cứng năng lực theo một roadmap cứng nhắc.</p>
 
-<p>Đây là contradiction không thể sustain. Agile development thừa nhận rằng requirements sẽ thay đổi khi bạn learn more. Nhưng waterfall budgeting assume requirements đã fixed khi budget được set. Một team có thể run perfect sprints, discover rằng users need something completely different, và vẫn bị locked vào build original committed features vì budget has been allocated.</p>
+<p>Đây là một mâu thuẫn không thể duy trì lâu dài. Phát triển Agile thừa nhận rằng yêu cầu sẽ thay đổi khi bạn học hỏi được nhiều hơn. Nhưng lập ngân sách kiểu waterfall lại giả định rằng yêu cầu đã cố định ngay khi ngân sách được thiết lập. Một team có thể chạy những sprint hoàn hảo, phát hiện ra rằng người dùng cần một thứ hoàn toàn khác, và vẫn bị khóa chặt vào việc xây dựng những tính năng đã cam kết ban đầu vì ngân sách đã được phân bổ.</p>
 
-<p>Kết quả là một loại cargo cult: teams perform rituals của Agile (standups, sprints, retros) nhưng deliver outputs của waterfall (committed feature lists, fixed scope, predetermined roadmaps). Product kata không thể hoạt động trong môi trường này vì học được điều gì đó và muốn change direction đồng nghĩa với việc phải fight budget processes.</p>
+<p>Kết quả là một dạng "cargo cult": các team thực hiện đầy đủ nghi thức của Agile (standup, sprint, retro) nhưng vẫn tạo ra output kiểu waterfall (danh sách tính năng đã cam kết, phạm vi cố định, roadmap định sẵn). Product Kata không thể vận hành trong môi trường này vì học được điều gì đó mới và muốn đổi hướng đồng nghĩa với việc phải chiến đấu với các quy trình ngân sách.</p>
 
-<h2>Budget Như Một Venture Capitalist</h2>
+<h2>Lập Ngân Sách Như Một Nhà Đầu Tư Mạo Hiểm</h2>
 
-<p>Venture capitalists không fund một startup với toàn bộ capital needed để reach profitability upfront. Đó sẽ là rủi ro khổng lồ — bạn đang bet tất cả vào một unproven hypothesis. Thay vào đó, VCs fund theo stages:</p>
+<p>Các nhà đầu tư mạo hiểm không rót cho một startup toàn bộ số vốn cần thiết để đạt lợi nhuận ngay từ đầu. Đó sẽ là một rủi ro khổng lồ — bạn đang đặt cược tất cả vào một giả thuyết chưa được chứng minh. Thay vào đó, các nhà đầu tư mạo hiểm rót vốn theo từng giai đoạn:</p>
 
-<p>Seed round: đủ để prove problem-solution fit. Đủ nhỏ để không catastrophic nếu fail. Goal: learn whether this is a problem worth solving.</p>
+<p>Vòng seed: đủ để chứng minh sự phù hợp giữa vấn đề và giải pháp. Đủ nhỏ để không gây thảm họa nếu thất bại. Mục tiêu: tìm hiểu xem đây có phải là một vấn đề đáng để giải quyết hay không.</p>
 
-<p>Series A: đủ để build product và get first users. Mục tiêu của vòng này là prove product-market fit — liệu users có thực sự use và pay for this không. Requires evidence từ seed stage.</p>
+<p>Vòng Series A: đủ để xây dựng sản phẩm và có được những người dùng đầu tiên. Mục tiêu của vòng này là chứng minh sự phù hợp giữa sản phẩm và thị trường (product-market fit) — liệu người dùng có thực sự sử dụng và trả tiền cho nó hay không. Yêu cầu phải có bằng chứng từ giai đoạn seed.</p>
 
-<p>Series B và beyond: scale và accelerate what's working. Capital lớn hơn, nhưng với evidence tốt hơn từ các rounds trước. Không phải bet — đây là accelerate với proven playbook.</p>
+<p>Series B trở lên: mở rộng quy mô và tăng tốc những gì đang hiệu quả. Nguồn vốn lớn hơn, nhưng đi kèm bằng chứng tốt hơn từ các vòng trước. Đây không phải là đặt cược — đây là tăng tốc với một công thức đã được chứng minh.</p>
 
-<p>Mỗi round yêu cầu team chứng minh họ đã học được gì từ round trước và tại sao tiếp tục đầu tư là hợp lý. VCs không tiếp tục fund một company mà evidence consistently pointing away from viability, dù sao đến thời điểm funding đã committed rồi.</p>
+<p>Mỗi vòng gọi vốn đòi hỏi team phải chứng minh họ đã học được gì từ vòng trước và tại sao việc tiếp tục đầu tư là hợp lý. Các nhà đầu tư mạo hiểm không tiếp tục rót vốn cho một công ty mà bằng chứng liên tục cho thấy không khả thi, cho dù vốn đã được cam kết đến thời điểm đó.</p>
 
-<p>Tại sao internal product teams không hoạt động theo logic tương tự?</p>
+<p>Tại sao các product team nội bộ lại không hoạt động theo logic tương tự?</p>
 
-<h2>Stage-Based Funding Nội Bộ</h2>
+<h2>Cấp Vốn Theo Giai Đoạn Trong Nội Bộ</h2>
 
-<p>Melissa Perri propose rằng companies nên fund product initiatives theo stages, tương tự như VC rounds, với checkpoints để review evidence và decide on continued investment:</p>
+<p>Melissa Perri đề xuất rằng các công ty nên cấp vốn cho các sáng kiến sản phẩm theo từng giai đoạn, tương tự như các vòng gọi vốn VC, với những điểm kiểm tra để xem xét bằng chứng và quyết định có tiếp tục đầu tư hay không:</p>
 
-<p><strong>Experiment funding:</strong> Nhỏ, đủ để run experiments và validate hypotheses. Không cần engineering resources lớn — chủ yếu là researcher, PM, designer time, và tools để chạy concierge tests hoặc prototypes. Goal: học đủ để quyết định worth building không.</p>
+<p><strong>Vốn cho giai đoạn thử nghiệm:</strong> Nhỏ, đủ để chạy các thử nghiệm và kiểm chứng giả thuyết. Không cần nhiều nguồn lực kỹ thuật — chủ yếu là thời gian của researcher, PM, designer, và các công cụ để chạy concierge test hoặc dựng prototype. Mục tiêu: học đủ để quyết định có đáng xây dựng hay không.</p>
 
-<p><strong>Alpha funding:</strong> Thêm để build minimum feature set cho real production environment với small user group. Engineering resources được added, nhưng scope vẫn limited. Goal: validate với real users trong real conditions, không chỉ trong lab.</p>
+<p><strong>Vốn cho giai đoạn Alpha:</strong> Thêm vốn để xây dựng bộ tính năng tối thiểu cho môi trường production thật với một nhóm người dùng nhỏ. Nguồn lực kỹ thuật được bổ sung, nhưng phạm vi vẫn giới hạn. Mục tiêu: kiểm chứng với người dùng thật trong điều kiện thật, không chỉ trong phòng lab.</p>
 
-<p><strong>Beta funding:</strong> Invest vào scalability, security, và broader rollout. Significant engineering resources. Goal: reduce technical risk, get broader feedback, prepare for GA.</p>
+<p><strong>Vốn cho giai đoạn Beta:</strong> Đầu tư vào khả năng mở rộng, bảo mật, và triển khai rộng hơn. Nguồn lực kỹ thuật đáng kể. Mục tiêu: giảm rủi ro kỹ thuật, thu thập feedback rộng hơn, chuẩn bị cho giai đoạn GA.</p>
 
-<p><strong>GA funding:</strong> Marketing, sales enablement, support training. Product đã proven — now là scale distribution.</p>
+<p><strong>Vốn cho giai đoạn GA:</strong> Marketing, hỗ trợ đội sales, đào tạo đội support. Sản phẩm đã được chứng minh — giờ là lúc mở rộng phân phối.</p>
 
-<p>Với model này, leadership không commit 12 tháng của engineering capacity upfront. Họ commit experiment budget, review results, then decide whether Alpha funding is warranted. Từng checkpoint là một go/no-go decision dựa trên actual evidence — không phải gut feel hay political pressure.</p>
+<p>Với mô hình này, ban lãnh đạo không cam kết trước 12 tháng năng lực kỹ thuật. Họ chỉ cam kết ngân sách cho giai đoạn thử nghiệm, xem xét kết quả, rồi mới quyết định có nên cấp vốn cho giai đoạn Alpha hay không. Mỗi điểm kiểm tra là một quyết định tiếp tục-hay-dừng dựa trên bằng chứng thực tế — không phải cảm tính hay áp lực chính trị nội bộ.</p>
 
-<h2>Marquetly Đổi Cách Budget</h2>
+<h2>Marquetly Thay Đổi Cách Lập Ngân Sách</h2>
 
-<p>Sau khi Jen join as CPO và strategic framework được established, Marquetly thay đổi cách budget product work. Thay vì annual planning cycle với feature lists, họ áp dụng initiative-based funding với quarterly checkpoints.</p>
+<p>Sau khi Jen gia nhập với vai trò CPO và khung chiến lược được thiết lập, Marquetly thay đổi cách lập ngân sách cho công việc sản phẩm. Thay vì chu kỳ lập kế hoạch hàng năm với danh sách tính năng, họ áp dụng cấp vốn theo từng sáng kiến với các điểm kiểm tra hàng quý.</p>
 
-<p>Teacher initiative nhận một team: 3 engineers, 1 PM, 1 designer cho 6 tháng đầu với explicit checkpoint ở tháng 3. Tại checkpoint tháng 3: team present evidence từ experiments (the 30/40 teacher result). Dựa trên evidence đó, leadership quyết định continue và increase investment cho Budapest acquisition và full build.</p>
+<p>Sáng kiến dành cho giáo viên được giao cho một team: 3 kỹ sư, 1 PM, 1 designer trong 6 tháng đầu với một điểm kiểm tra rõ ràng vào tháng 3. Tại điểm kiểm tra tháng 3: team trình bày bằng chứng từ các thử nghiệm (kết quả 30/40 giáo viên). Dựa trên bằng chứng đó, ban lãnh đạo quyết định tiếp tục và tăng đầu tư cho việc mua lại Budapest cũng như xây dựng toàn diện.</p>
 
-<p>Finance team ban đầu nervous: "Làm sao chúng ta plan budget nếu không biết features nào sẽ được build?" Câu trả lời của Jen: bạn biết bạn đang funding một team để solve a specific problem. Bạn không biết chính xác cách họ sẽ solve nó — và pretending bạn biết không làm process tốt hơn, nó chỉ tạo ra false certainty và real inflexibility. Finance học rằng stage-based funding thực ra more predictable về business outcomes, dù less predictable về feature delivery.</p>
+<p>Đội tài chính ban đầu lo lắng: "Làm sao chúng ta lập ngân sách nếu không biết tính năng nào sẽ được xây dựng?" Câu trả lời của Jen: bạn biết bạn đang cấp vốn cho một team để giải quyết một vấn đề cụ thể. Bạn không biết chính xác họ sẽ giải quyết nó bằng cách nào — và giả vờ như mình biết không làm quy trình tốt hơn, nó chỉ tạo ra một sự chắc chắn giả tạo và sự cứng nhắc có thật. Đội tài chính học được rằng cấp vốn theo giai đoạn thực ra dự đoán được tốt hơn về outcome kinh doanh, dù khó dự đoán hơn về việc giao tính năng.</p>
 
-<h2>Portfolio Allocation: Explore Và Exploit</h2>
+<h2>Phân Bổ Danh Mục Đầu Tư: Khám Phá Và Khai Thác</h2>
 
-<p>Ở cấp độ portfolio, CFO và CPO cùng nhau quyết định allocation giữa hai modes:</p>
+<p>Ở cấp độ danh mục đầu tư, CFO và CPO cùng nhau quyết định cách phân bổ giữa hai chế độ:</p>
 
-<p><strong>Exploit mode:</strong> Đầu tư vào những gì đã proven — products ở Beta hoặc GA với positive evidence. Đây là phần lớn budget vì risk thấp, return predictable. Scale marketing, improve reliability, expand market.</p>
+<p><strong>Chế độ khai thác:</strong> Đầu tư vào những gì đã được chứng minh — các sản phẩm ở giai đoạn Beta hoặc GA với bằng chứng tích cực. Đây là phần lớn ngân sách vì rủi ro thấp, lợi nhuận có thể dự đoán được. Mở rộng marketing, cải thiện độ tin cậy, mở rộng thị trường.</p>
 
-<p><strong>Explore mode:</strong> Đầu tư vào experiment và alpha stage work — những initiatives mà chưa biết outcome. Smaller budget per initiative, nhưng nhiều initiatives in parallel. Nhiều sẽ fail — điều đó expected và acceptable. Một số sẽ prove out và move to exploit mode.</p>
+<p><strong>Chế độ khám phá:</strong> Đầu tư vào công việc ở giai đoạn thử nghiệm và Alpha — những sáng kiến mà kết quả chưa được biết trước. Ngân sách nhỏ hơn cho mỗi sáng kiến, nhưng nhiều sáng kiến chạy song song. Phần lớn sẽ thất bại — điều đó được dự liệu trước và chấp nhận được. Một số sẽ được chứng minh là đúng và chuyển sang chế độ khai thác.</p>
 
-<p>Heuristic phổ biến: ~70% budget cho exploit, ~20% cho grow (Beta stage), ~10% cho explore (Experiment/Alpha). Công ty early-stage nên có explore percentage cao hơn vì họ chưa có nhiều proven products. Công ty mature hơn có thể shift về exploit nhưng phải be careful không to cut explore entirely — that's how disruption happens from below.</p>
+<p>Một quy tắc kinh nghiệm phổ biến: khoảng 70% ngân sách cho khai thác, khoảng 20% cho tăng trưởng (giai đoạn Beta), khoảng 10% cho khám phá (Thử nghiệm/Alpha). Công ty ở giai đoạn đầu nên có tỷ lệ khám phá cao hơn vì họ chưa có nhiều sản phẩm đã được chứng minh. Công ty trưởng thành hơn có thể nghiêng về khai thác nhưng phải cẩn thận không cắt bỏ hoàn toàn phần khám phá — đó chính là cách mà những đối thủ mang tính đột phá xuất hiện từ bên dưới.</p>
 
-<p>Budgeting không phải chỉ là finance function. Đây là strategic decision về how much uncertainty và risk bạn willing to take on, và ở đâu. Product-led organizations treat budgeting như một product decision, không chỉ là một numbers exercise.</p>
+<p>Lập ngân sách không chỉ là chức năng của bộ phận tài chính. Đây là một quyết định chiến lược về việc bạn sẵn sàng chấp nhận bao nhiêu sự không chắc chắn và rủi ro, và ở đâu. Các tổ chức product-led xem việc lập ngân sách như một quyết định sản phẩm, không chỉ là một bài toán con số.</p>
 
 <nav class="chapnav">
-  <a href="/escaping-the-build-trap/safety-and-learning"><span class="lbl">Chương trước</span>Chương 22: Safety and Learning</a>
-  <a href="/escaping-the-build-trap/customer-centricity"><span class="lbl">Chương sau</span>Chương 24: Customer Centricity</a>
+  <a href="/escaping-the-build-trap/safety-and-learning"><span class="lbl">Chương trước</span>Chương 22: Sự An Toàn Và Học Hỏi</a>
+  <a href="/escaping-the-build-trap/customer-centricity"><span class="lbl">Chương sau</span>Chương 24: Lấy Khách Hàng Làm Trung Tâm</a>
 </nav>
 </body>
 </html>

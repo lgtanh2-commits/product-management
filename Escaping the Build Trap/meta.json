@@ -43,139 +43,139 @@
     {
       "n": 6,
       "title": "Những Kiểu Product Manager Tồi",
-      "sub": "Ba archetype phổ biến nhất của bad PM — và tại sao chúng đẩy team vào build trap",
+      "sub": "Ba kiểu mẫu phổ biến nhất của một PM tồi — và tại sao chúng đẩy team vào build trap",
       "slug": "nhung-kieu-product-manager-toi",
       "file": "ch06-ebt.html"
     },
     {
       "n": 7,
       "title": "Một Product Manager Xuất Sắc",
-      "sub": "Không phải mini-CEO, không phải lone wolf — mà là người kết nối business, technology, và người dùng",
+      "sub": "Không phải mini-CEO, không phải người đơn độc — mà là người kết nối kinh doanh, công nghệ, và người dùng",
       "slug": "mot-product-manager-xuat-sac",
       "file": "ch07-ebt.html"
     },
     {
       "n": 8,
       "title": "Con Đường Sự Nghiệp Product Manager",
-      "sub": "Từ Associate PM đến CPO — và tại sao tổ chức cần đầu tư vào career path này",
+      "sub": "Từ Associate PM đến CPO — và tại sao tổ chức cần đầu tư vào lộ trình sự nghiệp này",
       "slug": "con-duong-su-nghiep-product-manager",
       "file": "ch08-ebt.html"
     },
     {
       "n": 9,
       "title": "Tổ Chức Team Sản Phẩm",
-      "sub": "Value streams, features, hay technical components — cách cấu trúc team quyết định cách team tư duy",
+      "sub": "Value stream, tính năng, hay thành phần kỹ thuật — cách cấu trúc team quyết định cách team tư duy",
       "slug": "to-chuc-team-san-pham",
       "file": "ch09-ebt.html"
     },
     {
       "n": 10,
       "title": "Những Yếu Tố Cấu Thành Chiến Lược Tốt",
-      "sub": "Strategy không phải là plan — đây là framework ra quyết định có thể triển khai qua nhiều năm",
+      "sub": "Chiến lược không phải là kế hoạch — đây là khung ra quyết định có thể triển khai qua nhiều năm",
       "slug": "nhung-yeu-to-cau-thanh-chien-luoc-tot",
       "file": "ch10-ebt.html"
     },
     {
       "n": 11,
-      "title": "Strategic Gaps",
+      "title": "Những Khoảng Cách Chiến Lược",
       "sub": "Ba khoảng cách chiến lược mà mọi tổ chức đều mắc phải — và cách thu hẹp chúng",
       "slug": "strategic-gaps",
       "file": "ch11-ebt.html"
     },
     {
       "n": 12,
-      "title": "Tạo Ra Một Strategic Framework Tốt",
-      "sub": "Từ OKRs output-oriented đến bốn cấp độ chiến lược — cách deploy strategy xuống toàn tổ chức",
+      "title": "Tạo Ra Một Khung Chiến Lược Tốt",
+      "sub": "Từ OKR định hướng theo output đến bốn cấp độ chiến lược — cách triển khai chiến lược xuống toàn tổ chức",
       "slug": "tao-ra-mot-strategic-framework-tot",
       "file": "ch12-ebt.html"
     },
     {
       "n": 13,
-      "title": "Company Vision Và Strategic Intents",
-      "sub": "Vision là điểm neo — Strategic Intents là những đặt cược quan trọng nhất để hiện thực hóa vision đó",
+      "title": "Tầm Nhìn Công Ty Và Strategic Intents",
+      "sub": "Tầm nhìn là điểm neo — Strategic Intents là những đặt cược quan trọng nhất để hiện thực hóa tầm nhìn đó",
       "slug": "company-vision-va-strategic-intents",
       "file": "ch13-ebt.html"
     },
     {
       "n": 14,
-      "title": "Product Vision Và Portfolio",
-      "sub": "Product initiatives translate business goals thành user problems — và product vision định hướng tại sao bạn build",
+      "title": "Tầm Nhìn Sản Phẩm Và Portfolio",
+      "sub": "Product initiative chuyển hóa mục tiêu kinh doanh thành vấn đề người dùng — và tầm nhìn sản phẩm định hướng tại sao bạn xây dựng",
       "slug": "product-vision-va-portfolio",
       "file": "ch14-ebt.html"
     },
     {
       "n": 15,
-      "title": "The Product Kata",
-      "sub": "Quy trình có hệ thống để di chuyển từ current state đến desired outcome thông qua experimentation",
+      "title": "Product Kata",
+      "sub": "Quy trình có hệ thống để di chuyển từ trạng thái hiện tại đến outcome mong muốn thông qua thử nghiệm",
       "slug": "the-product-kata",
       "file": "ch15-ebt.html"
     },
     {
       "n": 16,
-      "title": "Understanding the Direction and Setting Success Metrics",
-      "sub": "Chọn đúng metrics không phải là việc đo lường nhiều thứ — mà là đo lường đúng thứ theo đúng cách",
+      "title": "Hiểu Rõ Định Hướng Và Thiết Lập Chỉ Số Thành Công",
+      "sub": "Chọn đúng chỉ số không phải là việc đo lường nhiều thứ — mà là đo lường đúng thứ theo đúng cách",
       "slug": "understanding-the-direction-and-setting-success-metrics",
       "file": "ch16-ebt.html"
     },
     {
       "n": 17,
-      "title": "Problem Exploration",
+      "title": "Khám Phá Vấn Đề",
       "sub": "Trước khi giải quyết vấn đề, bạn phải chắc chắn mình đang giải quyết đúng vấn đề",
       "slug": "problem-exploration",
       "file": "ch17-ebt.html"
     },
     {
       "n": 18,
-      "title": "Solution Exploration",
-      "sub": "Validate trước khi build — ba loại experiment để kiểm chứng giả thuyết với chi phí thấp nhất",
+      "title": "Khám Phá Giải Pháp",
+      "sub": "Kiểm chứng trước khi xây dựng — ba loại thử nghiệm để kiểm chứng giả thuyết với chi phí thấp nhất",
       "slug": "solution-exploration",
       "file": "ch18-ebt.html"
     },
     {
       "n": 19,
-      "title": "Building and Optimizing Your Solution",
-      "sub": "Khi đã validate, làm thế nào để build đúng cách — và biết khi nào thực sự \"done\"",
+      "title": "Xây Dựng Và Tối Ưu Giải Pháp Của Bạn",
+      "sub": "Khi đã kiểm chứng xong, làm thế nào để xây dựng đúng cách — và biết khi nào thực sự hoàn thành",
       "slug": "building-and-optimizing-your-solution",
       "file": "ch19-ebt.html"
     },
     {
       "n": 20,
-      "title": "Outcome-Focused Communication",
-      "sub": "Roadmaps, cadences, và cách communicate strategy xuống toàn bộ tổ chức mà không rơi vào feature-list thinking",
+      "title": "Giao Tiếp Tập Trung Vào Outcome",
+      "sub": "Roadmap, các nhịp giao tiếp, và cách truyền đạt chiến lược xuống toàn bộ tổ chức mà không rơi vào tư duy liệt kê tính năng",
       "slug": "outcome-focused-communication",
       "file": "ch20-ebt.html"
     },
     {
       "n": 21,
-      "title": "Rewards and Incentives",
-      "sub": "Khi incentive structures tạo ra build trap — và cách leaders có thể thay đổi điều đó",
+      "title": "Phần Thưởng Và Động Lực",
+      "sub": "Khi cơ cấu khen thưởng tạo ra build trap — và cách các nhà lãnh đạo có thể thay đổi điều đó",
       "slug": "rewards-and-incentives",
       "file": "ch21-ebt.html"
     },
     {
       "n": 22,
-      "title": "Safety and Learning",
-      "sub": "Không có safety, không có learning — và không có learning, không có innovation thực sự",
+      "title": "Sự An Toàn Và Học Hỏi",
+      "sub": "Không có sự an toàn, không có học hỏi — và không có học hỏi, không có đổi mới thực sự",
       "slug": "safety-and-learning",
       "file": "ch22-ebt.html"
     },
     {
       "n": 23,
-      "title": "Budgeting",
-      "sub": "Tại sao annual feature commitments phá vỡ product development — và cách budget như một venture capitalist",
+      "title": "Lập Ngân Sách",
+      "sub": "Tại sao các cam kết tính năng hàng năm phá vỡ việc phát triển sản phẩm — và cách lập ngân sách như một nhà đầu tư mạo hiểm",
       "slug": "budgeting",
       "file": "ch23-ebt.html"
     },
     {
       "n": 24,
-      "title": "Customer Centricity",
-      "sub": "Customer centricity không phải là slogan — nó là cách tổ chức được xây dựng, từ farm visits đến how Prime was born",
+      "title": "Lấy Khách Hàng Làm Trung Tâm",
+      "sub": "Lấy khách hàng làm trung tâm không phải là một khẩu hiệu — đó là cách tổ chức được xây dựng, từ những chuyến thăm nông trại đến cách Prime ra đời",
       "slug": "customer-centricity",
       "file": "ch24-ebt.html"
     },
     {
       "n": 25,
-      "title": "Marquetly: The Product-Led Company",
+      "title": "Marquetly: Công Ty Dẫn Dắt Bởi Sản Phẩm",
       "sub": "Kết thúc hành trình Marquetly — và bắt đầu hành trình của bạn",
       "slug": "marquetly-the-product-led-company",
       "file": "ch25-ebt.html"

@@ -3,66 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chương 17: Problem Exploration — Escaping the Build Trap</title>
+<title>Chương 17: Khám Phá Vấn Đề — Escaping the Build Trap</title>
 <link rel="stylesheet" href="../assets/theme.css">
 </head>
 <body>
 <p class="book-topline"><a href="/escaping-the-build-trap">← Về mục lục</a></p>
 <div class="book-label">Escaping the Build Trap · Melissa Perri · Chương 17</div>
-<h1>Problem Exploration</h1>
+<h1>Khám Phá Vấn Đề</h1>
 <p class="chapter-subtitle">Trước khi giải quyết vấn đề, bạn phải chắc chắn mình đang giải quyết đúng vấn đề</p>
 
 <hr class="divider">
 
-<p>Với metrics đã được định nghĩa, Karen và team biết rằng teacher publish rate thấp là obstacle chính. Nhưng biết rằng có vấn đề khác với hiểu vấn đề đó thực sự là gì. Team cần đi vào phase đầu tiên của discovery: Problem Exploration.</p>
+<p>Với các chỉ số đã được định nghĩa, Karen và team biết rằng tỷ lệ giáo viên xuất bản khóa học thấp là trở ngại chính. Nhưng biết có vấn đề khác với hiểu vấn đề đó thực sự là gì. Team cần đi vào giai đoạn đầu tiên của discovery: Khám Phá Vấn Đề.</p>
 
 <h2>Generative Research vs. Evaluative Research</h2>
 
-<p>Hầu hết các công ty làm "user research" theo nghĩa evaluative — họ tạo ra một prototype hoặc một feature, sau đó test nó với users để xem có usable không, có chỗ nào confusing không. Đây là research có giá trị, nhưng nó trả lời câu hỏi sai: "giải pháp này có hoạt động không?" thay vì "chúng ta có đang giải quyết đúng vấn đề không?"</p>
+<p>Hầu hết các công ty làm nghiên cứu người dùng theo kiểu evaluative — họ tạo ra một bản mẫu hoặc một tính năng, rồi test nó với người dùng để xem có dễ dùng không, có chỗ nào gây khó hiểu không. Đây là nghiên cứu có giá trị, nhưng nó trả lời câu hỏi sai: "giải pháp này có hoạt động không?" thay vì "chúng ta có đang giải quyết đúng vấn đề không?"</p>
 
-<p><em>Generative research</em> là loại research tạo ra hiểu biết mới — generate insights chứ không evaluate solutions. Mục tiêu là hiểu người dùng sâu hơn: họ đang cố làm gì, những khó khăn họ gặp phải trong quá trình đó, context và environment mà họ làm việc. Generative research thường dùng: in-depth interviews, ethnographic observation, diary studies, contextual inquiry.</p>
+<p><em>Generative research</em> là loại nghiên cứu tạo ra hiểu biết mới — tạo ra insight chứ không đánh giá giải pháp. Mục tiêu là hiểu người dùng sâu hơn: họ đang cố làm gì, những khó khăn họ gặp phải trong quá trình đó, bối cảnh và môi trường mà họ làm việc. Generative research thường dùng: phỏng vấn chuyên sâu, quan sát thực địa, nhật ký nghiên cứu, và phỏng vấn tại bối cảnh thực.</p>
 
-<p>Surveys không phải là generative research tốt. Survey chỉ hữu dụng khi bạn đã biết câu hỏi cần hỏi — và biết đủ để thiết kế câu hỏi không leading. Khi bạn chưa biết vấn đề thực sự là gì, survey sẽ chỉ confirm biases hiện có.</p>
+<p>Khảo sát không phải là một hình thức generative research tốt. Khảo sát chỉ hữu dụng khi bạn đã biết câu hỏi cần hỏi — và biết đủ để thiết kế câu hỏi không dẫn dắt. Khi bạn chưa biết vấn đề thực sự là gì, khảo sát sẽ chỉ xác nhận lại những định kiến sẵn có.</p>
 
-<h2>Marquetly đi gặp Teachers</h2>
+<h2>Marquetly Đi Gặp Giáo Viên</h2>
 
-<p>Karen và team quyết định làm 20 in-depth interviews với teachers — cụ thể là những người đã join platform nhưng chưa publish course nào hoặc chỉ publish được một course rồi dừng. Đây là đối tượng quan trọng nhất vì họ có ý định ban đầu (đã sign up) nhưng có friction đủ lớn để cản họ publish.</p>
+<p>Karen và team quyết định làm 20 cuộc phỏng vấn chuyên sâu với giáo viên — cụ thể là những người đã tham gia nền tảng nhưng chưa xuất bản khóa học nào hoặc chỉ xuất bản được một khóa rồi dừng lại. Đây là nhóm đối tượng quan trọng nhất vì họ đã có ý định ban đầu (đã đăng ký) nhưng gặp đủ khó khăn để bị cản trở việc xuất bản.</p>
 
-<p>Interviews kéo dài 60–90 phút, diễn ra tại nhà hoặc văn phòng của teachers — không phải trong meeting room của Marquetly. Lý do quan trọng: bạn cần observe people trong môi trường thực của họ, với tools thực họ đang dùng, trong workflow thực của họ. Khi bạn đưa họ vào lab, họ sẽ behave khác đi.</p>
+<p>Các buổi phỏng vấn kéo dài 60–90 phút, diễn ra tại nhà hoặc văn phòng của giáo viên — không phải trong phòng họp của Marquetly. Lý do quan trọng: bạn cần quan sát con người trong môi trường thực của họ, với công cụ thực họ đang dùng, trong quy trình làm việc thực của họ. Khi bạn đưa họ vào một phòng lab, họ sẽ hành xử khác đi.</p>
 
-<p>Câu hỏi không phải là "bạn có thích platform của chúng tôi không?" hay "bạn muốn feature gì?" — những câu hỏi này chỉ dẫn đến feature requests và opinion, không phải insight. Thay vào đó: "Hãy kể cho tôi nghe lần cuối cùng bạn tạo một course trông như thế nào?" và "Show me how you do it." Observing behavior beats asking about opinions every time.</p>
+<p>Câu hỏi không phải là "bạn có thích nền tảng của chúng tôi không?" hay "bạn muốn tính năng gì?" — những câu hỏi này chỉ dẫn đến các yêu cầu tính năng và ý kiến chủ quan, không phải insight thực sự. Thay vào đó: "Hãy kể cho tôi nghe lần cuối cùng bạn tạo một khóa học trông như thế nào?" và "Hãy làm cho tôi xem bạn làm điều đó ra sao." Quan sát hành vi luôn đáng tin hơn hỏi về ý kiến.</p>
 
 <h2>Năm Vấn Đề Lớn Xuất Hiện</h2>
 
-<p>Sau 20 interviews, team patterns hóa findings thành năm problem statements rõ ràng:</p>
+<p>Sau 20 cuộc phỏng vấn, team tổng hợp các phát hiện thành năm vấn đề (problem statement) rõ ràng:</p>
 
-<p><strong>Video editing cực kỳ tốn thời gian.</strong> Teachers đang chi 80 giờ hoặc hơn chỉ để edit video cho một course — so với 10–20 giờ để thực sự teach material đó. Họ phải học video editing software, thuê freelancer editor, hoặc tự làm từng cut một. Đây là friction point lớn nhất và cũng là phát hiện bất ngờ nhất.</p>
+<p><strong>Việc dựng video cực kỳ tốn thời gian.</strong> Giáo viên đang bỏ ra 80 giờ hoặc hơn chỉ để dựng video cho một khóa học — so với 10–20 giờ để thực sự giảng dạy nội dung đó. Họ phải học phần mềm dựng video, thuê người dựng video tự do, hoặc tự làm từng cảnh cắt một. Đây là điểm cản trở lớn nhất và cũng là phát hiện bất ngờ nhất.</p>
 
-<p><strong>Teachers không biết learners muốn học gì.</strong> Họ tạo content dựa trên những gì họ biết và nghĩ là hay — không phải dựa trên demand. Kết quả: một số courses có vài dozen students, một số khác có hàng nghìn. Teachers không có cách nào biết trước liệu topic của mình có audience hay không.</p>
+<p><strong>Giáo viên không biết học viên muốn học gì.</strong> Họ tạo nội dung dựa trên những gì họ biết và nghĩ là hay — không phải dựa trên nhu cầu thực tế. Kết quả: một số khóa học chỉ có vài chục học viên, một số khác có hàng nghìn. Giáo viên không có cách nào biết trước liệu chủ đề của mình có người quan tâm hay không.</p>
 
-<p><strong>Workflow publish trên platform phức tạp và confusing.</strong> Quá trình upload, segment video, add quizzes, set pricing, và publish có quá nhiều bước với UX không rõ ràng. Nhiều teachers bỏ cuộc ở giữa chừng.</p>
+<p><strong>Quy trình xuất bản trên nền tảng phức tạp và khó hiểu.</strong> Quá trình tải video lên, chia đoạn video, thêm câu hỏi kiểm tra, đặt giá, và xuất bản có quá nhiều bước với trải nghiệm người dùng không rõ ràng. Nhiều giáo viên bỏ cuộc giữa chừng.</p>
 
-<p><strong>Không có feedback loop với learners.</strong> Sau khi publish, teachers không biết learners của họ đang gặp khó khăn ở đâu, phần nào được yêu thích, phần nào bị skip. Không có data để cải thiện content.</p>
+<p><strong>Không có vòng phản hồi với học viên.</strong> Sau khi xuất bản, giáo viên không biết học viên của mình đang gặp khó khăn ở đâu, phần nào được yêu thích, phần nào bị bỏ qua. Không có data để cải thiện nội dung.</p>
 
-<p><strong>Vấn đề về equipment và production quality.</strong> Một số teachers lo lắng về việc video của họ trông "amateur" — âm thanh kém, ánh sáng tồi, không có proper setup. Nhưng đây là vấn đề nhỏ hơn so với bốn vấn đề kia.</p>
+<p><strong>Vấn đề về thiết bị và chất lượng sản xuất.</strong> Một số giáo viên lo lắng về việc video của họ trông "nghiệp dư" — âm thanh kém, ánh sáng tồi, không được setup đúng cách. Nhưng đây là vấn đề nhỏ hơn so với bốn vấn đề kia.</p>
 
-<h2>Phát Hiện Bất Ngờ: 80 Giờ Editing</h2>
+<h2>Phát Hiện Bất Ngờ: 80 Giờ Dựng Video</h2>
 
-<p>Con số 80 giờ editing cho một course là shocking với team Marquetly. Trước khi research, giả định của team là vấn đề nằm ở platform UX — upload flow quá phức tạp, hay pricing quá confusing. Nhưng hóa ra, teachers chưa kịp đến bước upload vì họ đang mắc kẹt ở khâu editing — một việc xảy ra hoàn toàn ngoài platform.</p>
+<p>Con số 80 giờ dựng video cho một khóa học khiến team Marquetly sốc. Trước khi nghiên cứu, giả định của team là vấn đề nằm ở trải nghiệm người dùng của nền tảng — luồng tải lên quá phức tạp, hay cách đặt giá quá rối rắm. Nhưng hóa ra, giáo viên chưa kịp đến bước tải lên vì họ đang mắc kẹt ở khâu dựng video — một việc xảy ra hoàn toàn ngoài nền tảng.</p>
 
-<p>Đây chính là lý do tại sao generative research quan trọng hơn nhiều so với bất kỳ loại analytics nào. Analytics có thể nói "teachers không publish" nhưng không thể nói "teachers không publish vì họ dành 80 giờ editing một mình trên iMovie." Chỉ khi ngồi bên cạnh một teacher và watch họ làm việc, bạn mới thấy điều đó.</p>
+<p>Đây chính là lý do tại sao generative research quan trọng hơn nhiều so với bất kỳ loại phân tích dữ liệu nào. Phân tích dữ liệu có thể cho biết "giáo viên không xuất bản" nhưng không thể cho biết "giáo viên không xuất bản vì họ dành 80 giờ dựng video một mình trên iMovie." Chỉ khi ngồi bên cạnh một giáo viên và quan sát họ làm việc, bạn mới thấy được điều đó.</p>
 
-<p>Một trong những interviews ấn tượng nhất là với một marketer chuyên nghiệp ở San Francisco. Cô ấy là expert thực sự trong lĩnh vực của mình và muốn chia sẻ kiến thức với người khác — nhưng khi team observe session editing của cô ấy, họ thấy cô ấy đã dành 3 giờ chỉ để cắt một đoạn video 15 phút, xuất ra wrong format, rồi phải làm lại từ đầu. Expertise ở marketing không transfer sang video production. Đây là một blocker thực sự.</p>
+<p>Một trong những buổi phỏng vấn ấn tượng nhất là với một chuyên gia marketing ở San Francisco. Cô ấy thực sự giỏi trong lĩnh vực của mình và muốn chia sẻ kiến thức với người khác — nhưng khi team quan sát buổi dựng video của cô ấy, họ thấy cô đã dành 3 giờ chỉ để cắt một đoạn video 15 phút, xuất sai định dạng, rồi phải làm lại từ đầu. Chuyên môn về marketing không chuyển hóa được sang kỹ năng sản xuất video. Đây là một rào cản thực sự.</p>
 
-<h2>Từ Problem Statements Đến Prioritization</h2>
+<h2>Từ Các Vấn Đề Đến Ưu Tiên Hóa</h2>
 
-<p>Với năm vấn đề, team phải quyết định cái nào cần tackle trước. Câu hỏi đặt ra: vấn đề nào nếu được giải quyết sẽ có impact lớn nhất lên publish rate và teacher retention? Dựa trên frequency trong interviews và severity của friction, team quyết định focus vào hai vấn đề lớn nhất: video editing time và topic demand signals.</p>
+<p>Với năm vấn đề, team phải quyết định cái nào cần giải quyết trước. Câu hỏi đặt ra: vấn đề nào nếu được giải quyết sẽ có tác động lớn nhất lên tỷ lệ xuất bản và khả năng giữ chân giáo viên? Dựa trên tần suất xuất hiện trong các cuộc phỏng vấn và mức độ nghiêm trọng của khó khăn, team quyết định tập trung vào hai vấn đề lớn nhất: thời gian dựng video và tín hiệu nhu cầu theo chủ đề.</p>
 
-<p>Đây là lúc bước sang giai đoạn tiếp theo: Solution Exploration — nhưng với sự hiểu biết sâu về problem space, không phải nhảy ngay vào solutions dựa trên intuition. Giai đoạn problem exploration đã giúp team tránh được một sai lầm kinh điển: xây dựng một platform UI mới trong khi vấn đề thực sự nằm ở quy trình editing video ngoài platform.</p>
+<p>Đây là lúc bước sang giai đoạn tiếp theo: Khám Phá Giải Pháp — nhưng với sự hiểu biết sâu về không gian vấn đề, không phải nhảy ngay vào giải pháp dựa trên trực giác. Giai đoạn khám phá vấn đề đã giúp team tránh được một sai lầm kinh điển: xây dựng một giao diện nền tảng mới trong khi vấn đề thực sự nằm ở quy trình dựng video bên ngoài nền tảng.</p>
 
 <nav class="chapnav">
-  <a href="/escaping-the-build-trap/understanding-the-direction-and-setting-success-metrics"><span class="lbl">Chương trước</span>Chương 16: Understanding the Direction and Setting Success Metrics</a>
-  <a href="/escaping-the-build-trap/solution-exploration"><span class="lbl">Chương sau</span>Chương 18: Solution Exploration</a>
+  <a href="/escaping-the-build-trap/understanding-the-direction-and-setting-success-metrics"><span class="lbl">Chương trước</span>Chương 16: Hiểu Rõ Định Hướng Và Thiết Lập Chỉ Số Thành Công</a>
+  <a href="/escaping-the-build-trap/solution-exploration"><span class="lbl">Chương sau</span>Chương 18: Khám Phá Giải Pháp</a>
 </nav>
 </body>
 </html>
